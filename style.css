@@ -1,0 +1,878 @@
+/* ==========================================
+   VARIABLES & RESET
+   ========================================== */
+
+:root {
+    --terracotta: #C97B63;
+    --rose: #D4A5A5;
+    --ocre: #D4915D;
+    --burgundy: #7B3F3F;
+    --olive: #7A8268;
+    --sage: #4A5442;
+    --cream: #F5EFE7;
+    --sand: #E8D5C4;
+    --teal: #4A7C7E;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    color: #333;
+    background-color: var(--cream);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ==========================================
+   INTRO ANIMATION
+   ========================================== */
+
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 50%, var(--rose) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeOut 1s ease-in 2.5s forwards;
+}
+
+.intro-content {
+    text-align: center;
+    color: var(--burgundy);
+}
+
+.intro-ornament {
+    font-size: 4rem;
+    animation: scaleIn 0.8s ease-out;
+    margin-bottom: 1rem;
+}
+
+.intro-names {
+    font-size: 5rem;
+    font-weight: 300;
+    letter-spacing: 8px;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.intro-date {
+    font-size: 1.5rem;
+    color: var(--olive);
+    letter-spacing: 3px;
+    animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+/* ==========================================
+   NAVIGATION
+   ========================================== */
+
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transform: translateY(-100%);
+    animation: slideDown 0.5s ease-out 3s forwards;
+}
+
+@keyframes slideDown {
+    to {
+        transform: translateY(0);
+    }
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--burgundy);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+    text-transform: uppercase;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--terracotta);
+    transition: width 0.3s;
+}
+
+nav a:hover::after,
+nav a.active::after {
+    width: 100%;
+}
+
+nav a:hover,
+nav a.active {
+    color: var(--terracotta);
+}
+
+/* ==========================================
+   HERO SECTION
+   ========================================== */
+
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 8rem 2rem 4rem;
+}
+
+.hero-pattern {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    opacity: 0.08;
+    background-image: 
+        radial-gradient(circle at 20% 50%, var(--olive) 2px, transparent 2px),
+        radial-gradient(circle at 80% 50%, var(--terracotta) 2px, transparent 2px);
+    background-size: 40px 40px;
+}
+
+.hero-pattern-left {
+    top: 10%;
+    left: -100px;
+    transform: rotate(-15deg);
+    animation: float 20s infinite ease-in-out;
+}
+
+.hero-pattern-right {
+    bottom: 10%;
+    right: -100px;
+    transform: rotate(15deg);
+    animation: float 25s infinite ease-in-out reverse;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) rotate(-15deg);
+    }
+    50% {
+        transform: translate(30px, 30px) rotate(-10deg);
+    }
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 1;
+    max-width: 900px;
+}
+
+.ornament {
+    color: var(--terracotta);
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeIn 1s ease-in 3.5s forwards;
+}
+
+.names {
+    font-size: 4.5rem;
+    color: var(--burgundy);
+    margin: 1rem 0;
+    font-weight: 300;
+    letter-spacing: 4px;
+    opacity: 0;
+    animation: fadeInUp 1s ease-in 3.7s forwards;
+}
+
+.ampersand {
+    font-style: italic;
+    font-size: 5.5rem;
+    color: var(--terracotta);
+    display: block;
+    margin: 0.5rem 0;
+}
+
+.date-info {
+    margin: 2rem 0;
+    opacity: 0;
+    animation: fadeInUp 1s ease-in 4s forwards;
+}
+
+.wedding-date {
+    font-size: 1.8rem;
+    color: var(--burgundy);
+    font-weight: 500;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.wedding-location {
+    font-size: 1.3rem;
+    color: var(--olive);
+    letter-spacing: 1px;
+}
+
+.countdown {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeInUp 1s ease-in 4.3s forwards;
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+    min-width: 100px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.countdown-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--burgundy);
+    font-family: 'Arial', sans-serif;
+}
+
+.countdown-label {
+    font-size: 0.9rem;
+    color: var(--olive);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--burgundy);
+    font-size: 2rem;
+    animation: bounce 2s infinite;
+    opacity: 0;
+    animation: bounce 2s infinite 4.5s;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-50%) translateY(10px);
+        opacity: 0.7;
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   SECTIONS COMMUNES
+   ========================================== */
+
+section {
+    min-height: 100vh;
+    padding: 6rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 3rem;
+    color: var(--burgundy);
+    margin-bottom: 1rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--terracotta), var(--ocre));
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: var(--olive);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 4rem;
+    line-height: 1.8;
+}
+
+.section-decoration {
+    width: 200px;
+    margin: 0 auto;
+    color: var(--terracotta);
+    opacity: 0.3;
+}
+
+.section-decoration-top {
+    margin-bottom: 3rem;
+}
+
+/* ==========================================
+   RSVP SECTION
+   ========================================== */
+
+.rsvp {
+    background: linear-gradient(135deg, var(--cream) 0%, rgba(212, 165, 165, 0.15) 100%);
+    position: relative;
+}
+
+.rsvp-content {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+    max-width: 1200px;
+    align-items: center;
+}
+
+.rsvp-image-frame {
+    position: relative;
+}
+
+.rsvp-image-frame img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+    transition: transform 0.3s;
+}
+
+.rsvp-image-frame:hover img {
+    transform: scale(1.02);
+}
+
+.rsvp-image-frame::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    right: 15px;
+    bottom: 15px;
+    border: 2px solid var(--terracotta);
+    border-radius: 20px;
+    opacity: 0.3;
+    z-index: -1;
+}
+
+.rsvp-card {
+    background: white;
+    padding: 4rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.rsvp-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.rsvp-text {
+    font-size: 1.15rem;
+    color: #666;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 3rem;
+    background: linear-gradient(135deg, var(--terracotta), var(--burgundy));
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 10px 30px rgba(201, 123, 99, 0.3);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(201, 123, 99, 0.4);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.btn:hover .btn-icon {
+    transform: translateX(5px);
+}
+
+/* ==========================================
+   LOGEMENTS SECTION
+   ========================================== */
+
+.logements {
+    background: #fff;
+}
+
+.logements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.logement-card {
+    background: linear-gradient(135deg, #fff 0%, var(--cream) 100%);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+    border: 1px solid rgba(201, 123, 99, 0.1);
+}
+
+.logement-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.logement-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.logement-card h3 {
+    color: var(--burgundy);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.logement-details p {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+}
+
+.logement-details .address {
+    color: var(--olive);
+}
+
+.logement-details .phone,
+.logement-details .distance {
+    font-size: 0.95rem;
+    color: var(--terracotta);
+}
+
+.map-container {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    margin-bottom: 4rem;
+}
+
+.map-header h3 {
+    color: var(--burgundy);
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.map-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: var(--cream);
+    border-radius: 15px;
+}
+
+.info-icon {
+    font-size: 2rem;
+}
+
+.info-item strong {
+    display: block;
+    color: var(--burgundy);
+    margin-bottom: 0.3rem;
+}
+
+.info-item p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.map-note {
+    text-align: center;
+    color: var(--olive);
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.photo-item {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.photo-item img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.photo-item:hover img {
+    transform: scale(1.1);
+}
+
+/* ==========================================
+   CAGNOTTE SECTION
+   ========================================== */
+
+.cagnotte {
+    background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 100%);
+    position: relative;
+}
+
+.cagnotte-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30 L35 25 L30 20 L25 25 Z' fill='%23C97B63' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+.cagnotte-content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    max-width: 1200px;
+    align-items: center;
+}
+
+.cagnotte-image-frame {
+    position: relative;
+    order: 2;
+}
+
+.cagnotte-image-frame img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+    transition: transform 0.3s;
+}
+
+.cagnotte-image-frame:hover img {
+    transform: scale(1.02);
+}
+
+.cagnotte-image-frame::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: -15px;
+    bottom: -15px;
+    left: 15px;
+    border: 2px solid var(--olive);
+    border-radius: 20px;
+    opacity: 0.3;
+    z-index: -1;
+}
+
+.cagnotte-card {
+    background: white;
+    padding: 4rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    order: 1;
+}
+
+.gift-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.cagnotte-text {
+    font-size: 1.15rem;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+}
+
+.coming-soon {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 2.5rem;
+    background: var(--olive);
+    color: white;
+    border-radius: 50px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+}
+
+.coming-soon-icon {
+    font-size: 1.5rem;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+
+footer {
+    background: var(--burgundy);
+    color: white;
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.footer-ornament {
+    color: var(--sand);
+    margin-bottom: 1.5rem;
+}
+
+.footer-ornament svg {
+    margin: 0 auto;
+    display: block;
+}
+
+.footer-names {
+    font-size: 1.8rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.footer-date {
+    font-size: 1.1rem;
+    color: var(--sand);
+    margin-bottom: 0.5rem;
+}
+
+.footer-theme {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 1024px) {
+    .rsvp-content,
+    .cagnotte-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    
+    .cagnotte-image-frame,
+    .cagnotte-card {
+        order: 0;
+    }
+    
+    .rsvp-image-frame img,
+    .cagnotte-image-frame img {
+        height: 500px;
+    }
+    
+    .photo-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        gap: 1rem;
+    }
+    
+    nav a {
+        font-size: 0.85rem;
+    }
+    
+    .intro-names {
+        font-size: 3.5rem;
+    }
+    
+    .names {
+        font-size: 2.8rem;
+    }
+    
+    .ampersand {
+        font-size: 3.5rem;
+    }
+    
+    .wedding-date {
+        font-size: 1.4rem;
+    }
+    
+    .wedding-location {
+        font-size: 1.1rem;
+    }
+    
+    .countdown {
+        gap: 1rem;
+    }
+    
+    .countdown-item {
+        min-width: 80px;
+        padding: 1rem;
+    }
+    
+    .countdown-number {
+        font-size: 2rem;
+    }
+    
+    .countdown-label {
+        font-size: 0.8rem;
+    }
+    
+    .section-title {
+        font-size: 2.2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .logements-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .map-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .rsvp-card,
+    .cagnotte-card {
+        padding: 2.5rem 2rem;
+    }
+    
+    .rsvp-image-frame img,
+    .cagnotte-image-frame img {
+        height: 400px;
+    }
+    
+    .photo-item img {
+        height: 300px;
+    }
+}
