@@ -275,3 +275,138 @@ console.log('%c💒 Maureen & William 💒', 'font-size: 24px; color: #C97B63; f
 console.log('%c9-11 Août 2026 • Montélimar', 'font-size: 14px; color: #7A8268;');
 console.log('%cThème Méditerranéen 🌿🍊', 'font-size: 12px; color: #D4915D;');
 console.log('%cSite créé avec amour ❤️', 'font-size: 12px; color: #7B3F3F; font-style: italic;');
+
+// ==========================================
+// EMBED RSVP FORM (insère un iframe dans la carte de droite)
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const openBtn = document.getElementById('openRsvpBtn');
+    const rsvpCard = openBtn ? openBtn.closest('.rsvp-card') : null;
+
+    if (!openBtn || !rsvpCard) return;
+
+    // We'll save the original innerHTML to be able to restore it on close.
+    let originalInnerHTML = null;
+    let originalWidthStyle = '';
+
+    function createIframeWrapper(src) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'rsvp-iframe-wrapper';
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'rsvp-iframe-toolbar';
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'rsvp-iframe-close';
+        closeBtn.setAttribute('aria-label', 'Fermer le formulaire RSVP');
+        closeBtn.textContent = 'Fermer';
+        toolbar.appendChild(closeBtn);
+        wrapper.appendChild(toolbar);
+
+        const iframe = document.createElement('iframe');
+        const trySrc = src.includes('docs.google.com') ? (src + (src.includes('?') ? '&' : '?') + 'embedded=true') : src;
+        iframe.src = trySrc;
+        iframe.loading = 'lazy';
+        iframe.referrerPolicy = 'no-referrer-when-downgrade';
+        wrapper.appendChild(iframe);
+
+        const fallback = document.createElement('div');
+        fallback.className = 'rsvp-iframe-fallback';
+        fallback.innerHTML = `Si le formulaire ne s'affiche pas, <a href="${src}" target="_blank" rel="noopener">ouvrez-le dans un nouvel onglet</a>.`;
+        wrapper.appendChild(fallback);
+
+        // Close handler: restore original HTML and rebind the open button
+        closeBtn.addEventListener('click', () => {
+            rsvpCard.classList.remove('rsvp-embedded');
+            if (originalInnerHTML !== null) {
+                rsvpCard.innerHTML = originalInnerHTML;
+                // re-initialize the RSVP button listener on restored content
+                // small timeout ensures DOM is updated
+                setTimeout(() => {
+                    setupRsvpEmbed();
+                }, 20);
+            }
+        });
+
+        return wrapper;
+    }
+
+    function setupRsvpEmbed() {
+        const btn = document.getElementById('openRsvpBtn');
+        if (!btn) return;
+
+        btn.addEventListener('click', function handleOpen(e) {
+            e.preventDefault();
+            const src = btn.dataset.formSrc || btn.getAttribute('href');
+            if (!src) return window.open(btn.href, '_blank');
+
+            // Save original markup once
+            if (originalInnerHTML === null) originalInnerHTML = rsvpCard.innerHTML;
+
+            // Freeze card width to prevent grid reflow (keeps right column width stable)
+            originalWidthStyle = rsvpCard.style.width || '';
+            const rect = rsvpCard.getBoundingClientRect();
+            rsvpCard.style.width = rect.width + 'px';
+
+            // Clear and insert iframe wrapper directly in the card (ensures nothing else remains visible)
+            rsvpCard.innerHTML = '';
+            rsvpCard.classList.add('rsvp-embedded');
+            const wrapper = createIframeWrapper(src);
+            rsvpCard.appendChild(wrapper);
+
+            // Ensure width is restored when close button is clicked inside the wrapper
+            const closeBtn = wrapper.querySelector('.rsvp-iframe-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    rsvpCard.style.width = originalWidthStyle;
+                });
+            }
+        }, { once: true });
+    }
+
+    // Init
+    setupRsvpEmbed();
+});
+
+// ==========================================
+// BACK TO TOP BUTTON (desktop-only, visible when RSVP in view)
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const backBtn = document.getElementById('backToTop');
+    const sectionsToWatch = Array.from(document.querySelectorAll('#rsvp, #logements, #cagnotte'));
+
+    if (!backBtn || sectionsToWatch.length === 0) return;
+
+    // Show the button when ANY of the watched sections (from RSVP down) is visible, on desktop
+    const obs = new IntersectionObserver((entries) => {
+        const isDesktop = window.innerWidth >= 1024;
+        let anyVisible = false;
+        entries.forEach(entry => {
+            if (entry.isIntersecting) anyVisible = true;
+        });
+
+        if (isDesktop && anyVisible) {
+            backBtn.classList.add('visible');
+            backBtn.setAttribute('aria-hidden', 'false');
+        } else {
+            backBtn.classList.remove('visible');
+            backBtn.setAttribute('aria-hidden', 'true');
+        }
+    }, { threshold: 0.15 });
+
+    sectionsToWatch.forEach(s => obs.observe(s));
+
+    backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Hide/show on resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth < 1024) {
+            backBtn.classList.remove('visible');
+            backBtn.setAttribute('aria-hidden', 'true');
+        }
+    });
+});

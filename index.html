@@ -21,7 +21,6 @@
     <!-- Navigation -->
     <nav id="mainNav">
         <ul>
-            <li><a href="#accueil">Accueil</a></li>
             <li><a href="#rsvp">RSVP</a></li>
             <li><a href="#logements">Logements & Accès</a></li>
             <li><a href="#cagnotte">Cagnotte</a></li>
@@ -81,10 +80,15 @@
                     Nous serions ravis de célébrer ce moment unique avec vous !<br>
                     Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.
                 </p>
-                <a href="https://forms.gle/sd8xBqQ9UxEXnREK9" target="_blank" class="btn btn-primary">
-                    <span>Répondre au RSVP</span>
-                    <span class="btn-icon">→</span>
-                </a>
+                <!-- Button to load the external RSVP form inside this card (will insert an iframe) -->
+                <div class="rsvp-card-content">
+                    <a href="https://forms.gle/sd8xBqQ9UxEXnREK9" target="_blank" class="btn btn-primary" id="openRsvpBtn" data-form-src="https://forms.gle/sd8xBqQ9UxEXnREK9">
+                        <span>Répondre au RSVP</span>
+                        <span class="btn-icon">→</span>
+                    </a>
+                </div>
+
+                <!-- Note: iframe is injected directly into this card when opened. -->
             </div>
         </div>
     </section>
@@ -222,5 +226,7 @@
     </footer>
 
     <script src="script.js"></script>
+    <!-- Back to top (desktop only) -->
+    <button id="backToTop" class="back-to-top" aria-label="Retour en haut" aria-hidden="true">↑</button>
 </body>
 </html>
