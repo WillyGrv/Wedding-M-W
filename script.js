@@ -1,3 +1,40 @@
+// Parallax léger sur les patterns décoratifs
+window.addEventListener('scroll', function() {
+    const scrollY = window.scrollY;
+    document.querySelectorAll('.hero-pattern-left').forEach(el => {
+        el.style.transform = `rotate(-15deg) translateY(${scrollY * 0.08}px)`;
+    });
+    document.querySelectorAll('.hero-pattern-right').forEach(el => {
+        el.style.transform = `rotate(15deg) translateY(-${scrollY * 0.08}px)`;
+    });
+});
+// Apparition animée des sections au scroll
+function revealSectionsOnScroll() {
+    const sections = document.querySelectorAll('section');
+    const trigger = window.innerHeight * 0.85;
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if(rect.top < trigger) {
+            section.classList.add('visible');
+        }
+    });
+}
+window.addEventListener('scroll', revealSectionsOnScroll);
+window.addEventListener('resize', revealSectionsOnScroll);
+document.addEventListener('DOMContentLoaded', revealSectionsOnScroll);
+// Ajoute une classe .scrolled au body quand la section RSVP entre dans la fenêtre
+const rsvpSection = document.getElementById('rsvp');
+function checkRSVPScroll() {
+    const rect = rsvpSection.getBoundingClientRect();
+    if(rect.top <= 60) {
+        document.body.classList.add('scrolled');
+    } else {
+        document.body.classList.remove('scrolled');
+    }
+}
+window.addEventListener('scroll', checkRSVPScroll);
+window.addEventListener('resize', checkRSVPScroll);
+document.addEventListener('DOMContentLoaded', checkRSVPScroll);
 // ==========================================
 // INTRO ANIMATION
 // ==========================================

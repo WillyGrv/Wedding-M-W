@@ -1,3 +1,73 @@
+/* Décorations RSVP (grande taille) */
+.rsvp::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 520px; height: 520px;
+    background: url('images/9604792.png') no-repeat left top/contain;
+    left: -120px;
+    top: -120px;
+    bottom: auto;
+    right: auto;
+    opacity: 0.13;
+    pointer-events: none;
+    z-index: 0;
+}
+.rsvp {
+    position: relative;
+    z-index: 1;
+}
+
+/* Décorations Logements (grande taille) */
+.logements::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 600px; height: 600px;
+    background: url('images/9710452.png') no-repeat right bottom/contain;
+    right: -180px;
+    top: 60%;
+    bottom: auto;
+    left: auto;
+    opacity: 0.10;
+    pointer-events: none;
+    z-index: 0;
+}
+.logements {
+    position: relative;
+    z-index: 1;
+}
+
+/* Décorations Cagnotte (grande taille) */
+.cagnotte::before {
+    content: '';
+    position: absolute;
+    top: 30px; right: 0;
+    width: 500px; height: 500px;
+    background: url('images/9710452.png') no-repeat right top/contain;
+    right: -140px;
+    bottom: -120px;
+    top: auto;
+    left: auto;
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+}
+.cagnotte {
+    position: relative;
+    z-index: 1;
+}
+
+.logement-card, .rsvp-card, .cagnotte-card {
+    box-shadow: 0 4px 24px 0 rgba(122,130,104,0.10);
+    border-radius: 1.2rem;
+    background: rgba(255,255,255,0.85);
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+.logement-card:hover, .rsvp-card:hover, .cagnotte-card:hover {
+    box-shadow: 0 8px 32px 0 rgba(122,130,104,0.18);
+    transform: translateY(-4px) scale(1.02);
+}
 /* ==========================================
    VARIABLES & RESET
    ========================================== */
@@ -24,12 +94,22 @@ html {
     scroll-behavior: smooth;
 }
 
+
 body {
-    font-family: 'Georgia', serif;
+    font-family: 'Quicksand', Arial, sans-serif;
     color: #333;
     background-color: var(--cream);
     overflow-x: hidden;
     line-height: 1.6;
+}
+
+h1, h2, h3, .names, .ornament, .intro-names {
+    font-family: 'Yeseva One', serif;
+    letter-spacing: 0.5px;
+}
+
+nav, button, .btn, input, textarea, select, .date-info, .wedding-date, .wedding-location, p, li, ul, .intro-date {
+    font-family: 'Quicksand', Arial, sans-serif;
 }
 
 img {
@@ -118,11 +198,26 @@ nav {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: transparent;
+    backdrop-filter: none;
+    transition: background 0.3s, box-shadow 0.3s;
     z-index: 1000;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 0.7rem 2rem;
+    box-shadow: none;
+    border-bottom: none;
+    transform: translateY(-100%);
+    animation: slideDown 0.5s ease-out 3s forwards;
+}
+
+/* Menu sticky avec fond blanc au scroll */
+.scrolled nav {
+    background: var(--cream);
+    box-shadow: 0 2px 10px rgba(122,130,104,0.07);
+    border-bottom: 1px solid #eee;
+    z-index: 1000;
+    padding: 0.7rem 2rem;
+    box-shadow: none;
+    border-bottom: none;
     transform: translateY(-100%);
     animation: slideDown 0.5s ease-out 3s forwards;
 }
@@ -143,13 +238,13 @@ nav ul {
 
 nav a {
     text-decoration: none;
-    color: var(--burgundy);
+    color: #333;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     letter-spacing: 1px;
     transition: color 0.3s;
     text-transform: uppercase;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Yeseva One', serif;
     position: relative;
 }
 
@@ -160,7 +255,7 @@ nav a::after {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--terracotta);
+    background: var(--sage);
     transition: width 0.3s;
 }
 
@@ -171,7 +266,11 @@ nav a.active::after {
 
 nav a:hover,
 nav a.active {
-    color: var(--terracotta);
+    color: var(--sage);
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    transition: color 0.2s;
 }
 
 /* ==========================================
@@ -190,11 +289,55 @@ nav a.active {
     padding: 8rem 2rem 4rem;
 }
 
+.hero-bg-blur {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('images/23dcca5b-428f-4c82-bf8b-8a801b824ee1.png') center/cover no-repeat,
+                url('images/5658d31d-58c7-451b-bc70-686c175118e8.jpg') repeat;
+    filter: blur(10px) brightness(0.7) grayscale(0.1);
+    opacity: 0.32;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(120deg, rgba(245,239,231,0.7) 0%, rgba(212,165,165,0.25) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-icons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 2.2rem;
+    margin-bottom: 1.2rem;
+    opacity: 0.85;
+}
+
+.small-names {
+    font-size: 1.3rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+    opacity: 0.92;
+}
+
+.one-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .hero-pattern {
     position: absolute;
     width: 400px;
     height: 400px;
-    opacity: 0.08;
+    opacity: 0.10;
+    will-change: transform;
+    transition: transform 0.7s cubic-bezier(.23,1.01,.32,1);
     background-image: 
         radial-gradient(circle at 20% 50%, var(--olive) 2px, transparent 2px),
         radial-gradient(circle at 80% 50%, var(--terracotta) 2px, transparent 2px);
@@ -226,7 +369,22 @@ nav a.active {
 
 .hero-content {
     text-align: center;
-    z-index: 1;
+    z-index: 2;
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+section {
+        opacity: 0;
+        transform: translateY(40px);
+        animation: fadeInUp 1.2s cubic-bezier(.23,1.01,.32,1) both;
+}
+section.visible {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.7s, transform 0.7s;
+}
     max-width: 900px;
 }
 
