@@ -96,7 +96,7 @@ html {
 
 
 body {
-    font-family: 'Quicksand', Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     color: #333;
     background-color: var(--cream);
     overflow-x: hidden;
@@ -104,12 +104,8 @@ body {
 }
 
 h1, h2, h3, .names, .ornament, .intro-names {
-    font-family: 'Yeseva One', serif;
+     font-family: 'Inter', Arial, sans-serif;
     letter-spacing: 0.5px;
-}
-
-nav, button, .btn, input, textarea, select, .date-info, .wedding-date, .wedding-location, p, li, ul, .intro-date {
-    font-family: 'Quicksand', Arial, sans-serif;
 }
 
 img {
@@ -244,7 +240,7 @@ nav a {
     letter-spacing: 1px;
     transition: color 0.3s;
     text-transform: uppercase;
-    font-family: 'Yeseva One', serif;
+     font-family: 'Inter', Arial, sans-serif;
     position: relative;
 }
 
@@ -458,7 +454,7 @@ section.visible {
     font-size: 3rem;
     font-weight: 700;
     color: var(--burgundy);
-    font-family: 'Arial', sans-serif;
+     font-family: 'Inter', Arial, sans-serif;
 }
 
 .countdown-label {
@@ -609,69 +605,10 @@ section {
 
 .rsvp-card {
     background: white;
-    padding: 4rem 3rem;
+    padding: 1rem 1rem 5rem 1rem;
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
     text-align: center;
-}
-
-/* Force a stable card height so removing padding on embed doesn't change outer size */
-.rsvp-card,
-.cagnotte-card {
-    height: 600px; /* desktop height matching .rsvp-image-frame img */
-    box-sizing: border-box; /* ensure padding is included in the height */
-    transition: height 180ms ease, min-height 180ms ease;
-}
-
-.rsvp-card.rsvp-embedded {
-    /* keep original padding to avoid layout shifts; overlay will cover the inner area */
-    position: relative; /* container for absolute overlay */
-    overflow: hidden; /* ensure overlay/iframe respects rounded corners */
-}
-
-/* iframe wrapper fills the card when embedded */
-.rsvp-iframe-wrapper {
-    width: 100%;
-    height: 100%; /* will fill the parent .rsvp-card */
-    /* let parent `.rsvp-card` handle border-radius and overflow */
-    border-radius: 0;
-    overflow: hidden;
-    position: absolute; /* fill the parent */
-    inset: 0;
-}
-
-.rsvp-iframe-wrapper iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    display: block;
-}
-
-.rsvp-iframe-fallback {
-    position: absolute;
-    left: 12px;
-    bottom: 12px;
-    z-index: 11;
-    padding: 0.6rem 0.8rem;
-    background: rgba(255,255,255,0.95);
-    border-radius: 8px;
-    font-size: 0.95rem;
-}
-
-.rsvp-iframe-toolbar {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-}
-
-.rsvp-iframe-close {
-    background: rgba(255,255,255,0.9);
-    border: none;
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    cursor: pointer;
-    font-weight: 600;
 }
 
 .rsvp-icon {
@@ -700,7 +637,7 @@ section {
     transition: all 0.3s;
     letter-spacing: 1px;
     text-transform: uppercase;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     box-shadow: 0 10px 30px rgba(201, 123, 99, 0.3);
 }
 
@@ -1011,17 +948,6 @@ footer {
     .cagnotte-image-frame img {
         height: 500px;
     }
-
-    /* Match card heights to the image on medium screens */
-    .rsvp-card,
-    .cagnotte-card {
-        height: 500px;
-    }
-
-    /* adjust embedded card height on medium screens */
-    .rsvp-card.rsvp-embedded {
-        min-height: 500px;
-    }
     
     .photo-grid {
         grid-template-columns: 1fr;
@@ -1092,57 +1018,15 @@ footer {
     
     .rsvp-card,
     .cagnotte-card {
-        padding: 2.5rem 2rem;
+        padding: 1rem 1rem 5rem 1rem;
     }
     
     .rsvp-image-frame img,
     .cagnotte-image-frame img {
         height: 400px;
     }
-
-    /* Small screens: reduce card heights to match images */
-    .rsvp-card,
-    .cagnotte-card {
-        height: 400px;
-    }
     
     .photo-item img {
         height: 300px;
-    }
-}
-
-/* Back-to-top button (desktop-only) */
-.back-to-top {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.7);
-    color: var(--burgundy);
-    border: 1px solid rgba(122,130,104,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    transition: transform 160ms ease, opacity 160ms ease;
-    opacity: 0;
-    transform: translateY(6px);
-    pointer-events: none;
-    z-index: 2000;
-}
-
-.back-to-top.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-@media (max-width: 1023px) {
-    .back-to-top {
-        display: none;
     }
 }
