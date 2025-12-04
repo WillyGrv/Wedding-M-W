@@ -70,9 +70,7 @@
         </div>
         
         <div class="rsvp-content">
-            <div class="rsvp-image-frame">
-                <img src="https://via.placeholder.com/600x400?text=Photo+en+construction" alt="Photo en construction">
-            </div>
+            
             
             <div class="rsvp-card">
                 <div class="rsvp-icon"></div>
@@ -81,10 +79,17 @@
                     Nous serions ravis de célébrer ce moment unique avec vous !<br>
                     Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.
                 </p>
-                <button id="openRsvpBtn" class="btn btn-primary" data-form-url="https://forms.gle/sd8xBqQ9UxEXnREK9">
-                    <span>Répondre au RSVP</span>
-                    <span class="btn-icon">→</span>
-                </button>
+<div id="rsvp-check">
+  <input type="email" id="rsvpEmail" placeholder="Votre email" required>
+  <button id="rsvpCheckBtn">Vérifier</button>
+  <div id="rsvpCheckResult"></div>
+</div>
+
+
+            </div>
+
+            <div class="rsvp-image-frame">
+                <img src="https://via.placeholder.com/600x400?text=Photo+en+construction" alt="Photo en construction">
             </div>
         </div>
     </section>
