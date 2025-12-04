@@ -22,8 +22,8 @@
     <!-- Navigation -->
     <nav id="mainNav">
         <ul>
-            <li><a href="#rsvp">RSVP</a></li>
-            <li><a href="#logements">Logements & Accès</a></li>
+            <li><a href="#rsvp">RSVP & Infos</a></li>
+            <li><a href="#logements">Logements</a></li>
             <li><a href="#cagnotte">Cagnotte</a></li>
         </ul>
     </nav>
@@ -72,25 +72,53 @@
         <div class="rsvp-content">
             
             
-            <div class="rsvp-card">
-                <div class="rsvp-icon"></div>
-                <h2 class="section-title">Confirmez votre présence</h2>
-                <p class="rsvp-text">
-                    Nous serions ravis de célébrer ce moment unique avec vous !<br>
-                    Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.
-                </p>
-<div id="rsvp-check">
-  <input type="email" id="rsvpEmail" placeholder="Votre email" required>
-  <button id="rsvpCheckBtn">Vérifier</button>
-  <div id="rsvpCheckResult"></div>
-</div>
+                        <div class="rsvp-card">
+                                <div class="rsvp-icon"></div>
+                                <h2 class="section-title">Confirmez votre présence</h2>
+                                <p class="rsvp-text">
+                                        Nous avons hâte de célébrer ce moment unique avec vous !<br>
+                                        Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.<br>
+                                        Renseigne ton email ici pour vérifier ton inscription.
+                                </p>
+                                <div id="rsvp-check">
+                                    <input type="email" id="rsvpEmail" placeholder="Votre email" required>
+                                    <button id="rsvpCheckBtn">Vérifier</button>
+                                    <div id="rsvpCheckResult"></div>
+                                </div>
+                        </div>
 
-
-            </div>
-
-            <div class="rsvp-image-frame">
-                <img src="https://via.placeholder.com/600x400?text=Photo+en+construction" alt="Photo en construction">
-            </div>
+                        <div class="rsvp-info-frame" style="background:rgba(255,255,255,0.85);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.08);padding:2.5rem;min-width:600px;max-width:600px;min-height:600px;max-height:600px;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+                                <h3 style="color:var(--burgundy);font-size:2rem;margin-bottom:1.2rem;">Informations pratiques</h3>
+                                <ul style="list-style:none;padding:0;margin:0;font-size:0.8rem;line-height:2;text-align:left;max-width:420px;">
+                                      <li><strong>Lieu :</strong> <span style="color:var(--olive);">TBD (Proche Grignan)</span></li>
+                                      <li><strong>Arrivée :</strong> Dimanche 09 août en fin d'après-midi <span style="color:var(--terracotta);">(à partir de 17h)</span></li>
+                                      <li><strong>Départ :</strong> Mardi 11 août après <span style="color:var(--terracotta);">15h</span></li>
+                                                        <li style="display:flex;flex-direction:column;gap:8px;">
+                                                                                <span><strong>Gare la plus proche :</strong></span>
+                                                                                <div class="gare-choices-row">
+                                                                                    <div class="gare-choice">
+                                                                                        <span class="gare-title" style="font-weight:bold;color:var(--olive);">Montélimar TGV</span>
+                                                                                        <span class="gare-details">≈ 4h de train (1 correspondance)<br>+ 30 min voiture</span>
+                                                                                        <a href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Montelimar+TGV" target="_blank" rel="noopener">
+                                                                                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d115326.964!2d4.7500!3d44.5600!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f5f7e2e2e2e2e3%3A0x2e2e2e2e2e2e2e2e!2sGare%20de%20Mont%C3%A9limar!5e0!3m2!1sfr!2sfr!4v1701710000000!5m2!1sfr!2sfr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                                                                            <span style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;"></span>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                    <div class="gare-choice">
+                                                                                        <span class="gare-title" style="font-weight:bold;color:var(--olive);">Valence TGV</span>
+                                                                                        <span class="gare-details">≈ 2h de train<br>+ 1h voiture</span>
+                                                                                        <a href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Valence+TGV" target="_blank" rel="noopener">
+                                                                                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d115326.964!2d4.9000!3d44.9333!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f5f7e2e2e2e2e3%3A0x2e2e2e2e2e2e2e2e!2sGare%20de%20Valence%20TGV!5e0!3m2!1sfr!2sfr!4v1701710000000!5m2!1sfr!2sfr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                                                                            <span style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;"></span>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </div>
+                                                        </li>
+                                </ul>
+                                <div style="margin-top:2.5rem;color:var(--sage);font-size:1.05rem;text-align:center;opacity:0.8;">
+                                    <em>Le lieu exact sera communiqué prochainement.<br>Merci de prévoir votre arrivée et départ selon ces horaires.</em>
+                                </div>
+                        </div>
         </div>
     </section>
 
@@ -102,82 +130,14 @@
             </svg>
         </div>
         <div class="container">
-            <h2 class="section-title">Logements & Accès</h2>
+            <h2 class="section-title">Logements</h2>
             <p class="section-subtitle">
-                Notre mariage se déroulera dans la magnifique région de Montélimar,<br>
-                entre oliviers et champs de lavande. Le lieu exact vous sera communiqué prochainement.
+                Notre mariage se déroulera dans un domaine 100% réservé pour les participants.<br>
+                Chaque personne disposera d'un lit dans une chambre (partagée ou non).<br>
+                Nous demandons à chacun de participer à cette réservation à hauteur de <strong>125€ par personne</strong> pour les 2 nuits.<br>
+                Le lieu exact vous sera communiqué prochainement.<br>
             </p>
-
-            <div class="logements-grid">
-                <div class="logement-card">
-                    <div class="logement-icon">🏨</div>
-                    <h3>Hôtels</h3>
-                    <div class="logement-details">
-                        <p><strong>Le Sphinx Hôtel</strong></p>
-                        <p class="address">19 Boulevard Meynot, 26200 Montélimar</p>
-                        <p class="phone">☎️ 04 75 01 86 64</p>
-                    </div>
-                </div>
-
-                <div class="logement-card">
-                    <div class="logement-icon">🏡</div>
-                    <h3>Chambres d'hôtes</h3>
-                    <div class="logement-details">
-                        <p><strong>La Bastide des Oliviers</strong></p>
-                        <p class="address">Authentique mas provençal</p>
-                        <p class="distance">À 10 min de Montélimar</p>
-                    </div>
-                </div>
-
-                <div class="logement-card">
-                    <div class="logement-icon">🏕️</div>
-                    <h3>Locations saisonnières</h3>
-                    <div class="logement-details">
-                        <p><strong>Airbnb / Gîtes de France</strong></p>
-                        <p class="address">Nombreuses options dans la région</p>
-                        <p class="distance">Parfait pour les familles</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="map-container">
-                <div class="map-header">
-                    <h3>📍 Comment venir ?</h3>
-                </div>
-                <div class="map-info">
-                    <div class="info-item">
-                        <span class="info-icon">🚗</span>
-                        <div>
-                            <strong>En voiture</strong>
-                            <p>Parking sur place disponible</p>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-icon">🚂</span>
-                        <div>
-                            <strong>En train</strong>
-                            <p>Gare TGV de Montélimar</p>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-icon">✈️</span>
-                        <div>
-                            <strong>En avion</strong>
-                            <p>Aéroport Lyon-Saint-Exupéry (1h30)</p>
-                        </div>
-                    </div>
-                </div>
-                <p class="map-note">Le lieu exact sera révélé prochainement 🤫</p>
-            </div>
-
-            <div class="photo-grid">
-                <div class="photo-item">
-                    <img src="https://via.placeholder.com/600x400?text=Photo+en+construction" alt="Photo en construction">
-                </div>
-                <div class="photo-item">
-                    <img src="https://via.placeholder.com/600x400?text=Photo+en+construction" alt="Photo en construction">
-                </div>
-            </div>
+            
         </div>
     </section>
 
