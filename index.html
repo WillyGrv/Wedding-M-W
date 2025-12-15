@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maureen & William - 9-11 Août 2026</title>
-    <!-- Police Google Fonts moderne -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Yeseva+One&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Fraunces (titres) & Nunito Sans (corps/menu) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -63,11 +63,6 @@
 
     <!-- RSVP Section -->
     <section id="rsvp" class="rsvp">
-        <div class="section-decoration section-decoration-top">
-            <svg viewBox="0 0 200 20" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,10 Q50,0 100,10 T200,10" fill="none" stroke="#D4915D" stroke-width="2"/>
-            </svg>
-        </div>
         
         <div class="rsvp-content">
             
@@ -124,19 +119,52 @@
 
     <!-- Logements Section -->
     <section id="logements" class="logements">
-        <div class="section-decoration section-decoration-top">
-            <svg viewBox="0 0 200 20" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,10 Q50,0 100,10 T200,10" fill="none" stroke="#7A8268" stroke-width="2"/>
-            </svg>
-        </div>
         <div class="container">
-            <h2 class="section-title">Logements</h2>
-            <p class="section-subtitle">
-                Notre mariage se déroulera dans un domaine 100% réservé pour les participants.<br>
-                Chaque personne disposera d'un lit dans une chambre (partagée ou non).<br>
-                Nous demandons à chacun de participer à cette réservation à hauteur de <strong>125€ par personne</strong> pour les 2 nuits.<br>
-                Le lieu exact vous sera communiqué prochainement.<br>
-            </p>
+                    
+            
+                        <div class="logements-theme-grid">
+                            <div class="logement-card">
+                                <h3>Logements</h3>
+                                <ul class="logement-list">
+                                    <li><span class="bullet">🏠</span><span>Domaine 100% réservé pour les invités</span></li>
+                                    <li><span class="bullet">🛏️</span><span>Un lit par personne (chambres partagées possibles)</span></li>
+                                    <li><span class="bullet">🕔</span><span>Arrivée dimanche 9 août à partir de 17h</span></li>
+                                    <li><span class="bullet">🕒</span><span>Départ mardi 11 août après 15h</span></li>
+                                    <li><span class="bullet">💶</span><span>Participation: <strong>125€ / personne</strong> pour 2 nuits</span></li>
+                                    <li><span class="bullet">🚗</span><span>Parking sur place</span></li>
+                                </ul>
+                                <p class="logement-note">Adresse exacte et répartition des chambres communiquées prochainement.</p>
+                            </div>
+                            <div class="logement-card">
+                                <h3>Thème</h3>
+                                <p><strong>Méditerranéen · Maroc</strong> — ambiance chaleureuse, naturelle et solaire.</p>
+                                <div class="theme-groups">
+                                                        <div class="theme-group">
+                                                            <strong>Couleurs privilégiées</strong>
+                                                            <ul class="color-chips">
+                                                                <li class="color-dot" tabindex="0" style="--chip: var(--terracotta);" data-label="Terracotta"></li>
+                                                                <li class="color-dot" tabindex="0" style="--chip: var(--olive);" data-label="Olive"></li>
+                                                                <li class="color-dot" tabindex="0" style="--chip: var(--sand);" data-label="Sable"></li>
+                                                                <li class="color-dot" tabindex="0" style="--chip: var(--cream);" data-label="Crème"></li>
+                                                                <li class="color-dot" tabindex="0" style="--chip: var(--ocre);" data-label="Ocre"></li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="theme-group" style="margin-top:1rem;">
+                                                            <strong>Couleurs à éviter</strong>
+                                                            <ul class="color-chips">
+                                                                <li class="color-dot" tabindex="0" style="--chip:#000000;" data-label="Noir pur"></li>
+                                                                <li class="color-dot" tabindex="0" style="--chip:#ff00ff;" data-label="Fuchsia néon"></li>
+                                                                <li class="color-dot" tabindex="0" style="--chip:#00ff00;" data-label="Vert néon"></li>
+                                                                <li class="color-dot" tabindex="0" style="--chip:#0000ff;" data-label="Bleu électrique"></li>
+                                                            </ul>
+                                                        </div>
+                                </div>
+                                                                <p class="theme-note" style="margin-top:1rem;opacity:0.9;line-height:1.6;">
+                                                                    <span style="display:inline-block;background:var(--terracotta);color:#fff;border-radius:999px;padding:4px 10px;font-weight:700;letter-spacing:0.02em;margin-right:8px;">⚠️ INTERDIT</span>
+                                                                    Costume + baskets (même blanches) le jour J. On adore le confort, mais pas ce combo — on reste chic-chic-chic 👞✨
+                                                                </p>
+                            </div>
+                        </div>
             
         </div>
     </section>
@@ -144,25 +172,41 @@
     <!-- Cagnotte Section -->
     <section id="cagnotte" class="cagnotte">
         <div class="cagnotte-pattern"></div>
-        
-        <div class="section-decoration section-decoration-top">
-            <svg viewBox="0 0 200 20" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,10 Q50,0 100,10 T200,10" fill="none" stroke="#C97B63" stroke-width="2"/>
-            </svg>
-        </div>
         <div class="container">
             <div class="cagnotte-content">
                 <div class="cagnotte-image-frame">
-                    <img src="https://via.placeholder.com/600x400?text=Photo+en+construction" alt="Photo en construction">
+                    <div id="giftCarousel" class="carousel" aria-label="Photos de cadeau">
+                        <div class="carousel-track">
+                            <div class="carousel-slide is-active">
+                                <img src="images/couple-mer.png" alt="Mer" loading="lazy">
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="images/couple-provence.png" alt="Provence" loading="lazy">
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="images/couple-montagne.png" alt="Montagne" loading="lazy">
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="images/couple-fleurs.png" alt="Fleurs" loading="lazy">
+                            </div>
+                            <div class="carousel-slide">
+                                <img src="images/9710452.jpg" alt="Paysage" loading="lazy">
+                            </div>
+                        </div>
+                        <button class="carousel-btn prev" aria-label="Image précédente">‹</button>
+                        <button class="carousel-btn next" aria-label="Image suivante">›</button>
+                        <div class="carousel-dots" role="tablist" aria-label="Navigation du carrousel"></div>
+                    </div>
                 </div>
                 
                 <div class="cagnotte-card">
-                    <div class="gift-icon">🎁</div>
-                    <h2 class="section-title">Liste de mariage</h2>
+                    
+                    <h2 class="section-title">Cadeau de mariage</h2>
                     <p class="cagnotte-text">
-                        Votre présence est le plus beau des cadeaux.<br><br>
-                        Si vous souhaitez nous faire plaisir, une cagnotte sera bientôt disponible<br>
-                        pour nous aider à réaliser notre voyage de noces.
+                      Ce mariage est le début d’une grande aventure… et la prochaine étape sera notre voyage de noces.
+<br>Nous rêvons d’un <b>safari au Kenya</b>, suivi de quelques jours dans un écrin de soleil comme <b>la Réunion, l’île Maurice ou les Seychelles</b>.<br>
+Si vous souhaitez nous offrir un cadeau, une cagnotte a été ouverte pour nous aider à réaliser ce rêve.
+<br>AMerci pour votre amour et votre soutien.
                     </p>
                     <div class="coming-soon">
                         <span class="coming-soon-icon">⏳</span>

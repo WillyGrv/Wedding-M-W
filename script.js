@@ -176,63 +176,6 @@ function launchFireworks() {
     }
     attachRsvpCheck();
 });
-                // === Ajout du bloc RSVP Check ===
-                const formIframe = `
-                        <div style="width:100%;display:flex;justify-content: flex-end;margin-bottom: 2%;">
-                            <button id="rsvpRetourBtn" style="padding:8px 16px;border-radius:8px;border:none;background:#eee;font-weight:500;cursor:pointer;">Retour</button>
-                        </div>
-                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSewEkWOQkJiKJOBlMmxI647K0kBp3i6Ne_8pGFKxmO7LrYFjQ/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" style="display:block; border-radius:16px; background:#fff;">Chargement…</iframe>
-                    `;
-                const apiUrl = 'https://script.google.com/macros/s/AKfycbzmmcFRWjK0Tqs1DeOEti4SQtio3x6nOI2K8mve6lyouugVVMQORWsAyZKBnn_RhY4udg/exec'; // remplace par ton URL
-
-                function attachRsvpCheck() {
-                    const checkBtn = document.getElementById('rsvpCheckBtn');
-                    const emailInput = document.getElementById('rsvpEmail');
-                    const resultDiv = document.getElementById('rsvpCheckResult');
-                    if (checkBtn) {
-                        checkBtn.addEventListener('click', async () => {
-                            const email = emailInput.value.trim();
-                            if (!email) {
-                                resultDiv.textContent = 'Veuillez entrer un email.';
-                                return;
-                            }
-                            resultDiv.textContent = 'Vérification en cours...';
-                            try {
-                                const res = await fetch(`${apiUrl}?email=${encodeURIComponent(email)}`);
-                                const data = await res.json();
-                                if (data.found) {
-                                    if (rsvpCard) {
-                                        rsvpCard.innerHTML = `<div class=\"rsvp-success\">Inscription déjà validée pour <strong>${data.prenom} ${data.nom}</strong> !</div>`;
-                                    }
-                                } else {
-                                    if (rsvpCard) {
-                                        rsvpCard.innerHTML = formIframe;
-                                        // Réattache le handler du bouton retour
-                                        const retourBtn = rsvpCard.querySelector('#rsvpRetourBtn');
-                                        if (retourBtn) {
-                                            retourBtn.addEventListener('click', (e) => {
-                                                e.preventDefault();
-                                                location.reload(); // recharge la page pour revenir au check
-                                            });
-                                        }
-                                    }
-                                }
-                            } catch (err) {
-                               
-                            }
-                        });
-                    }
-                }
-                attachRsvpCheck();
-        ;
-    update();
-     
-    // Mise à jour toutes les minutes
-    const countdownInterval = setInterval(update, 60000);
-
-
-// Lance le compteur dès que la page est chargée
-updateCountdown();
 
 // ==========================================
 // SMOOTH SCROLL & ACTIVE NAV
@@ -417,5 +360,75 @@ console.log('%c💒 Maureen & William 💒', 'font-size: 24px; color: #C97B63; f
 console.log('%c9-11 Août 2026 • Montélimar', 'font-size: 14px; color: #7A8268;');
 console.log('%cThème Méditerranéen 🌿🍊', 'font-size: 12px; color: #D4915D;');
 console.log('%cSite créé avec amour ❤️', 'font-size: 12px; color: #7B3F3F; font-style: italic;');
+
+
+// ==========================================
+// SIMPLE CAROUSEL (Cagnotte image frame)
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.getElementById('giftCarousel');
+    if (!carousel) return;
+    const track = carousel.querySelector('.carousel-track');
+    const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
+    const prevBtn = carousel.querySelector('.carousel-btn.prev');
+    const nextBtn = carousel.querySelector('.carousel-btn.next');
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+    let index = 0;
+    let autoTimer;
+
+    // Build dots
+    slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.setAttribute('aria-label', `Aller à l'image ${i+1}`);
+        if (i === 0) dot.setAttribute('aria-current', 'true');
+        dot.addEventListener('click', () => goTo(i));
+        dotsContainer.appendChild(dot);
+    });
+
+    function update() {
+        const slideWidth = slides[0] ? slides[0].getBoundingClientRect().width : carousel.clientWidth;
+        const offsetPx = -index * slideWidth;
+        track.style.transform = `translateX(${offsetPx}px)`;
+        slides.forEach((s, i) => s.classList.toggle('is-active', i === index));
+        dotsContainer.querySelectorAll('button').forEach((b, i) => {
+            if (i === index) b.setAttribute('aria-current', 'true');
+            else b.removeAttribute('aria-current');
+        });
+    }
+
+    function goTo(i) {
+        index = (i + slides.length) % slides.length;
+        update();
+        restartAuto();
+    }
+
+    function next() { goTo(index + 1); }
+    function prev() { goTo(index - 1); }
+
+    function startAuto() {
+        autoTimer = setInterval(next, 4500);
+    }
+    function stopAuto() { clearInterval(autoTimer); }
+    function restartAuto() { stopAuto(); startAuto(); }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    carousel.addEventListener('mouseenter', stopAuto);
+    carousel.addEventListener('mouseleave', startAuto);
+
+    // Handle resize to keep alignment
+    window.addEventListener('resize', () => {
+        // Re-apply transform based on new width
+        update();
+    });
+
+    // Init (wait a tick for layout)
+    requestAnimationFrame(() => {
+        update();
+    });
+    startAuto();
+});
 
 

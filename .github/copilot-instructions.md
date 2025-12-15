@@ -8,7 +8,7 @@ This is a small, static wedding site (HTML/CSS/vanilla JS). There is no build to
 - Visual assets are in the `images/` folder (PNG/JPG/EPS/AI). CSS references these directly (see large decorative backgrounds in `style.css`).
 - `script.js` contains page behaviors: intro overlay timing, countdown target date (2026-08-09T15:00), smooth scroll that subtracts the nav height, simple lazy-loading support (commented instruction to use `data-src`), and small UI effects (parallax, intersection observer animations).
 
-## Patterns & conventions to follow when editing
+## Patterns & conventions to follow when editing^
 
 - Keep wedding-specific content obvious and easy to change: date/time is hardcoded in `script.js` (update there if needed). Avoid scattering that value in multiple files.
 - Lazy-load images by using `data-src` and a placeholder `src` (see comments in `script.js`). If adding new large images, prefer this pattern to avoid layout jank.
