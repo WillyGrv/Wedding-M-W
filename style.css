@@ -284,8 +284,8 @@
     --sand: #E8D5C4;
     --teal: #4A7C7E;
     /* Fonts */
-    --font-heading: 'Fraunces', serif;
-    --font-body: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-heading: 'Cormorant Garamond', serif; /* Demo-style elegant serif */
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Clean sans */
 }
 
 * {
@@ -307,7 +307,7 @@ body {
     line-height: 1.6;
 }
 
-h1, h2, h3, .names, .ornament, .intro-names {
+h1, h2, h3, .names {
     font-family: var(--font-heading);
     letter-spacing: 0.5px;
 }
@@ -321,74 +321,7 @@ img {
 /* ==========================================
    INTRO ANIMATION
    ========================================== */
-
-.intro-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 50%, var(--rose) 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    animation: fadeOut 1s ease-in 2.5s forwards;
-}
-
-.intro-content {
-    text-align: center;
-    color: var(--burgundy);
-}
-
-.intro-ornament {
-    font-size: 4rem;
-    animation: scaleIn 0.8s ease-out;
-    margin-bottom: 1rem;
-}
-
-.intro-names {
-    font-size: 5rem;
-    font-weight: 300;
-    letter-spacing: 8px;
-    animation: fadeInUp 1s ease-out 0.3s both;
-}
-
-.intro-date {
-    font-size: 1.5rem;
-    color: var(--olive);
-    letter-spacing: 3px;
-    animation: fadeInUp 1s ease-out 0.6s both;
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        pointer-events: none;
-    }
-}
+/* (Intro animation disabled in HTML; removed unused CSS) */
 
 /* ==========================================
    NAVIGATION
@@ -407,18 +340,7 @@ nav {
     border-bottom: none;
     transform: none;
 }
-
-/* Menu sticky avec fond blanc au scroll */
-.scrolled nav {
-    background: var(--cream);
-    box-shadow: 0 2px 10px rgba(122,130,104,0.07);
-    border-bottom: 1px solid #eee;
-    z-index: 1000;
-    padding: 0.7rem 2rem;
-    box-shadow: none;
-    border-bottom: none;
-    transform: none;
-}
+/* (Removed unused .scrolled nav variant) */
 
 
 nav ul {
@@ -494,14 +416,7 @@ nav a.active {
 
 
 
-.hero-icons {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    font-size: 2.2rem;
-    margin-bottom: 1.2rem;
-    opacity: 0.85;
-}
+/* (Removed unused .hero-icons) */
 
 .small-names {
     font-size: 1.3rem;
@@ -556,31 +471,10 @@ nav a.active {
 .hero-content {
     text-align: center;
     z-index: 2;
-@keyframes fadeInUp {
-    0% { opacity: 0; transform: translateY(40px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-section {
-        opacity: 0;
-        transform: translateY(40px);
-        animation: fadeInUp 1.2s cubic-bezier(.23,1.01,.32,1) both;
-}
-section.visible {
-        opacity: 1;
-        transform: translateY(0);
-        transition: opacity 0.7s, transform 0.7s;
-}
     max-width: 900px;
 }
 
-.ornament {
-    color: var(--terracotta);
-    font-size: 3rem;
-    margin-bottom: 2rem;
-    opacity: 1;
-    animation: none;
-}
+/* (Removed unused .ornament) */
 
 .names {
     font-size: 4.5rem;
@@ -592,13 +486,7 @@ section.visible {
     animation: none;
 }
 
-.ampersand {
-    font-style: italic;
-    font-size: 5.5rem;
-    color: var(--terracotta);
-    display: block;
-    margin: 0.5rem 0;
-}
+/* (Removed unused .ampersand) */
 
 .date-info {
     margin: 2rem 0;
@@ -676,12 +564,7 @@ section.visible {
         opacity: 0.7;
     }
 }
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
+/* (Removed unused @keyframes fadeIn) */
 
 /* ==========================================
    SECTIONS COMMUNES
@@ -798,39 +681,7 @@ section:not(.hero) {
     }
 }
 
-.section-subtitle {
-    font-size: 1.2rem;
-    color: var(--olive);
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto 4rem;
-    line-height: 1.8;
-}
-
-.section-decoration {
-    width: 200px;
-    margin: 0 auto;
-    color: var(--terracotta);
-    opacity: 0.3;
-}
-
-.section-decoration-top {
-    margin-bottom: 1.5rem;
-}
-
-/* Ensure olive branch images scale nicely inside the decoration wrapper */
-.section-decoration img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-/* Match plant2/plant5 orientation to plant3 */
-.section-decoration img[src*="plant2"] {
-    transform: rotate(109deg);
-}
-.section-decoration img[src*="plant5"] {
-    transform: rotate(65deg);
-}
+/* (Removed unused subtitles and section decoration helpers) */
 
 /* ==========================================
    RSVP SECTION
@@ -849,37 +700,7 @@ section:not(.hero) {
     align-items: center;
 }
 
-.rsvp-image-frame {
-    position: relative;
-}
-
-.rsvp-image-frame img {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-    border-radius: 20px;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.5);
-    transition: transform 0.3s;
-}
-
-.rsvp-image-frame:hover img {
-    transform: scale(1.02);
-}
-
-.rsvp-image-frame::before {
-    content: '';
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    right: 15px;
-    bottom: 15px;
-    border: 2px solid var(--terracotta);
-    border-radius: 20px;
-    opacity: 0.3;
-    z-index: -1;
-}
+/* (Removed unused RSVP image frame styles) */
 
 .rsvp-card {
     background: white;
@@ -960,13 +781,6 @@ section:not(.hero) {
     background: #fff;
 }
 
-.logements-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 4rem;
-}
-
 .logement-card {
     background: linear-gradient(135deg, #fff 0%, var(--cream) 100%);
     padding: 2.5rem;
@@ -982,10 +796,7 @@ section:not(.hero) {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
-.logement-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
+/* (Removed unused .logement-icon) */
 
 .logement-card h3 {
     color: var(--burgundy);
@@ -1026,99 +837,7 @@ section:not(.hero) {
     color: #777;
 }
 
-.logement-details p {
-    color: #666;
-    line-height: 1.8;
-    margin-bottom: 0.5rem;
-}
-
-.logement-details .address {
-    color: var(--olive);
-}
-
-.logement-details .phone,
-.logement-details .distance {
-    font-size: 0.95rem;
-    color: var(--terracotta);
-}
-
-.map-container {
-    background: white;
-    padding: 3rem;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-    margin-bottom: 4rem;
-}
-
-.map-header h3 {
-    color: var(--burgundy);
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.map-info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.info-item {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-    padding: 1.5rem;
-    background: var(--cream);
-    border-radius: 15px;
-}
-
-.info-icon {
-    font-size: 2rem;
-}
-
-.info-item strong {
-    display: block;
-    color: var(--burgundy);
-    margin-bottom: 0.3rem;
-}
-
-.info-item p {
-    color: #666;
-    font-size: 0.95rem;
-}
-
-.map-note {
-    text-align: center;
-    color: var(--olive);
-    font-style: italic;
-    font-size: 1.1rem;
-    margin-top: 1.5rem;
-}
-
-.photo-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-}
-
-.photo-item {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-}
-
-.photo-item img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    transition: transform 0.5s;
-}
-
-.photo-item:hover img {
-    transform: scale(1.1);
-}
+/* (Removed unused map and photo grid styles) */
 
 /* ==========================================
    CAGNOTTE SECTION
@@ -1256,10 +975,7 @@ section:not(.hero) {
     order: 1;
 }
 
-.gift-icon {
-    font-size: 4rem;
-    margin-bottom: 1.5rem;
-}
+/* (Removed unused .gift-icon) */
 
 .cagnotte-text {
     font-size: 1.15rem;
@@ -1340,13 +1056,8 @@ footer {
         order: 0;
     }
     
-    .rsvp-image-frame img,
     .cagnotte-image-frame img,
     .cagnotte-image-frame .carousel { height: 500px; }
-    
-    .photo-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 768px) {
@@ -1366,9 +1077,7 @@ footer {
         font-size: 2.8rem;
     }
     
-    .ampersand {
-        font-size: 3.5rem;
-    }
+    /* (Removed unused .ampersand rule) */
     
     .wedding-date {
         font-size: 1.4rem;
@@ -1399,28 +1108,17 @@ footer {
         font-size: 2.2rem;
     }
     
-    .section-subtitle {
-        font-size: 1.1rem;
-    }
+    /* (Removed unused .section-subtitle rule) */
     
-    .logements-grid {
-        grid-template-columns: 1fr;
-    }
+    /* (Removed unused .logements-grid rule) */
     
-    .map-info {
-        grid-template-columns: 1fr;
-    }
+    /* (Removed unused .map-info rule) */
     
     .rsvp-card,
     .cagnotte-card {
         padding: 1rem 1rem 5rem 1rem;
     }
     
-    .rsvp-image-frame img,
     .cagnotte-image-frame img,
     .cagnotte-image-frame .carousel { height: 400px; }
-    
-    .photo-item img {
-        height: 300px;
-    }
 }

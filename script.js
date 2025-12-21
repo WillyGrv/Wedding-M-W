@@ -247,7 +247,7 @@ const observer = new IntersectionObserver((entries) => {
 // Éléments à animer au scroll
 document.addEventListener('DOMContentLoaded', () => {
     const animatedElements = document.querySelectorAll(
-        '.logement-card, .photo-item, .rsvp-card, .cagnotte-card, .map-container'
+        '.logement-card, .rsvp-card, .cagnotte-card'
     );
     
     animatedElements.forEach(el => {
@@ -331,35 +331,12 @@ style.textContent = `
 document.head.appendChild(style);
 
 // ==========================================
-// LAZY LOADING IMAGES (amélioration performance)
+// LAZY LOADING (hint only)
 // ==========================================
+// Pour activer le lazy loading: utilisez l'attribut data-src sur vos <img> et
+// remplacez src par un placeholder. Un observer peut être réintroduit si besoin.
 
-if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                }
-                imageObserver.unobserve(img);
-            }
-        });
-    });
-    
-    // Si vous voulez activer le lazy loading, ajoutez data-src dans le HTML
-    // et remplacez src par une image placeholder
-}
-
-// ==========================================
-// CONSOLE MESSAGE (pour les curieux)
-// ==========================================
-
-console.log('%c💒 Maureen & William 💒', 'font-size: 24px; color: #C97B63; font-weight: bold;');
-console.log('%c9-11 Août 2026 • Montélimar', 'font-size: 14px; color: #7A8268;');
-console.log('%cThème Méditerranéen 🌿🍊', 'font-size: 12px; color: #D4915D;');
-console.log('%cSite créé avec amour ❤️', 'font-size: 12px; color: #7B3F3F; font-style: italic;');
+// (Removed non-essential console banners)
 
 
 // ==========================================
