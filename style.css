@@ -4,80 +4,107 @@
     flex-direction: row;
     gap: 20px;
     justify-content: center;
-    align-items: stretch;
-    margin-top: 8px;
+     align-items: stretch;
+     
 }
-.gare-choice {
-    flex: 1 1 0;
-    min-width: 180px;
-    max-width: 320px;
-    background: var(--beige);
-    border-radius: 8px;
-    padding: 12px 8px;
-    box-shadow: 0 2px 8px #0001;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-        gap: 8px;
-        font-size: 0.97em;
+     .rsvp .container {
+    max-width: none; /* full-width row like reference */
+    width: 100%;
+    padding-left: 2rem;
+        justify-items: center;
+    padding-right: 2rem;
+     display: grid;
+    
+}
+    /* Tiles layout like demo Our Schedule */
+    .schedule-tiles {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 3rem;
+        align-items: start;
+        text-align: center;
+        margin-top: 2rem;
     }
-    .gare-choice span {
-        font-size: 10px;
+    .schedule-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
     }
-    .gare-choice .gare-title {
-        font-size: 1em;
+.schedule-section-title {
+    color: #fff;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+.schedule-photo img {
+    width: 100%;
+    max-width: 520px;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 5px 16px rgba(0,0,0,0.12); /* ombre discrète */
+}
+    .schedule-icon-img {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        opacity: 0.9;
     }
-    .gare-choice .gare-details {
-        font-size: 0.92em;
+    .schedule-time {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        color: #fff;
+    }
+    .schedule-text {
+        color: rgba(255,255,255,0.85);
+        font-size: 1rem;
+        max-width: 520px;
+    }
+    .schedule-link {
+        color: var(--sand);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .schedule-link:hover { text-decoration: underline; }
+
+    .infos-cta {
+        display: flex;
+        justify-content: center;
+        margin-top: 2.5rem;
+    }
+    .btn-outline {
+        display: inline-block;
+        padding: 0.8rem 1.8rem;
+        border: 1.5px solid rgba(255,255,255,0.6);
+        border-radius: 999px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .btn-outline:hover {
+        background: rgba(255,255,255,0.08);
     }
 
-.gare-choice a {
-    width: 100%;
-    height: 120px;
-    position: relative;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-top: 6px;
-}
-.gare-choice iframe {
-    width: 100%;
-    height: 120px;
-    border: 1px solid var(--olive);
-    border-radius: 6px;
-    pointer-events: none;
-}
-@media (max-width: 768px) {
-    .gare-choices-row {
-        flex-direction: column;
-        gap: 12px;
+    @media (max-width: 1024px) {
+        .schedule-tiles { grid-template-columns: 1fr; }
     }
-    .gare-choice {
-        max-width: 100%;
-    }
-}
-/* RSVP Email Check UI */
-#rsvp-check {
-    background: rgba(255,255,255,0.85);
-    border-radius: 16px;
-    padding: 2rem 1.5rem 1.5rem 1.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.2rem;
-}
+    /* single column from tablet down for cleaner flow */
+
+ #rsvp-check{
+text-align: -webkit-center;
+ }
 
 #rsvp-check input[type="email"] {
     padding: 1rem 1.2rem;
-    border-radius: 50px;
-    border: 1px solid var(--terracotta);
+    
+    border: 1px solid lightgray;
     font-size: 1.1rem;
     width: 100%;
     max-width: 320px;
-    background: #fff;
     color: var(--burgundy);
     box-shadow: 0 1px 6px rgba(201,123,99,0.07);
     transition: border-color 0.2s;
+    background:transparent;
 }
 #rsvp-check input[type="email"]:focus {
     border-color: var(--olive);
@@ -86,21 +113,18 @@
 
 
 #rsvpCheckBtn {
-    padding: 1rem 2.2rem;
-    border-radius: 50px;
+padding: 1rem 2.2rem;
     border: none;
-    background: linear-gradient(135deg, var(--terracotta), var(--burgundy));
-    color: #fff;
+    background: transparent;
+    color: var(--burgundy);
     font-size: 1.1rem;
     font-weight: 600;
     letter-spacing: 1px;
-    box-shadow: 0 4px 18px rgba(201,123,99,0.18);
     cursor: pointer;
     transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
-    margin-top: 0.5rem;
+    margin-top: 1rem;
 }
 #rsvpCheckBtn:hover {
-    background: linear-gradient(135deg, var(--burgundy), var(--terracotta));
     box-shadow: 0 8px 32px rgba(201,123,99,0.28);
     transform: translateY(-2px) scale(1.03);
 }
@@ -136,7 +160,6 @@
 .rsvp::before {
     content: '';
     position: absolute;
-    top: 0; left: 0;
     width: 520px; height: 520px;
     background: url('images/9604792.png') no-repeat left top/contain;
     left: -120px;
@@ -145,7 +168,7 @@
     right: auto;
     opacity: 0.13;
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
 }
 .rsvp {
     position: relative;
@@ -175,7 +198,7 @@
     height: 480px;
     background: url('images/plant3.png') no-repeat center/contain;
     left: -180px;
-    top: 12%;
+    top: -42%;
     opacity: 0.08;
     pointer-events: none;
     z-index: 0;
@@ -184,17 +207,17 @@
 
 /* Décorations Cagnotte (complément en bas gauche) */
 .cagnotte::after {
-    content: '';
+    /*content: '';*/
     position: absolute;
     width: 460px;
     height: 460px;
     background: url('images/plant2.png') no-repeat center/contain;
-    left: -150px;
-    top: 60%;
+    right: -100px;
+    top: 56%;
     opacity: 0.09;
     pointer-events: none;
     z-index: 0;
-    transform: scaleX(-1) rotate(10deg);
+    transform: scaleX(-1) rotate(30deg);
 }
 
 /* Ajustements responsive pour les décorations */
@@ -219,12 +242,12 @@
     width: 420px;
     height: 420px;
     background: url('images/plant2.png') no-repeat center/contain;
-    right: -150px;
-    top: 64%;
+    right: -79px;
+    top: 65%;
     opacity: 0.09;
     pointer-events: none;
-    z-index: 0;
-    transform: scaleX(-1) rotate(8deg);
+    z-index: 1;
+    transform: scaleX(-1) rotate(35deg);
 }
 
 /* Décorations Cagnotte — complément en haut gauche */
@@ -234,12 +257,12 @@
     width: 360px;
     height: 360px;
     background: url('images/plant3.png') no-repeat center/contain;
-    left: -130px;
-    top: 8%;
+    left: -70px;
+    top: -24%;
     opacity: 0.08;
     pointer-events: none;
-    z-index: 0;
-    transform: rotate(6deg);
+    z-index: 1;
+    transform: rotate(140deg);
 }
 
 /* Décoration Hero — très discrète */
@@ -253,7 +276,7 @@
     top: 18%;
     opacity: 0.06;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     transform: scaleX(-1) rotate(-6deg);
 }
 
@@ -281,11 +304,14 @@
     --olive: #7A8268;
     --sage: #4A5442;
     --cream: #F5EFE7;
+    /* RGB tuple for translucent gradients using cream */
+    --cream-rgb: 245, 239, 231;
     --sand: #E8D5C4;
     --teal: #4A7C7E;
     /* Fonts */
     --font-heading: 'Cormorant Garamond', serif; /* Demo-style elegant serif */
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Clean sans */
+    --font-script: 'Great Vibes', cursive; /* Calligraphic display */
 }
 
 * {
@@ -310,6 +336,10 @@ body {
 h1, h2, h3, .names {
     font-family: var(--font-heading);
     letter-spacing: 0.5px;
+}
+.names, h2, h3, .section-title {
+    font-family: var(--font-script);
+    letter-spacing: 0; /* script fonts look better without tracking */
 }
 
 img {
@@ -341,6 +371,20 @@ nav {
     transform: none;
 }
 /* (Removed unused .scrolled nav variant) */
+
+/* Cream gradient when reaching RSVP and beyond: slightly transparent edges, solid center */
+nav.nav-cream {
+    background: linear-gradient(
+        to right,
+        rgba(var(--cream-rgb), 0) 0%,
+        rgba(var(--cream-rgb), 0.85) 20%,
+        rgba(var(--cream-rgb), 1) 50%,
+        rgba(var(--cream-rgb), 0.85) 80%,
+        rgba(var(--cream-rgb), 0) 100%
+    );
+    backdrop-filter: none; /* keep crisp, no blur requested */
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
 
 
 nav ul {
@@ -480,8 +524,8 @@ nav a.active {
     font-size: 4.5rem;
     color: var(--burgundy);
     margin: 1rem 0;
-    font-weight: 300;
-    letter-spacing: 4px;
+    font-weight: 400;
+    letter-spacing: 0;
     opacity: 1;
     animation: none;
 }
@@ -510,9 +554,9 @@ nav a.active {
 
 .countdown {
     display: flex;
-    gap: 2rem;
+    gap: 1rem; /* tighter spacing for a discreet look */
     justify-content: center;
-    margin-top: 3rem;
+    margin-top: 2rem; /* smaller top space */
     opacity: 1;
     animation: none;
 }
@@ -521,26 +565,27 @@ nav a.active {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 15px;
-    min-width: 100px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 0; /* reduced padding */
+    background: transparent; /* no white background */
+    border-radius: 0;
+    min-width: auto;
+    box-shadow: none; /* remove shadow */
 }
 
 .countdown-number {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--burgundy);
-     font-family: 'Inter', Arial, sans-serif;
+    font-size: 1.8rem; /* smaller */
+    font-weight: 600;
+    color: var(--olive); /* softer color for discretion */
+    font-family: 'Inter', Arial, sans-serif;
+    letter-spacing: 0.5px;
 }
 
 .countdown-label {
-    font-size: 0.9rem;
-    color: var(--olive);
+    font-size: 0.75rem; /* smaller */
+    color: rgba(0,0,0,0.65);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 0.5rem;
+    letter-spacing: 0.08em;
+    margin-top: 0.25rem;
 }
 
 .scroll-indicator {
@@ -585,6 +630,195 @@ section:not(.hero) {
     margin: 0 auto;
 }
 
+/* ==========================================
+   INVITATION / APERITIVO SECTION
+   ========================================== */
+
+.invite-section {
+    /* Palette (scoped to section) */
+    --bg: #F7F3EC; /* ivoire */
+    --text: #1E1E1E;
+    --muted: #6B6B6B;
+    --accent: #2F4A3C; /* vert profond */
+    --line: rgba(0,0,0,0.12);
+    background: var(--bg);
+    color: var(--text);
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+.invite-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.invite-title {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    line-height: 1.1;
+    color: var(--text);
+    letter-spacing: 0.5px;
+}
+.invite-script {
+    font-family: 'Italianno', cursive;
+       font-size: 3rem;
+    color: var(--accent);
+    margin-top: -1.3rem;
+}
+
+.invite-title-white {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    line-height: 1.1;
+    color:#fff;
+    letter-spacing: 0.5px;
+}
+.invite-script-white {
+    font-family: 'Italianno', cursive;
+       font-size: 3rem;
+    color:#fff;
+    margin-top: -1.3rem;
+}
+
+.invite-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr; /* ~60% / 40% */
+    gap: 3rem;
+    align-items: center; /* infos centrées verticalement par rapport à l'image */
+}
+
+.invite-image {
+    margin: 0; /* figure reset */
+}
+.invite-image img {
+    width: 100%;
+    max-height: 680px;
+    object-fit: cover;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.52); /* ombre légère */
+}
+
+.invite-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    margin-top:20%;
+}
+.invite-info-title {
+    font-family: var(--font-heading) !important; /* override global script for h3 */
+    font-size: 1.6rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.invite-icon {
+    width: 28px;
+    height: 41px;
+    object-fit: contain;
+    flex: 0 0 60px;
+    filter: saturate(0.9) contrast(1);
+}
+.invite-info-text {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.9;
+    margin-top: 1rem;
+}
+.invite-info-text-train{
+
+    display: flex;
+    gap: 10%;
+    justify-content: space-evenly;
+
+}
+.invite-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+.invite-link:hover { opacity: 0.85; }
+
+.invite-sep {
+    border: none;
+    height: 1px;
+    background: var(--line);
+}
+
+.invite-map {
+    width: 100%;
+    height: 200px;
+    border: 0;
+    
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.rsvp-illustration img{
+    box-shadow: 0 6px 18px rgba(0,0,0,0.32);
+
+    }
+
+@media (max-width: 900px) {
+    .invite-map { height: 260px; }
+}
+
+@media (max-width: 900px) {
+    .invite-title { font-size: 2.4rem; }
+    .invite-script { font-size: 2.2rem; margin-top: -0.3rem; }
+    .invite-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .invite-image img { max-height: 520px; }
+}
+/* ==========================================
+   INFORMATIONS SECTION (minimalist)
+   ========================================== */
+
+.infos {
+    background: var(--olive);
+    color: var(--cream);
+}
+.infos .section-title { color: #fff; }
+
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-top: 1rem;
+}
+
+.schedule-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    padding: 1.2rem 0;
+    border-top: 1px solid rgba(255,255,255,0.25);
+}
+.schedule-label {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+.schedule-title {
+    color: #fff;
+    font-size: 1.5rem;
+}
+.schedule-desc {
+    color: rgba(255,255,255,0.85);
+    font-size: 1rem;
+}
+.schedule-link {
+    color: var(--olive);
+    font-weight: 600;
+    text-decoration: none;
+}
+.schedule-link:hover { text-decoration: underline; }
+
+@media (max-width: 1024px) {
+    .schedule-grid { grid-template-columns: 1fr; }
+    .schedule-item { grid-template-columns: 120px 1fr; }
+}
+
 .section-title {
     font-size: 2rem;
     color: var(--burgundy);
@@ -593,18 +827,10 @@ section:not(.hero) {
     position: relative;
     padding-bottom: 1.5rem;
 }
-
-.section-title::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--terracotta), var(--ocre));
-    border-radius: 2px;
+.rsvp-card .section-title {
+    text-align: left;
 }
+
 
 /* Logements: split with Theme (2 columns) */
 .logements-theme-grid {
@@ -630,12 +856,9 @@ section:not(.hero) {
     gap: 12px;
 }
 .color-chips .color-dot {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    width: 90px;
+    height: 50px;
     background: var(--chip, var(--olive));
-    border: 2px solid rgba(0,0,0,0.08);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     position: relative;
     cursor: default;
 }
@@ -703,21 +926,25 @@ section:not(.hero) {
 /* (Removed unused RSVP image frame styles) */
 
 .rsvp-card {
-    background: white;
-    padding: 1rem;
-    z-index:1;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    min-width: 555px; 
-    max-width: 600px;
-    min-height: 600px;
-    max-height: 600px;
+    background: transparent; /* remove white card */
+    padding: 0.5rem 0;
+    z-index: 1;
+    border-radius: 0; /* no rounded corners */
+    box-shadow: none; /* no card shadow */
+    text-align: left; /* align like demo */
+    min-width: auto;
+    max-width: 680px;
+    min-height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: anchor-center;
     box-sizing: border-box;
+}
+
+/* When user opens the form, expand the card height */
+.rsvp-card.rsvp-expanded {
+    min-height: 800px;
 }
 
 .rsvp-card iframe {
@@ -737,7 +964,7 @@ section:not(.hero) {
 .rsvp-text {
     font-size: 1.15rem;
     color: #666;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
     line-height: 1.8;
 }
 
@@ -778,28 +1005,21 @@ section:not(.hero) {
    ========================================== */
 
 .logements {
-    background: #fff;
+    background: var(--olive);
 }
 
 .logement-card {
-    background: linear-gradient(135deg, #fff 0%, var(--cream) 100%);
-    padding: 2.5rem;
-    border-radius: 20px;
-    z-index:1;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s;
-    border: 1px solid rgba(201, 123, 99, 0.1);
+       padding: 2.5rem;
+    z-index: 1;
+    color:var(--cream);
 }
 
-.logement-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-}
+
 
 /* (Removed unused .logement-icon) */
 
 .logement-card h3 {
-    color: var(--burgundy);
+    color: var(--cream);
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     font-weight: 600;
@@ -817,7 +1037,7 @@ section:not(.hero) {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    color: #555;
+    color: var(--cream);
 }
 .logement-list .bullet {
     width: 28px;
@@ -834,7 +1054,7 @@ section:not(.hero) {
 .logement-note {
     margin-top: 0.75rem;
     font-size: 0.95rem;
-    color: #777;
+    color: var(--cream);
 }
 
 /* (Removed unused map and photo grid styles) */
@@ -861,7 +1081,8 @@ section:not(.hero) {
 
 .cagnotte-content {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    /* Inverse layout vs. invite: text a bit narrower, image wider */
+    grid-template-columns: 2fr 3fr;
     gap: 4rem;
     max-width: 1200px;
     align-items: center;
@@ -874,12 +1095,10 @@ section:not(.hero) {
 
 .cagnotte-image-frame img {
     width: 100%;
-    height: 600px;
+    height: 420px; /* more landscape than portrait */
     object-fit: cover;
-    border-radius: 20px;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.5);
+    border-radius: 0; /* no rounded corners */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.52); /* ombre discrète */
     transition: transform 0.3s;
 }
 
@@ -887,9 +1106,9 @@ section:not(.hero) {
 .cagnotte-image-frame .carousel {
     position: relative;
     width: 100%;
-    height: 600px; /* must match .cagnotte-image-frame img at desktop */
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.5);
+    height: 420px; /* must match .cagnotte-image-frame img at desktop */
+    border-radius: 0; /* square corners */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.52); /* ombre discrète */
     overflow: hidden;
 }
 .cagnotte-image-frame .carousel-track {
@@ -908,7 +1127,7 @@ section:not(.hero) {
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 20px;
+    border-radius: 0;
 }
 .cagnotte-image-frame .carousel-btn {
     position: absolute;
@@ -953,26 +1172,15 @@ section:not(.hero) {
 /* Hover zoom disabled per request */
 /* .cagnotte-image-frame:hover img { transform: scale(1.02); } */
 
-.cagnotte-image-frame::after {
-    content: '';
-    position: absolute;
-    top: 15px;
-    right: -15px;
-    bottom: -15px;
-    left: 15px;
-    border: 2px solid var(--olive);
-    border-radius: 20px;
-    opacity: 0.3;
-    z-index: -1;
-}
+.cagnotte-image-frame::after { display: none; }
 
 .cagnotte-card {
-    background: white;
-    padding: 4rem 3rem;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    order: 1;
+    background: transparent; /* remove white card */
+    padding: 0; /* lean like invite info */
+    border-radius: 0; /* no rounded corners */
+    box-shadow: none; /* remove card shadow */
+    text-align: left; /* align like invite */
+    order: 1; /* keep text on the left */
 }
 
 /* (Removed unused .gift-icon) */
@@ -989,7 +1197,7 @@ section:not(.hero) {
     align-items: center;
     gap: 1rem;
     padding: 1.2rem 2.5rem;
-    background: var(--olive);
+    background: var(--burgundy);
     color: white;
     border-radius: 50px;
     font-weight: 600;
@@ -1024,6 +1232,7 @@ footer {
 
 .footer-names {
     font-size: 1.8rem;
+    font-family: var(--font-script);
     font-weight: 300;
     letter-spacing: 2px;
     margin-bottom: 0.5rem;
@@ -1049,6 +1258,7 @@ footer {
     .cagnotte-content {
         grid-template-columns: 1fr;
         gap: 3rem;
+        width: 100%;
     }
     
     .cagnotte-image-frame,
@@ -1056,8 +1266,9 @@ footer {
         order: 0;
     }
     
+    .rsvp-illustration img,
     .cagnotte-image-frame img,
-    .cagnotte-image-frame .carousel { height: 500px; }
+    .cagnotte-image-frame .carousel { height: 360px; }
 }
 
 @media (max-width: 768px) {
@@ -1087,22 +1298,10 @@ footer {
         font-size: 1.1rem;
     }
     
-    .countdown {
-        gap: 1rem;
-    }
-    
-    .countdown-item {
-        min-width: 80px;
-        padding: 1rem;
-    }
-    
-    .countdown-number {
-        font-size: 2rem;
-    }
-    
-    .countdown-label {
-        font-size: 0.8rem;
-    }
+    .countdown { gap: 0.75rem; }
+    .countdown-item { padding: 0.4rem 0; }
+    .countdown-number { font-size: 1.6rem; }
+    .countdown-label { font-size: 0.7rem; }
     
     .section-title {
         font-size: 2.2rem;
@@ -1119,6 +1318,7 @@ footer {
         padding: 1rem 1rem 5rem 1rem;
     }
     
+    .rsvp-illustration img,
     .cagnotte-image-frame img,
-    .cagnotte-image-frame .carousel { height: 400px; }
+    .cagnotte-image-frame .carousel { height: 300px; }
 }

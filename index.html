@@ -8,19 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- Additional Fonts (Giona demo style): Cormorant Garamond (headings) & Inter (body) -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Calligraphic Display Font for large titles & H2/H3 -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- Section-specific Script Font for Aperitivo accent -->
+    <link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Intro Animation (désactivée)
-    <div class="intro-overlay" id="introOverlay">
-        <div class="intro-content">
-            <div class="intro-ornament">✦</div>
-            <div class="intro-names">M & W</div>
-            <div class="intro-date">9 Août 2026</div>
-        </div>
-    </div>
-    -->
-
+    
     <!-- Navigation -->
     <nav id="mainNav">
         <ul>
@@ -42,7 +37,7 @@
             </h1>
             <div class="date-info">
                 <p class="wedding-date">09 - 11 Août 2026</p>
-                <p class="wedding-location">Région de Montélimar</p>
+                <p class="wedding-location">Domaine de Sarson, Grignan</p>
             </div>
             <!-- Countdown -->
             <div class="countdown" id="countdown">
@@ -63,109 +58,141 @@
         <div class="scroll-indicator">↓</div>
     </section>
 
+
+
     <!-- RSVP Section -->
     <section id="rsvp" class="rsvp">
-       
-        
-        <div class="rsvp-content">
-            
-            
-                        <div class="rsvp-card">
-                                <div class="rsvp-icon"></div>
-                                <h2 class="section-title">Confirmez votre présence</h2>
-                                <p class="rsvp-text">
-                                        Nous avons hâte de célébrer ce moment unique avec vous !<br>
-                                        Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.<br>
-                                        Renseigne ton email ici pour vérifier ton inscription.
-                                </p>
-                                <div id="rsvp-check">
-                                    <input type="email" id="rsvpEmail" placeholder="Votre email" required>
-                                    <button id="rsvpCheckBtn">Vérifier</button>
-                                    <div id="rsvpCheckResult"></div>
-                                </div>
-                        </div>
-
-                        <div class="rsvp-info-frame" style="background:rgba(255,255,255,0.85);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.08);padding:2.5rem;min-width:600px;max-width:600px;min-height:600px;max-height:600px;display:flex;flex-direction:column;justify-content:center;align-items:center;">
-                                <h3 style="color:var(--burgundy);font-size:2rem;margin-bottom:1.2rem;">Informations pratiques</h3>
-                                <ul style="list-style:none;padding:0;margin:0;font-size:0.8rem;line-height:2;text-align:left;max-width:420px;">
-                                      <li><strong>Lieu :</strong> <span style="color:var(--olive);">TBD (Proche Grignan)</span></li>
-                                      <li><strong>Arrivée :</strong> Dimanche 09 août en fin d'après-midi <span style="color:var(--terracotta);">(à partir de 17h)</span></li>
-                                      <li><strong>Départ :</strong> Mardi 11 août après <span style="color:var(--terracotta);">15h</span></li>
-                                                        <li style="display:flex;flex-direction:column;gap:8px;">
-                                                                                <span><strong>Gare la plus proche :</strong></span>
-                                                                                <div class="gare-choices-row">
-                                                                                    <div class="gare-choice">
-                                                                                        <span class="gare-title" style="font-weight:bold;color:var(--olive);">Montélimar TGV</span>
-                                                                                        <span class="gare-details">≈ 4h de train (1 correspondance)<br>+ 30 min voiture</span>
-                                                                                        <a href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Montelimar+TGV" target="_blank" rel="noopener">
-                                                                                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d115326.964!2d4.7500!3d44.5600!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f5f7e2e2e2e2e3%3A0x2e2e2e2e2e2e2e2e!2sGare%20de%20Mont%C3%A9limar!5e0!3m2!1sfr!2sfr!4v1701710000000!5m2!1sfr!2sfr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                                                                                            <span style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;"></span>
-                                                                                        </a>
-                                                                                    </div>
-                                                                                    <div class="gare-choice">
-                                                                                        <span class="gare-title" style="font-weight:bold;color:var(--olive);">Valence TGV</span>
-                                                                                        <span class="gare-details">≈ 2h de train<br>+ 1h voiture</span>
-                                                                                        <a href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Valence+TGV" target="_blank" rel="noopener">
-                                                                                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d115326.964!2d4.9000!3d44.9333!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f5f7e2e2e2e2e3%3A0x2e2e2e2e2e2e2e2e!2sGare%20de%20Valence%20TGV!5e0!3m2!1sfr!2sfr!4v1701710000000!5m2!1sfr!2sfr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                                                                                            <span style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;"></span>
-                                                                                        </a>
-                                                                                    </div>
-                                                                                </div>
-                                                        </li>
-                                </ul>
-                                <div style="margin-top:2.5rem;color:var(--sage);font-size:1.05rem;text-align:center;opacity:0.8;">
-                                    <em>Le lieu exact sera communiqué prochainement.<br>Merci de prévoir votre arrivée et départ selon ces horaires.</em>
-                                </div>
-                        </div>
+        <div class="container">
+            <div class="rsvp-content">
+                <div class="rsvp-illustration">
+                    <img src="images/mariage1.webp" alt="Illustration romantique" loading="lazy">
+                </div>
+                <div class="rsvp-card">
+                   <div class="invite-header">
+                <h2 class="invite-title">Confirmez votre présence</h2>
+                <p class="invite-script" aria-hidden="true">Inscrivez-vous</p>
+            </div>
+                    <p class="rsvp-text">
+                        Nous avons hâte de célébrer ce moment unique avec vous !<br>
+                        Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.<br>
+                        Renseigne ton email ici pour vérifier ton inscription.
+                    </p>
+                    <div id="rsvp-check">
+                        <input type="email" id="rsvpEmail" placeholder="Votre email" required>
+                        <button id="rsvpCheckBtn">Vérifier</button>
+                        <div id="rsvpCheckResult"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <!-- Invitation / Aperitivo Section -->
+    <section class="invite-section" id="aperitivo">
+        <div class="container">
+            
+            <div class="invite-grid">
+                <figure class="invite-image">
+                    <div class="invite-header">
+                <h2 class="invite-title">Préparez votre arrivée</h2>
+                <p class="invite-script" aria-hidden="true">Où, quand, comment ?</p>
+            </div>
+                    <img src="/images/Jardin.jpeg" alt="Evening aperitivo ambiance, vertical photo" loading="lazy">
+                </figure>
+                <div class="invite-info" aria-labelledby="aperitivo-info">
+                    <div class="invite-info-block">
+                        <h3 class="invite-info-title">
+                            <img class="invite-icon" src="images/grignan.png" alt="" aria-hidden="true">
+                            Où ?
+                        </h3>
+                        <iframe class="invite-map" title="Domaine de Sarson" aria-label="Domaine de Sarson"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d102144.33676200049!2d4.758169834409088!3d44.473238251500995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12b570184415bc0b%3A0x6cbecdc2dfd678fe!2sDomaine%20de%20Sarson!5e0!3m2!1sfr!2sfr!4v1767885992059!5m2!1sfr!2sfr"
+                                loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen>
+                        </iframe>
+
+                      
+                    </div>
+                    <hr class="invite-sep" aria-hidden="true">
+                    <div class="invite-info-block">
+                        <h3 class="invite-info-title" id="aperitivo-info">
+                            <img class="invite-icon" src="images/horloge.png" alt="" aria-hidden="true">
+                            Quand ?
+                        </h3>
+                        <p class="invite-info-text"><b>Arrivée </b>: Dimanche 09 Août 2026 · 16:00 h<br>
+                                                    <b>Départ </b>: Mardi 11 Août 2026 · 16:00 h<br></p>
+                    </div>
+                    <hr class="invite-sep" aria-hidden="true">
+                    
+                    <div class="invite-info-block">
+                        <h3 class="invite-info-title">
+                            <img class="invite-icon" src="images/train.png" alt="" aria-hidden="true">
+                            Comment ?
+                        </h3>
+                        <div class="invite-info-text invite-info-text-train">
+                            <p>Montelimar TGV <br>
+                                <i style="font-size:12px;">~30 min. de voiture</i><br>
+                            <a class="schedule-link" href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Montelimar+TGV" target="_blank">Voir l'itinéraire</a></p>
+                            <p>Valence TGV<br>
+                                 <i style="font-size:12px;">~1h de voiture</i><br>
+                                <a class="schedule-link" href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Valence+TGV" target="_blank">Voir l'itinéraire</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  
 
     <!-- Logements Section -->
     <section id="logements" class="logements">
        
         <div class="container">
-                    
+                    <div class="invite-header">
+                <h2 class="invite-title-white">Informations</h2>
+                <p class="invite-script-white" aria-hidden="true">Logements, thème...</p>
+            </div>
             
                         <div class="logements-theme-grid">
                             <div class="logement-card">
                                 <h3>Logements</h3>
                                 <ul class="logement-list">
                                     <li><span class="bullet">🏠</span><span>Domaine 100% réservé pour les invités</span></li>
-                                    <li><span class="bullet">🛏️</span><span>Un lit par personne (chambres partagées possibles)</span></li>
+                                    <li><span class="bullet">🛏️</span><span>Un lit par personne (chambres partagées 2 à 18 places)</span></li>
                                     <li><span class="bullet">🕔</span><span>Arrivée dimanche 9 août à partir de 17h</span></li>
                                     <li><span class="bullet">🕒</span><span>Départ mardi 11 août après 15h</span></li>
                                     <li><span class="bullet">💶</span><span>Participation: <strong>125€ / personne</strong> pour 2 nuits</span></li>
                                     <li><span class="bullet">🚗</span><span>Parking sur place</span></li>
                                 </ul>
-                                <p class="logement-note">Adresse exacte et répartition des chambres communiquées prochainement.</p>
+                                <p class="logement-note">La répartition des chambres communiquées prochainement.</p>
                             </div>
                             <div class="logement-card">
                                 <h3>Thème</h3>
-                                <p><strong>Méditerranéen · Maroc</strong> — ambiance chaleureuse, naturelle et solaire.</p>
+                                <p><strong>Provence · Maroc</strong> — ambiance chaleureuse, naturelle et solaire.</p>
                                 <div class="theme-groups">
                                                         <div class="theme-group">
                                                             <strong>Couleurs privilégiées</strong>
                                                             <ul class="color-chips">
-                                                                <li class="color-dot" tabindex="0" style="--chip: var(--terracotta);" data-label="Terracotta"></li>
-                                                                <li class="color-dot" tabindex="0" style="--chip: var(--olive);" data-label="Olive"></li>
-                                                                <li class="color-dot" tabindex="0" style="--chip: var(--sand);" data-label="Sable"></li>
-                                                                <li class="color-dot" tabindex="0" style="--chip: var(--cream);" data-label="Crème"></li>
-                                                                <li class="color-dot" tabindex="0" style="--chip: var(--ocre);" data-label="Ocre"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/terracotta.png') center/cover no-repeat;" data-label="Terracotta"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/olive.png') center/cover no-repeat;" data-label="Olive"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/sand.png') center/cover no-repeat;" data-label="Sand"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/cream.png') center/cover no-repeat;" data-label="Cream"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/ocre.png') center/cover no-repeat;" data-label="Ocre"></li>
                                                             </ul>
                                                         </div>
                                                         <div class="theme-group" style="margin-top:1rem;">
                                                             <strong>Couleurs à éviter</strong>
                                                             <ul class="color-chips">
-                                                                <li class="color-dot" tabindex="0" style="--chip:#000000;" data-label="Noir pur"></li>
-                                                                <li class="color-dot" tabindex="0" style="--chip:#ff00ff;" data-label="Fuchsia néon"></li>
-                                                                <li class="color-dot" tabindex="0" style="--chip:#00ff00;" data-label="Vert néon"></li>
-                                                                <li class="color-dot" tabindex="0" style="--chip:#0000ff;" data-label="Bleu électrique"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/noir.png') center/cover no-repeat;" data-label="Noir"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/fuschia.png') center/cover no-repeat;" data-label="Fuschia Néon"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/vert.png') center/cover no-repeat;" data-label="Vert Néon"></li>
+                                                                <li class="color-dot" tabindex="0" style="background: url('images/bleu.png') center/cover no-repeat;" data-label="Bleu Electrique"></li>
                                                             </ul>
                                                         </div>
                                 </div>
                                                                 <p class="theme-note" style="margin-top:1rem;opacity:0.9;line-height:1.6;">
                                                                     <span style="display:inline-block;background:var(--terracotta);color:#fff;border-radius:999px;padding:4px 10px;font-weight:700;letter-spacing:0.02em;margin-right:8px;">⚠️ INTERDIT</span>
-                                                                    Costume + baskets (même blanches) le jour J. On adore le confort, mais pas ce combo — on reste chic-chic-chic 👞✨
+                                                                    Costume + baskets (même blanches) le jour J. On adore le confort, mais pas ce combo. Chaussures de villes obligatoires 👞✨
                                                                 </p>
                             </div>
                         </div>
@@ -184,20 +211,15 @@
                     <div id="giftCarousel" class="carousel" aria-label="Photos de cadeau">
                         <div class="carousel-track">
                             <div class="carousel-slide is-active">
-                                <img src="images/couple-mer.png" alt="Mer" loading="lazy">
+                                <img src="images/maurice.png" alt="Maurice" loading="lazy">
                             </div>
                             <div class="carousel-slide">
-                                <img src="images/couple-provence.png" alt="Provence" loading="lazy">
+                                <img src="images/seychelle.png" alt="Seychelles" loading="lazy">
                             </div>
                             <div class="carousel-slide">
-                                <img src="images/couple-montagne.png" alt="Montagne" loading="lazy">
+                                <img src="images/safari.png" alt="Safari" loading="lazy">
                             </div>
-                            <div class="carousel-slide">
-                                <img src="images/couple-fleurs.png" alt="Fleurs" loading="lazy">
-                            </div>
-                            <div class="carousel-slide">
-                                <img src="images/9710452.jpg" alt="Paysage" loading="lazy">
-                            </div>
+                           
                         </div>
                         <button class="carousel-btn prev" aria-label="Image précédente">‹</button>
                         <button class="carousel-btn next" aria-label="Image suivante">›</button>
@@ -206,13 +228,14 @@
                 </div>
                 
                 <div class="cagnotte-card">
-                    
-                    <h2 class="section-title">Cadeau de mariage</h2>
+                     <div class="invite-header">
+                    <p class="invite-script" aria-hidden="true">Cadeau de mariage</p>
+                    </div>
                     <p class="cagnotte-text">
                       Ce mariage est le début d’une grande aventure… et la prochaine étape sera notre voyage de noces.
 <br>Nous rêvons d’un <b>safari au Kenya</b>, suivi de quelques jours dans un écrin de soleil comme <b>la Réunion, l’île Maurice ou les Seychelles</b>.<br>
 Si vous souhaitez nous offrir un cadeau, une cagnotte a été ouverte pour nous aider à réaliser ce rêve.
-<br>AMerci pour votre amour et votre soutien.
+<br>Merci pour votre amour et votre soutien.
                     </p>
                     <div class="coming-soon">
                         <span class="coming-soon-icon">⏳</span>
@@ -225,14 +248,9 @@ Si vous souhaitez nous offrir un cadeau, une cagnotte a été ouverte pour nous 
 
     <!-- Footer -->
     <footer>
-        <div class="footer-ornament">
-            <svg width="100" height="30" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,15 Q25,5 50,15 T100,15" fill="none" stroke="currentColor" stroke-width="2"/>
-                <circle cx="50" cy="15" r="3" fill="currentColor"/>
-            </svg>
-        </div>
+      
         <p class="footer-names">Maureen & William</p>
-        <p class="footer-date">9-11 Août 2026 • Montélimar</p>
+        <p class="footer-date">9-11 Août 2026 • Grignan</p>
         <p class="footer-theme">🌿 Thème Méditerranéen • Maroc & Provence 🍊</p>
     </footer>
 

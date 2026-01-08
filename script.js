@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="width:100%;display:flex;justify-content: flex-end;margin-bottom: 2%;">
             <button id="rsvpRetourBtn" style="padding:8px 16px;border-radius:8px;border:none;background:#eee;font-weight:500;cursor:pointer;">Retour</button>
         </div>
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSewEkWOQkJiKJOBlMmxI647K0kBp3i6Ne_8pGFKxmO7LrYFjQ/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" style="display:block; border-radius:16px; background:#fff;">Chargement…</iframe>
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSewEkWOQkJiKJOBlMmxI647K0kBp3i6Ne_8pGFKxmO7LrYFjQ/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" style="display:block; border-radius:16px; background:transparent;">Chargement…</iframe>
     `;
     const apiUrl = 'https://script.google.com/macros/s/AKfycbzmmcFRWjK0Tqs1DeOEti4SQtio3x6nOI2K8mve6lyouugVVMQORWsAyZKBnn_RhY4udg/exec';
 
@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rsvpCard.style.height = '';
         rsvpCard.style.maxWidth = '';
         rsvpCard.style.maxHeight = '';
+        rsvpCard.classList.remove('rsvp-expanded');
         attachRsvpCheck();
     }
 
@@ -160,6 +161,7 @@ function launchFireworks() {
                         const showFormBtn = document.getElementById('showRsvpFormBtn');
                         if (showFormBtn) {
                             showFormBtn.addEventListener('click', () => {
+                                rsvpCard.classList.add('rsvp-expanded');
                                 rsvpCard.innerHTML = formIframe;
                                 const retourBtn = rsvpCard.querySelector('#rsvpRetourBtn');
                                 if (retourBtn) {
@@ -186,15 +188,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         e.preventDefault();
         const targetId = this.getAttribute('href');
         const targetElement = document.querySelector(targetId);
-        
         if (targetElement) {
             const navHeight = document.querySelector('nav').offsetHeight;
             const targetPosition = targetElement.offsetTop - navHeight;
-            
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
         }
     });
 });
@@ -207,34 +204,50 @@ window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('nav a');
     const navHeight = document.querySelector('nav').offsetHeight;
-    
     let current = '';
-    
     sections.forEach(section => {
         const sectionTop = section.offsetTop - navHeight - 100;
         const sectionHeight = section.clientHeight;
-        
         if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
             current = section.getAttribute('id');
         }
     });
-    
     navLinks.forEach(link => {
         link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
+        if (link.getAttribute('href') === `#${current}`) link.classList.add('active');
     });
+
+    // Toggle cream gradient background on nav when reaching RSVP (and beyond)
+    const navEl = document.querySelector('nav');
+    const rsvpSection = document.getElementById('rsvp');
+    if (navEl && rsvpSection) {
+        if (window.scrollY >= (rsvpSection.offsetTop - navHeight - 1)) {
+            navEl.classList.add('nav-cream');
+        } else {
+            navEl.classList.remove('nav-cream');
+        }
+    }
+});
+
+// Ensure correct initial nav background on load (in case page opens mid-way)
+document.addEventListener('DOMContentLoaded', () => {
+    const navEl = document.querySelector('nav');
+    const rsvpSection = document.getElementById('rsvp');
+    if (navEl && rsvpSection) {
+        const navHeight = navEl.offsetHeight;
+        if (window.scrollY >= (rsvpSection.offsetTop - navHeight - 1)) {
+            navEl.classList.add('nav-cream');
+        } else {
+            navEl.classList.remove('nav-cream');
+        }
+    }
 });
 
 // ==========================================
 // SCROLL ANIMATIONS (Fade in on scroll)
 // ==========================================
 
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-    };
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -100px 0px' };
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -247,9 +260,8 @@ const observer = new IntersectionObserver((entries) => {
 // Éléments à animer au scroll
 document.addEventListener('DOMContentLoaded', () => {
     const animatedElements = document.querySelectorAll(
-        '.logement-card, .rsvp-card, .cagnotte-card'
+        '.logement-card, .rsvp-card, .cagnotte-card, .schedule-item, .schedule-photo'
     );
-    
     animatedElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
@@ -265,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('scroll', () => {
     const scrolled = window.scrollY;
     const patterns = document.querySelectorAll('.hero-pattern');
-    
     patterns.forEach((pattern, index) => {
         const speed = (index + 1) * 0.3;
         pattern.style.transform = `translateY(${scrolled * speed}px) rotate(${index === 0 ? '-15deg' : '15deg'})`;
@@ -282,23 +293,16 @@ const namesElement = document.querySelector('.names');
 if (namesElement) {
     namesElement.addEventListener('click', () => {
         clickCount++;
-        
         if (clickCount === 2) {
-            // Crée des confettis ou un message spécial
             createHearts();
             clickCount = 0;
         }
-        
-        // Reset après 1 seconde
-        setTimeout(() => {
-            clickCount = 0;
-        }, 1000);
+        setTimeout(() => { clickCount = 0; }, 1000);
     });
 }
 
 function createHearts() {
     const hearts = ['❤️', '💕', '💖', '💗', '💓', '💞'];
-    
     for (let i = 0; i < 20; i++) {
         const heart = document.createElement('div');
         heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
@@ -309,35 +313,19 @@ function createHearts() {
         heart.style.zIndex = '9999';
         heart.style.pointerEvents = 'none';
         heart.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
-        
         document.body.appendChild(heart);
-        
-        setTimeout(() => {
-            heart.remove();
-        }, 5000);
+        setTimeout(() => { heart.remove(); }, 5000);
     }
 }
 
 // Animation CSS pour les coeurs (ajoutée dynamiquement)
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes fall {
-        to {
-            transform: translateY(100vh) rotate(360deg);
-            opacity: 0;
+        @keyframes fall {
+                to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
-    }
 `;
 document.head.appendChild(style);
-
-// ==========================================
-// LAZY LOADING (hint only)
-// ==========================================
-// Pour activer le lazy loading: utilisez l'attribut data-src sur vos <img> et
-// remplacez src par un placeholder. Un observer peut être réintroduit si besoin.
-
-// (Removed non-essential console banners)
-
 
 // ==========================================
 // SIMPLE CAROUSEL (Cagnotte image frame)
@@ -358,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
     slides.forEach((_, i) => {
         const dot = document.createElement('button');
         dot.type = 'button';
-        dot.setAttribute('aria-label', `Aller à l'image ${i+1}`);
+        dot.setAttribute('aria-label', `Aller à l'image ${i + 1}`);
         if (i === 0) dot.setAttribute('aria-current', 'true');
         dot.addEventListener('click', () => goTo(i));
         dotsContainer.appendChild(dot);
@@ -370,23 +358,15 @@ document.addEventListener('DOMContentLoaded', () => {
         track.style.transform = `translateX(${offsetPx}px)`;
         slides.forEach((s, i) => s.classList.toggle('is-active', i === index));
         dotsContainer.querySelectorAll('button').forEach((b, i) => {
-            if (i === index) b.setAttribute('aria-current', 'true');
-            else b.removeAttribute('aria-current');
+            if (i === index) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
         });
     }
 
-    function goTo(i) {
-        index = (i + slides.length) % slides.length;
-        update();
-        restartAuto();
-    }
-
+    function goTo(i) { index = (i + slides.length) % slides.length; update(); restartAuto(); }
     function next() { goTo(index + 1); }
     function prev() { goTo(index - 1); }
 
-    function startAuto() {
-        autoTimer = setInterval(next, 4500);
-    }
+    function startAuto() { autoTimer = setInterval(next, 4500); }
     function stopAuto() { clearInterval(autoTimer); }
     function restartAuto() { stopAuto(); startAuto(); }
 
@@ -394,17 +374,8 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.addEventListener('click', prev);
     carousel.addEventListener('mouseenter', stopAuto);
     carousel.addEventListener('mouseleave', startAuto);
-
-    // Handle resize to keep alignment
-    window.addEventListener('resize', () => {
-        // Re-apply transform based on new width
-        update();
-    });
-
-    // Init (wait a tick for layout)
-    requestAnimationFrame(() => {
-        update();
-    });
+    window.addEventListener('resize', update);
+    requestAnimationFrame(update);
     startAuto();
 });
 
