@@ -182,8 +182,8 @@ padding: 1rem 2.2rem;
     width: 420px;
     height: 420px;
     background: url('images/plant5.png') no-repeat center/contain;
-    right: -160px;       /* légèrement hors du container pour un rendu “entre blocs” */
-    top: 38%;
+    right: -120px;       /* légèrement hors du container pour un rendu “entre blocs” */
+    top: 50%;
     opacity: 0.08;
     pointer-events: none;
     z-index: 0;
@@ -548,7 +548,7 @@ nav a.active {
 
 .wedding-location {
     font-size: 1.3rem;
-    color: var(--olive);
+    color: #000;
     letter-spacing: 1px;
 }
 
@@ -575,7 +575,7 @@ nav a.active {
 .countdown-number {
     font-size: 1.8rem; /* smaller */
     font-weight: 600;
-    color: var(--olive); /* softer color for discretion */
+    color: #000; /* softer color for discretion */
     font-family: 'Inter', Arial, sans-serif;
     letter-spacing: 0.5px;
 }
@@ -661,7 +661,7 @@ section:not(.hero) {
 .invite-script {
     font-family: 'Italianno', cursive;
        font-size: 3rem;
-    color: var(--accent);
+    color: #2F4A3C;
     margin-top: -1.3rem;
 }
 
@@ -675,13 +675,13 @@ section:not(.hero) {
 .invite-script-white {
     font-family: 'Italianno', cursive;
        font-size: 3rem;
-    color:#fff;
+    color:var(--cream);
     margin-top: -1.3rem;
 }
 
 .invite-grid {
     display: grid;
-    grid-template-columns: 3fr 2fr; /* ~60% / 40% */
+    grid-template-columns: 2fr 3fr; /* ~60% / 40% */
     gap: 3rem;
     align-items: center; /* infos centrées verticalement par rapport à l'image */
 }
@@ -862,12 +862,12 @@ section:not(.hero) {
     position: relative;
     cursor: default;
 }
+
 .color-chips .color-dot::after {
     content: attr(data-label);
     position: absolute;
     left: 50%;
     bottom: calc(100% + 8px);
-    transform: translateX(-50%) translateY(6px);
     opacity: 0;
     background: rgba(0,0,0,0.85);
     color: #fff;
@@ -877,19 +877,20 @@ section:not(.hero) {
     border-radius: 6px;
     white-space: nowrap;
     pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: transform 0.2s ease;
 }
 .color-chips .color-dot::before {
     content: '';
     position: absolute;
     left: 50%;
     bottom: 100%;
-    transform: translateX(-50%) translateY(6px);
     opacity: 0;
     border: 6px solid transparent;
     border-top-color: rgba(0,0,0,0.85);
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:  transform 0.2s ease;
+    
 }
+    
 .color-chips .color-dot:hover::after,
 .color-chips .color-dot:focus::after,
 .color-chips .color-dot:hover::before,
