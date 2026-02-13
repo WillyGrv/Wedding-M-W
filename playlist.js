@@ -128,31 +128,47 @@ async function addTrack(uri, btn) {
     setStatus('URI invalide pour la piste.', 'error');
     return;
   }
+
+  const originalLabel = btn.textContent;
   try {
     btn.disabled = true;
+    btn.textContent = 'Ajout…';
     setStatus('Ajout en cours…');
     const resp = await fetch(ADD_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ uri })
     });
+
+    // UX: more explicit handling
+    if (resp.status === 409) {
+      setStatus('Déjà proposé — merci !', 'info');
+      btn.textContent = 'Déjà ajouté';
+      return;
+    }
+
     if (!resp.ok) {
       const msg = `Ajout impossible (${resp.status})`;
       setStatus(msg, 'error');
-      btn.disabled = false;
       return;
     }
-    const data = await resp.json();
+
+    const data = await resp.json().catch(() => ({}));
     if (data.success) {
-      setStatus('Chanson ajoutée à la playlist. Merci !');
-    } else {
-      setStatus(data.message || 'Impossible d\'ajouter la chanson.', 'error');
+      setStatus('Chanson ajoutée (enregistrée). Merci !');
+      btn.textContent = 'Ajouté ✓';
+      return;
     }
+
+    setStatus(data.message || 'Impossible d\'ajouter la chanson.', 'error');
   } catch (err) {
     console.error(err);
     setStatus('Erreur réseau. Réessayez.', 'error');
   } finally {
-    setTimeout(() => { btn.disabled = false; }, 1500);
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }, 1500);
   }
 }
 
