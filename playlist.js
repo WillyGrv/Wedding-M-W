@@ -15,6 +15,12 @@ const $btn = document.getElementById('spotifySearchBtn');
 const $results = document.getElementById('spotifyResults');
 const $status = document.getElementById('playlistStatus');
 
+// If the current page doesn't have the playlist UI, exit early (safe to include on index.html)
+if (!$q || !$btn || !$results || !$status) {
+  // eslint-disable-next-line no-console
+  console.warn('[playlist] UI not found on this page; playlist.js not activated.');
+} else {
+
 function setStatus(msg, type = 'info') {
   $status.textContent = msg || '';
   $status.style.color = type === 'error' ? '#b00020' : 'var(--sage)';
@@ -153,3 +159,4 @@ async function addTrack(uri, btn) {
 // Wire events
 $btn.addEventListener('click', () => searchTracks($q.value));
 $q.addEventListener('input', debounce(() => searchTracks($q.value), 500));
+}

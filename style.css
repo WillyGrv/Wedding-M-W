@@ -232,6 +232,118 @@ padding: 1rem 2.2rem;
     .cagnotte::after { opacity: 0.06; transform: none; }
 }
 
+/* ==========================================
+   PLAYLIST (Spotify search)
+   ========================================== */
+
+.playlist-section {
+    position: relative;
+    padding: 5rem 0;
+    background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 100%);
+}
+
+.playlist-section .container {
+    max-width: 900px;
+}
+
+.playlist-intro {
+    font-family: var(--font-body);
+    color: var(--olive);
+    margin: 0.75rem 0 1.25rem;
+    text-align: center;
+}
+
+.playlist-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    padding: 1.5rem;
+}
+
+.playlist-section .spotify-search {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.playlist-section .spotify-search input[type="text"] {
+    flex: 1 1 260px;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #fff;
+    font-size: 1rem;
+}
+
+.playlist-section .spotify-search button {
+    padding: 0.7rem 1rem;
+    background: var(--sage);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.playlist-section .results {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.playlist-section .result-item {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 0.5rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+}
+
+.playlist-section .result-item h4 {
+    font-family: var(--font-body);
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.playlist-section .result-item p {
+    margin: 0.1rem 0 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.playlist-section .result-item img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+}
+
+.playlist-section .result-item .actions button {
+    background: var(--olive);
+    color: #fff;
+    border: none;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.playlist-section .status {
+    margin-top: 1rem;
+    min-height: 1.4rem;
+    font-size: 0.95rem;
+    color: var(--sage);
+}
+
+@media (min-width: 768px) {
+    .playlist-card { padding: 2.2rem; }
+}
+
 /* Sections décoratives: assure la position relative */
 .logements { position: relative; }
 

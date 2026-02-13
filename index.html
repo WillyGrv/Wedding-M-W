@@ -16,6 +16,7 @@
             <li><a href="#rsvp">RSVP & Infos</a></li>
             <li><a href="#logements">Logements</a></li>
             <li><a href="#cagnotte">Cagnotte</a></li>
+            <li><a href="#playlist">Playlist</a></li>
         </ul>
     </nav>
 
@@ -252,6 +253,30 @@ Si vous souhaitez nous offrir un cadeau, une cagnotte Tripee a été ouverte pou
         </div>
     </section>
 
+    <!-- Playlist Section -->
+    <section id="playlist" class="playlist-section">
+        <div class="container">
+            <div class="invite-header">
+                <h2 class="invite-title">Playlist</h2>
+                <p class="invite-script" aria-hidden="true">Propose ta chanson</p>
+            </div>
+
+            <p class="playlist-intro">
+                Recherchez une musique sur Spotify et proposez-la pour la soirée.
+            </p>
+
+            <div class="playlist-card" aria-label="Proposer une chanson pour la playlist">
+                <div class="spotify-search">
+                    <input id="spotifyQuery" type="text" placeholder="Rechercher une chanson ou un artiste" aria-label="Rechercher une chanson ou un artiste" />
+                    <button id="spotifySearchBtn" type="button" aria-label="Lancer la recherche">Rechercher</button>
+                </div>
+
+                <div id="spotifyResults" class="results" aria-live="polite"></div>
+                <div id="playlistStatus" class="status" role="status"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer>
       
@@ -304,5 +329,6 @@ Si vous souhaitez nous offrir un cadeau, une cagnotte Tripee a été ouverte pou
     </div>
 
     <script src="script.js"></script>
+    <script type="module" src="playlist.js"></script>
 </body>
 </html>
