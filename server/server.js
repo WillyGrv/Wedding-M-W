@@ -336,6 +336,107 @@ app.get('/api/debug/spotify-playlist', async (_req, res) => {
   }
 });
 
+// Debug (safe/write): create a test playlist owned by the authorized user.
+// POST /api/debug/spotify-create-playlist { name?, public? }
+// Stores the created playlist id in-memory for subsequent add-track test.
+let spotifyDebugPlaylistId = null;
+app.post('/api/debug/spotify-create-playlist', async (req, res) => {
+  if (!isSpotifyUserConfigured()) {
+    return res.status(500).json({
+      ok: false,
+      error: 'spotify_not_configured',
+      message: 'Need SPOTIFY_REFRESH_TOKEN + SPOTIFY_PLAYLIST_ID + SPOTIFY_CLIENT_ID/SECRET'
+    });
+  }
+
+  const name = String(req.body?.name || 'WM-W debug playlist');
+  const isPublic = req.body?.public === undefined ? false : Boolean(req.body.public);
+
+  try {
+    const token = await getSpotifyUserAccessToken();
+
+    // Who am I?
+    const meResp = await fetch('https://api.spotify.com/v1/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const meText = await meResp.text().catch(() => '');
+    if (!meResp.ok) {
+      return res.status(meResp.status).json({ ok: false, step: 'me', body: meText || null });
+    }
+    const me = meText ? JSON.parse(meText) : {};
+    const userId = me.id;
+    if (!userId) return res.status(500).json({ ok: false, step: 'me', message: 'Missing user id' });
+
+    const createResp = await fetch(`https://api.spotify.com/v1/users/${encodeURIComponent(userId)}/playlists`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, public: isPublic, description: 'Debug playlist created by WM-W server' })
+    });
+    const createText = await createResp.text().catch(() => '');
+    if (!createResp.ok) {
+      const wwwAuth = createResp.headers.get('www-authenticate');
+      console.error('Spotify create-playlist error', {
+        status: createResp.status,
+        wwwAuthenticate: wwwAuth || null,
+        error: createText || null
+      });
+      return res.status(createResp.status).json({
+        ok: false,
+        step: 'create_playlist',
+        status: createResp.status,
+        wwwAuthenticate: wwwAuth || null,
+        body: createText || null
+      });
+    }
+
+    const created = createText ? JSON.parse(createText) : {};
+    spotifyDebugPlaylistId = created.id || null;
+    return res.json({
+      ok: true,
+      playlist: {
+        id: created.id || null,
+        name: created.name || null,
+        public: typeof created.public === 'boolean' ? created.public : null,
+        owner: { id: created.owner?.id || null, display_name: created.owner?.display_name || null }
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ ok: false, error: 'unexpected_error', message: err.message });
+  }
+});
+
+// Debug (safe/write): add a track to the last created debug playlist.
+// POST /api/debug/spotify-add-track-test { uri }
+app.post('/api/debug/spotify-add-track-test', async (req, res) => {
+  if (!isSpotifyUserConfigured()) {
+    return res.status(500).json({
+      ok: false,
+      error: 'spotify_not_configured',
+      message: 'Need SPOTIFY_REFRESH_TOKEN + SPOTIFY_PLAYLIST_ID + SPOTIFY_CLIENT_ID/SECRET'
+    });
+  }
+
+  const uri = String(req.body?.uri || '');
+  if (!uri) return res.status(400).json({ ok: false, message: 'Missing uri' });
+  if (!spotifyDebugPlaylistId) {
+    return res.status(400).json({
+      ok: false,
+      message: 'No debug playlist id in memory. Call POST /api/debug/spotify-create-playlist first.'
+    });
+  }
+
+  try {
+    await spotifyAddTrackToPlaylist({ playlistId: spotifyDebugPlaylistId, trackUri: uri });
+    return res.json({ ok: true, playlistId: spotifyDebugPlaylistId });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: 'spotify_add_failed', message: err.message });
+  }
+});
+
 // Spotify OAuth (Authorization Code) to obtain a refresh token (one-time setup)
 // Visit /api/auth/login, approve, then /api/auth/callback will show the refresh_token.
 app.get('/api/auth/login', (_req, res) => {
