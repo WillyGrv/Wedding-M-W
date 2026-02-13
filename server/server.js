@@ -109,6 +109,17 @@ const dataDir = path.join(__dirname, 'mock-data');
 const tracksFile = path.join(dataDir, 'tracks.json');
 const logFile = path.join(dataDir, 'playlist-log.json');
 
+function normalizeLogEntry(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  return {
+    uri: entry.uri,
+    ts: entry.ts,
+    ip: entry.ip,
+    status: entry.status || 'pending',
+    confirmedAt: entry.confirmedAt || null
+  };
+}
+
 function readJSON(file) {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf-8'));
@@ -180,6 +191,55 @@ app.get('/api/search', searchLimiter, async (req, res) => {
   return res.json({ items: filtered });
 });
 
+// ADMIN: list requests (optionally filter by status)
+// GET /api/admin/requests?status=pending|confirmed|all
+app.get('/api/admin/requests', (req, res) => {
+  const status = String(req.query.status || 'pending');
+
+  let log;
+  try {
+    log = readJSON(logFile);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+
+  const normalized = (Array.isArray(log) ? log : [])
+    .map(normalizeLogEntry)
+    .filter(Boolean)
+    .filter(e => {
+      if (status === 'all') return true;
+      return e.status === status;
+    })
+    .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+
+  return res.json({ items: normalized });
+});
+
+// ADMIN: confirm a request
+// POST /api/admin/confirm { uri }
+app.post('/api/admin/confirm', (req, res) => {
+  const { uri } = req.body || {};
+  if (!uri) return res.status(400).json({ success: false, message: 'Missing uri' });
+
+  let log;
+  try {
+    log = readJSON(logFile);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+
+  const items = Array.isArray(log) ? log : [];
+  const entry = items.find(e => e && e.uri === uri);
+  if (!entry) return res.status(404).json({ success: false, message: 'Not found' });
+
+  entry.status = 'confirmed';
+  entry.confirmedAt = Date.now();
+  writeJSON(logFile, items);
+  return res.json({ success: true });
+});
+
 // POST /api/add-track { uri }
 app.post('/api/add-track', addLimiter, (req, res) => {
   const { uri } = req.body || {};
@@ -196,7 +256,7 @@ app.post('/api/add-track', addLimiter, (req, res) => {
     return res.status(409).json({ success: false, message: 'Track already added' });
   }
 
-  log.push({ uri, ts: Date.now(), ip: req.ip });
+  log.push({ uri, ts: Date.now(), ip: req.ip, status: 'pending' });
   writeJSON(logFile, log);
 
   // TODO: Later call Spotify API to add track to organizer playlist

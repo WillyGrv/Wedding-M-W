@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin • Playlist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Parisienne&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav id="mainNav">
+    <ul>
+      <li><a href="index.html">← Retour au site</a></li>
+    </ul>
+  </nav>
+
+  <main class="admin-page">
+    <section class="admin-container" aria-label="Administration des demandes playlist">
+      <div class="invite-header">
+        <h1 class="invite-title">Admin Playlist</h1>
+        <p class="invite-script" aria-hidden="true">Demandes en attente</p>
+      </div>
+
+      <div class="admin-toolbar">
+        <div class="admin-filters">
+          <label for="adminStatus">Statut</label>
+          <select id="adminStatus">
+            <option value="pending" selected>En attente</option>
+            <option value="confirmed">Confirmées</option>
+            <option value="all">Toutes</option>
+          </select>
+        </div>
+
+        <button id="adminRefreshBtn" type="button" class="admin-btn">Rafraîchir</button>
+      </div>
+
+      <div id="adminStatusMsg" class="status" role="status"></div>
+      <div id="adminList" class="admin-list" aria-live="polite"></div>
+
+      <p class="admin-note">
+        Note: cet écran confirme seulement les demandes dans le <code>playlist-log.json</code> (mode mock).
+        L’ajout réel à Spotify pourra être branché plus tard.
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

@@ -344,6 +344,133 @@ padding: 1rem 2.2rem;
     .playlist-card { padding: 2.2rem; }
 }
 
+/* ==========================================
+   ADMIN (playlist requests)
+   ========================================== */
+
+.admin-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 100%);
+    padding: 6rem 1.5rem 3rem;
+}
+
+.admin-container {
+    max-width: 980px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    padding: 2rem;
+}
+
+.admin-toolbar {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 1.25rem 0 0.75rem;
+}
+
+.admin-filters {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.admin-filters label {
+    font-family: var(--font-body);
+    color: var(--olive);
+    font-weight: 600;
+}
+
+.admin-filters select {
+    padding: 0.55rem 0.6rem;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #fff;
+    font-size: 0.95rem;
+}
+
+.admin-btn {
+    padding: 0.65rem 0.9rem;
+    background: var(--olive);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.admin-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.admin-list {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.admin-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 0.9rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+}
+
+.admin-uri code {
+    font-size: 0.9rem;
+}
+
+.admin-sub {
+    margin-top: 0.35rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.pill {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(122,130,104,0.15);
+    color: var(--sage);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.muted {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.admin-empty {
+    color: #666;
+    padding: 1rem;
+    background: #fff;
+    border: 1px dashed rgba(0,0,0,0.12);
+}
+
+.admin-note {
+    margin-top: 1.25rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+    .admin-item {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Sections décoratives: assure la position relative */
 .logements { position: relative; }
 
