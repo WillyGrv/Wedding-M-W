@@ -204,7 +204,8 @@ function normalizeLogEntry(entry) {
     ts: entry.ts,
     ip: entry.ip,
     status: entry.status || 'pending',
-    confirmedAt: entry.confirmedAt || null
+    confirmedAt: entry.confirmedAt || null,
+    manualAddedAt: entry.manualAddedAt || null
   };
 }
 
@@ -611,6 +612,29 @@ app.post('/api/admin/confirm', async (req, res) => {
     mode: 'manual',
     spotifyOpenUrl
   });
+});
+
+// ADMIN: mark a confirmed request as manually added to Spotify
+// POST /api/admin/manual-added { uri }
+app.post('/api/admin/manual-added', (req, res) => {
+  const { uri } = req.body || {};
+  if (!uri) return res.status(400).json({ success: false, message: 'Missing uri' });
+
+  let log;
+  try {
+    log = readJSON(logFile);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+
+  const items = Array.isArray(log) ? log : [];
+  const entry = items.find(e => e && e.uri === uri);
+  if (!entry) return res.status(404).json({ success: false, message: 'Not found' });
+
+  entry.manualAddedAt = Date.now();
+  writeJSON(logFile, items);
+  return res.json({ success: true, manualAddedAt: entry.manualAddedAt });
 });
 
 // POST /api/add-track { uri }

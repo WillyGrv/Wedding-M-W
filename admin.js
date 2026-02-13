@@ -9,6 +9,7 @@ const API_BASE = isLocal ? 'http://localhost:8888' : (isGitHubPages ? PROD_API_B
 const LIST_ENDPOINT = `${API_BASE}/api/admin/requests`;
 const CONFIRM_ENDPOINT = `${API_BASE}/api/admin/confirm`;
 const DELETE_ENDPOINT = `${API_BASE}/api/admin/delete`;
+const MANUAL_ADDED_ENDPOINT = `${API_BASE}/api/admin/manual-added`;
 
 const $list = document.getElementById('adminList');
 const $msg = document.getElementById('adminStatusMsg');
@@ -87,6 +88,10 @@ function render(items) {
       : '';
     const img = hasTrack && track.imageUrl ? `<img class="admin-cover" src="${escapeHtml(track.imageUrl)}" alt="" loading="lazy">` : '';
 
+    const spotifyOpenUrl = (entry.uri && entry.uri.startsWith('spotify:track:'))
+      ? `https://open.spotify.com/track/${encodeURIComponent(entry.uri.replace('spotify:track:', ''))}`
+      : '';
+
     meta.innerHTML = `
       <div class="admin-track">
         ${img}
@@ -100,7 +105,14 @@ function render(items) {
         <span class="pill">${escapeHtml(entry.status || 'pending')}</span>
         <span class="muted">Demandé: ${escapeHtml(fmtDate(entry.ts))}</span>
         ${entry.confirmedAt ? `<span class="muted">Confirmé: ${escapeHtml(fmtDate(entry.confirmedAt))}</span>` : ''}
+        ${entry.manualAddedAt ? `<span class="muted">Ajouté manuellement: ${escapeHtml(fmtDate(entry.manualAddedAt))}</span>` : ''}
       </div>
+      ${spotifyOpenUrl ? `
+      <div class="admin-links">
+        <a class="admin-link" href="${escapeHtml(spotifyOpenUrl)}" target="_blank" rel="noopener">Ouvrir Spotify</a>
+        <button type="button" class="admin-btn admin-secondary" data-copy-url="${escapeHtml(spotifyOpenUrl)}">Copier le lien</button>
+      </div>
+      ` : ''}
     `;
 
     const actions = document.createElement('div');
@@ -120,6 +132,16 @@ function render(items) {
       await confirm(entry.uri, confirmBtn);
     });
 
+    const manualBtn = document.createElement('button');
+    manualBtn.type = 'button';
+    manualBtn.className = 'admin-btn admin-secondary';
+    manualBtn.textContent = entry.manualAddedAt ? 'Ajouté ✅' : 'Ajouté manuellement ✅';
+    if (entry.manualAddedAt) manualBtn.disabled = true;
+
+    manualBtn.addEventListener('click', async () => {
+      await markManualAdded(entry.uri, manualBtn);
+    });
+
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
     deleteBtn.className = 'admin-btn admin-delete';
@@ -130,11 +152,27 @@ function render(items) {
     });
 
     actions.appendChild(confirmBtn);
+  actions.appendChild(manualBtn);
     actions.appendChild(deleteBtn);
 
     row.appendChild(meta);
     row.appendChild(actions);
     $list.appendChild(row);
+
+    // Wire copy link button (if present)
+    const copyBtn = row.querySelector('[data-copy-url]');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        const url = copyBtn.getAttribute('data-copy-url') || '';
+        if (!url) return;
+        try {
+          await navigator.clipboard.writeText(url);
+          setMsg('Lien copié.');
+        } catch {
+          setMsg('Impossible de copier automatiquement. Sélectionnez et copiez le lien.', 'error');
+        }
+      });
+    }
   });
 }
 
@@ -167,21 +205,44 @@ async function confirm(uri, btn) {
       return;
     }
 
-    const data = await resp.json().catch(() => ({}));
+    await resp.json().catch(() => ({}));
     btn.textContent = 'Confirmé ✓';
 
-    if (data && data.spotifyOpenUrl) {
-      setMsg('Confirmé. Ouverture de Spotify pour ajout manuel…');
-      try {
-        window.open(data.spotifyOpenUrl, '_blank', 'noopener');
-      } catch {
-        // If popup blocked, user can still copy the URL from the item.
-      }
-    } else {
-      setMsg('Demande confirmée.');
-    }
+    setMsg('Confirmé. Utilisez "Ouvrir Spotify" puis cliquez "Ajouté manuellement ✅".');
 
     // refresh list to reflect status + timestamps
+    setTimeout(load, 250);
+  } catch (err) {
+    console.error(err);
+    setMsg('Erreur réseau. Réessayez.', 'error');
+    btn.textContent = original;
+    btn.disabled = false;
+  }
+}
+
+async function markManualAdded(uri, btn) {
+  if (!uri) return;
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Enregistrement…';
+  setMsg('Marquage en cours…');
+
+  try {
+    const resp = await fetch(MANUAL_ADDED_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uri })
+    });
+
+    if (!resp.ok) {
+      setMsg(`Erreur (HTTP ${resp.status}).`, 'error');
+      btn.textContent = original;
+      btn.disabled = false;
+      return;
+    }
+
+    btn.textContent = 'Ajouté ✅';
+    setMsg('OK.');
     setTimeout(load, 250);
   } catch (err) {
     console.error(err);
