@@ -97,8 +97,23 @@ async function spotifyAddTrackToPlaylist({ playlistId, trackUri }) {
   });
 
   if (!resp.ok) {
+    const wwwAuth = resp.headers.get('www-authenticate');
     const text = await resp.text().catch(() => '');
-    throw new Error(`Spotify add-to-playlist failed (${resp.status}): ${text}`);
+    let parsed = null;
+    try { parsed = text ? JSON.parse(text) : null; } catch { /* ignore */ }
+
+    // Log extra context server-side (Render logs) WITHOUT exposing any token.
+    console.error('Spotify add-to-playlist error', {
+      status: resp.status,
+      wwwAuthenticate: wwwAuth || null,
+      error: parsed || text || null
+    });
+
+    throw new Error(
+      `Spotify add-to-playlist failed (${resp.status})`
+      + (wwwAuth ? ` www-authenticate=${wwwAuth}` : '')
+      + (text ? `: ${text}` : '')
+    );
   }
   return resp.json();
 }
