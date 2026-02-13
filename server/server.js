@@ -227,6 +227,100 @@ app.get('/api/debug/token-status', (_req, res) => {
   });
 });
 
+// Debug (safe): verify who the refresh_token belongs to.
+// Returns the Spotify user id + display name and the app scopes from /v1/me response.
+// Does NOT return any access token.
+app.get('/api/debug/spotify-me', async (_req, res) => {
+  if (!isSpotifyUserConfigured()) {
+    return res.status(500).json({
+      ok: false,
+      error: 'spotify_not_configured',
+      message: 'Need SPOTIFY_REFRESH_TOKEN + SPOTIFY_PLAYLIST_ID + SPOTIFY_CLIENT_ID/SECRET'
+    });
+  }
+
+  try {
+    const token = await getSpotifyUserAccessToken();
+    const resp = await fetch('https://api.spotify.com/v1/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const wwwAuth = resp.headers.get('www-authenticate');
+    const bodyText = await resp.text().catch(() => '');
+    if (!resp.ok) {
+      return res.status(resp.status).json({
+        ok: false,
+        status: resp.status,
+        wwwAuthenticate: wwwAuth || null,
+        body: bodyText || null
+      });
+    }
+
+    const data = bodyText ? JSON.parse(bodyText) : {};
+    return res.json({
+      ok: true,
+      user: {
+        id: data.id || null,
+        display_name: data.display_name || null
+      },
+      wwwAuthenticate: wwwAuth || null
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ ok: false, error: 'unexpected_error', message: err.message });
+  }
+});
+
+// Debug (safe): check whether the configured user can access the playlist.
+// Helpful to diagnose 403 (not owner / not collaborator / wrong playlist id).
+app.get('/api/debug/spotify-playlist', async (_req, res) => {
+  if (!isSpotifyUserConfigured()) {
+    return res.status(500).json({
+      ok: false,
+      error: 'spotify_not_configured',
+      message: 'Need SPOTIFY_REFRESH_TOKEN + SPOTIFY_PLAYLIST_ID + SPOTIFY_CLIENT_ID/SECRET'
+    });
+  }
+
+  try {
+    const token = await getSpotifyUserAccessToken();
+    const playlistId = SPOTIFY_PLAYLIST_ID;
+    const resp = await fetch(`https://api.spotify.com/v1/playlists/${encodeURIComponent(playlistId)}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const wwwAuth = resp.headers.get('www-authenticate');
+    const bodyText = await resp.text().catch(() => '');
+    if (!resp.ok) {
+      return res.status(resp.status).json({
+        ok: false,
+        status: resp.status,
+        wwwAuthenticate: wwwAuth || null,
+        body: bodyText || null
+      });
+    }
+
+    const data = bodyText ? JSON.parse(bodyText) : {};
+    return res.json({
+      ok: true,
+      playlist: {
+        id: data.id || playlistId,
+        name: data.name || null,
+        public: typeof data.public === 'boolean' ? data.public : null,
+        collaborative: typeof data.collaborative === 'boolean' ? data.collaborative : null,
+        owner: {
+          id: data.owner?.id || null,
+          display_name: data.owner?.display_name || null
+        }
+      },
+      wwwAuthenticate: wwwAuth || null
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ ok: false, error: 'unexpected_error', message: err.message });
+  }
+});
+
 // Spotify OAuth (Authorization Code) to obtain a refresh token (one-time setup)
 // Visit /api/auth/login, approve, then /api/auth/callback will show the refresh_token.
 app.get('/api/auth/login', (_req, res) => {
