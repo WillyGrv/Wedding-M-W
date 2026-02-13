@@ -305,6 +305,23 @@ padding: 1rem 2.2rem;
     box-shadow: 0 3px 10px rgba(0,0,0,0.04);
 }
 
+.spotify-preview {
+    grid-column: 1 / -1;
+    margin-top: 0.6rem;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 0.55rem;
+    border-radius: 12px;
+}
+
+.spotify-preview iframe {
+    width: 100%;
+    height: 152px;
+    border: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
 .playlist-section .result-item h4 {
     font-family: var(--font-body);
     margin: 0;

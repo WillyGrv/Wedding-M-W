@@ -47,7 +47,28 @@ function normalizeSpotifyTrack(item) {
   const imageUrl = images[0]?.url || images[images.length - 1]?.url || '';
   const uri = item.uri || item.track_uri || (item.id ? `spotify:track:${item.id}` : '');
   const previewUrl = item.preview_url || item.track_preview_url || '';
-  return { name, artistNames, imageUrl, uri, previewUrl };
+  const id = item.id || (uri && uri.startsWith('spotify:track:') ? uri.replace('spotify:track:', '') : '');
+  return { name, artistNames, imageUrl, uri, previewUrl, id };
+}
+
+function getSpotifyTrackId(track) {
+  if (!track) return '';
+  if (track.id) return String(track.id);
+  if (track.uri && track.uri.startsWith('spotify:track:')) return track.uri.replace('spotify:track:', '');
+  return '';
+}
+
+function createSpotifyEmbed(trackId) {
+  const wrap = document.createElement('div');
+  wrap.className = 'spotify-preview';
+
+  const iframe = document.createElement('iframe');
+  iframe.loading = 'lazy';
+  iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+  iframe.src = `https://open.spotify.com/embed/track/${encodeURIComponent(trackId)}`;
+
+  wrap.appendChild(iframe);
+  return wrap;
 }
 
 async function searchTracks(query) {
@@ -105,6 +126,32 @@ function renderResults(tracks) {
 
     const actions = document.createElement('div');
     actions.className = 'actions';
+
+    // Preview (Spotify embed)
+    const trackId = getSpotifyTrackId(t);
+    const hasEmbed = Boolean(trackId);
+    let previewEl = null;
+    if (hasEmbed) {
+      const previewBtn = document.createElement('button');
+      previewBtn.type = 'button';
+      previewBtn.textContent = 'Pré-écouter';
+      previewBtn.style.marginRight = '0.5rem';
+
+      previewBtn.addEventListener('click', () => {
+        if (previewEl) {
+          previewEl.remove();
+          previewEl = null;
+          previewBtn.textContent = 'Pré-écouter';
+          return;
+        }
+        previewEl = createSpotifyEmbed(trackId);
+        row.appendChild(previewEl);
+        previewBtn.textContent = 'Masquer';
+      });
+
+      actions.appendChild(previewBtn);
+    }
+
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
     addBtn.textContent = 'Ajouter à la playlist';

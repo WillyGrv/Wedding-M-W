@@ -92,6 +92,10 @@ function render(items) {
       ? `https://open.spotify.com/track/${encodeURIComponent(entry.uri.replace('spotify:track:', ''))}`
       : '';
 
+    const spotifyEmbedUrl = (entry.uri && entry.uri.startsWith('spotify:track:'))
+      ? `https://open.spotify.com/embed/track/${encodeURIComponent(entry.uri.replace('spotify:track:', ''))}`
+      : '';
+
     meta.innerHTML = `
       <div class="admin-track">
         ${img}
@@ -109,6 +113,7 @@ function render(items) {
       </div>
       ${spotifyOpenUrl ? `
       <div class="admin-links">
+        <button type="button" class="admin-btn admin-secondary" data-preview-embed="${escapeHtml(spotifyEmbedUrl)}">Pré-écouter</button>
         <a class="admin-link" href="${escapeHtml(spotifyOpenUrl)}" target="_blank" rel="noopener">Ouvrir Spotify</a>
         <button type="button" class="admin-btn admin-secondary" data-copy-url="${escapeHtml(spotifyOpenUrl)}">Copier le lien</button>
       </div>
@@ -121,7 +126,7 @@ function render(items) {
     const confirmBtn = document.createElement('button');
     confirmBtn.type = 'button';
     confirmBtn.className = 'admin-btn admin-confirm';
-  confirmBtn.textContent = 'Ajouter à Spotify';
+    confirmBtn.textContent = 'Confirmer';
 
     if (entry.status === 'confirmed') {
       confirmBtn.disabled = true;
@@ -152,7 +157,7 @@ function render(items) {
     });
 
     actions.appendChild(confirmBtn);
-  actions.appendChild(manualBtn);
+    actions.appendChild(manualBtn);
     actions.appendChild(deleteBtn);
 
     row.appendChild(meta);
@@ -171,6 +176,33 @@ function render(items) {
         } catch {
           setMsg('Impossible de copier automatiquement. Sélectionnez et copiez le lien.', 'error');
         }
+      });
+    }
+
+    // Wire preview embed toggle (if present)
+    const previewBtn = row.querySelector('[data-preview-embed]');
+    if (previewBtn) {
+      previewBtn.addEventListener('click', () => {
+        const src = previewBtn.getAttribute('data-preview-embed') || '';
+        if (!src) return;
+
+        const existing = row.querySelector('.spotify-preview');
+        if (existing) {
+          existing.remove();
+          previewBtn.textContent = 'Pré-écouter';
+          return;
+        }
+
+        const wrap = document.createElement('div');
+        wrap.className = 'spotify-preview';
+        const iframe = document.createElement('iframe');
+        iframe.loading = 'lazy';
+        iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+        iframe.src = src;
+        wrap.appendChild(iframe);
+        // Place preview in the left column (meta) so it doesn't squeeze the actions column.
+        meta.appendChild(wrap);
+        previewBtn.textContent = 'Masquer';
       });
     }
   });
