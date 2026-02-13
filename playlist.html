@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proposer une chanson • Playlist</title>
+  <!-- Fonts: Proposal B (match site) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Parisienne&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Page-specific minimal styling to avoid touching global CSS */
+    .playlist-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--sand) 0%, var(--cream) 100%);
+      padding: 6rem 1.5rem 3rem;
+    }
+    .playlist-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+      padding: 2rem;
+    }
+    .playlist-title { font-family: var(--font-heading); font-size: 2rem; color: var(--burgundy); margin-bottom: 1rem; }
+    .playlist-subtitle { font-family: var(--font-body); color: var(--olive); margin-bottom: 1.5rem; }
+    .spotify-search { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    .spotify-search input[type="text"] {
+      flex: 1;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      font-size: 1rem;
+    }
+    .spotify-search button {
+      padding: 0.7rem 1rem;
+      background: var(--sage);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .results {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .result-item {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      align-items: center;
+      gap: 0.75rem;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 0.5rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+    .result-item h4 {
+      font-family: var(--font-body);
+      margin: 0;
+      font-size: 1rem;
+      color: #333;
+    }
+    .result-item p { margin: 0.1rem 0 0; font-size: 0.9rem; color: #666; }
+    .result-item img { width: 64px; height: 64px; object-fit: cover; }
+    .result-item .actions button {
+      background: var(--olive);
+      color: #fff;
+      border: none;
+      padding: 0.55rem 0.8rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .status { margin-top: 1rem; min-height: 1.4rem; font-size: 0.95rem; color: var(--sage); }
+    .powered { margin-top: 1rem; font-size: 0.85rem; color: #555; }
+    .powered a { color: var(--olive); text-decoration: underline; }
+    @media (min-width: 768px) {
+      .playlist-container { padding: 2.2rem; }
+      .results { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="playlist-page">
+    <section class="playlist-container" aria-label="Proposer une chanson pour la playlist">
+      <h1 class="playlist-title">Proposer une chanson</h1>
+      <p class="playlist-subtitle">Recherchez une musique sur Spotify et ajoutez-la à la playlist prévue pour la soirée ✨</p>
+
+      <div class="spotify-search">
+        <input id="spotifyQuery" type="text" placeholder="Rechercher une chanson ou un artiste" aria-label="Rechercher une chanson ou un artiste" />
+        <button id="spotifySearchBtn" type="button" aria-label="Lancer la recherche">Rechercher</button>
+      </div>
+
+      <div id="spotifyResults" class="results" aria-live="polite"></div>
+      <div id="playlistStatus" class="status" role="status"></div>
+     
+    </section>
+  </main>
+
+  <script type="module" src="playlist.js"></script>
+</body>
+</html>

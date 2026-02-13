@@ -1,0 +1,155 @@
+// Minimal front-end for Spotify search and add-to-playlist via backend proxy
+// Configure your backend base URL:
+// - If deployed under the same domain with /api routes, leave API_BASE = '' (relative)
+// - Else set API_BASE to your server URL, e.g. 'https://playlist.yourdomain.com'
+// In local dev, the backend runs on localhost:8888.
+// In production (same domain), set this back to '' or to your deployed API origin.
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:8888'
+  : '';
+const SEARCH_ENDPOINT = `${API_BASE}/api/search`;
+const ADD_ENDPOINT = `${API_BASE}/api/add-track`;
+
+const $q = document.getElementById('spotifyQuery');
+const $btn = document.getElementById('spotifySearchBtn');
+const $results = document.getElementById('spotifyResults');
+const $status = document.getElementById('playlistStatus');
+
+function setStatus(msg, type = 'info') {
+  $status.textContent = msg || '';
+  $status.style.color = type === 'error' ? '#b00020' : 'var(--sage)';
+}
+
+function debounce(fn, wait = 400) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
+function normalizeSpotifyTrack(item) {
+  // Supports both raw Spotify search payload (tracks.items[]) and a custom normalized API payload
+  // Raw item example: { name, artists: [{name}], album: { images: [{url}] }, uri, id, preview_url }
+  const name = item.name || item.track_name || '';
+  const artists = item.artists || item.track_artists || [];
+  const artistNames = Array.isArray(artists) ? artists.map(a => a.name || a).join(', ') : String(artists || '');
+  const images = (item.album && item.album.images) || item.images || [];
+  const imageUrl = images[0]?.url || images[images.length - 1]?.url || '';
+  const uri = item.uri || item.track_uri || (item.id ? `spotify:track:${item.id}` : '');
+  const previewUrl = item.preview_url || item.track_preview_url || '';
+  return { name, artistNames, imageUrl, uri, previewUrl };
+}
+
+async function searchTracks(query) {
+  if (!query || query.trim().length < 2) {
+    setStatus('Tapez au moins 2 caractères pour rechercher.');
+    $results.innerHTML = '';
+    return;
+  }
+  setStatus('Recherche en cours…');
+  try {
+    const params = new URLSearchParams({ q: query.trim(), limit: '10' });
+    const resp = await fetch(`${SEARCH_ENDPOINT}?${params.toString()}`);
+    if (!resp.ok) throw new Error(`Recherche échouée (${resp.status})`);
+    const data = await resp.json();
+
+    // Accept raw Spotify payload or normalized payload
+    const items = (data.tracks && data.tracks.items) || data.items || [];
+    const tracks = items.map(normalizeSpotifyTrack);
+
+    renderResults(tracks);
+    setStatus(`Résultats: ${tracks.length}`);
+  } catch (err) {
+    console.error(err);
+    setStatus('Erreur pendant la recherche. Réessayez dans un instant.', 'error');
+  }
+}
+
+function renderResults(tracks) {
+  $results.innerHTML = '';
+  if (!tracks.length) {
+    const empty = document.createElement('div');
+    empty.textContent = 'Aucun résultat.';
+    empty.style.color = '#666';
+    $results.appendChild(empty);
+    return;
+  }
+
+  tracks.forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'result-item';
+
+    const img = document.createElement('img');
+    img.alt = `Pochette de ${t.name}`;
+    img.src = t.imageUrl || 'images/asset-placeholder.png';
+    row.appendChild(img);
+
+    const info = document.createElement('div');
+    const title = document.createElement('h4');
+    title.textContent = t.name;
+    const artists = document.createElement('p');
+    artists.textContent = t.artistNames;
+    info.appendChild(title);
+    info.appendChild(artists);
+    row.appendChild(info);
+
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.textContent = 'Ajouter à la playlist';
+    addBtn.addEventListener('click', () => addTrack(t.uri, addBtn));
+    actions.appendChild(addBtn);
+    row.appendChild(actions);
+
+    // Optional 30s preview
+    if (t.previewUrl) {
+      const audio = document.createElement('audio');
+      audio.src = t.previewUrl;
+      audio.controls = true;
+      audio.style.gridColumn = '1 / -1';
+      audio.style.marginTop = '0.25rem';
+      row.appendChild(audio);
+    }
+
+    $results.appendChild(row);
+  });
+}
+
+async function addTrack(uri, btn) {
+  if (!uri) {
+    setStatus('URI invalide pour la piste.', 'error');
+    return;
+  }
+  try {
+    btn.disabled = true;
+    setStatus('Ajout en cours…');
+    const resp = await fetch(ADD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uri })
+    });
+    if (!resp.ok) {
+      const msg = `Ajout impossible (${resp.status})`;
+      setStatus(msg, 'error');
+      btn.disabled = false;
+      return;
+    }
+    const data = await resp.json();
+    if (data.success) {
+      setStatus('Chanson ajoutée à la playlist. Merci !');
+    } else {
+      setStatus(data.message || 'Impossible d\'ajouter la chanson.', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    setStatus('Erreur réseau. Réessayez.', 'error');
+  } finally {
+    setTimeout(() => { btn.disabled = false; }, 1500);
+  }
+}
+
+// Wire events
+$btn.addEventListener('click', () => searchTracks($q.value));
+$q.addEventListener('input', debounce(() => searchTracks($q.value), 500));

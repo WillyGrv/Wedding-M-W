@@ -4,14 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maureen & William - 9-11 Août 2026</title>
-    <!-- Google Fonts: Fraunces (titres) & Nunito Sans (corps/menu) -->
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Additional Fonts (Giona demo style): Cormorant Garamond (headings) & Inter (body) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Calligraphic Display Font for large titles & H2/H3 -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-    <!-- Section-specific Script Font for Aperitivo accent -->
-    <link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
+    <!-- Fonts: Proposal B (Playfair Display, Poppins, Parisienne) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Parisienne&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -122,12 +116,13 @@
                             <img class="invite-icon" src="images/train.png" alt="" aria-hidden="true">
                             Comment ?
                         </h3>
+                         <p class="invite-info-text">Nous vous conseillons de prendre le train puis de louer une voiture à plusieurs.</p>
                         <div class="invite-info-text invite-info-text-train">
                             <p>Montelimar TGV <br>
-                                <i style="font-size:12px;">~30 min. de voiture</i><br>
+                                <i style="font-size:12px;">+ ~30 min. de voiture</i><br>
                             <a class="schedule-link" href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Montelimar+TGV" target="_blank">Voir l'itinéraire</a></p>
                             <p>Valence TGV<br>
-                                 <i style="font-size:12px;">~1h de voiture</i><br>
+                                 <i style="font-size:12px;">+ ~1h de voiture</i><br>
                                 <a class="schedule-link" href="https://www.google.com/maps/dir/?api=1&destination=Gare+de+Valence+TGV" target="_blank">Voir l'itinéraire</a></p>
                         </div>
                     </div>
@@ -160,14 +155,18 @@
                             <div class="logement-card">
                                 <h3>Logements</h3>
                                 <ul class="logement-list">
-                                    <li><span class="bullet">🏠</span><span>Domaine 100% réservé pour les invités</span></li>
+                                    <li><span class="bullet">🏠</span><span>Domaine <b>100% réservé </b>pour les invités</span></li>
                                     <li><span class="bullet">🛏️</span><span>Un lit par personne (chambres partagées 2 à 18 places)</span></li>
                                     <li><span class="bullet">🕔</span><span>Arrivée dimanche 9 août à partir de 17h</span></li>
                                     <li><span class="bullet">🕒</span><span>Départ mardi 11 août après 15h</span></li>
-                                    <li><span class="bullet">💶</span><span>Participation: <span style="font-weight:bold;font-size:18px;">125€ / personne</span> pour 2 nuits</span></li>
+                                    <li><span class="bullet">💶</span><span>Participation: <a href="#" class="contribution-link" id="contributionLink" style="font-weight:bold;font-size:18px;">125€ / personne</a> pour 2 nuits</span></li>
                                     <li><span class="bullet">🚗</span><span>Parking sur place</span></li>
                                 </ul>
-                                <p class="logement-note">La répartition des chambres sera communiquée prochainement.</p>
+                              <h3>Ne pas oublier</h3>
+                                <ul class="logement-list">
+                               <li><span class="bullet">🏊</span><span>Maillots de bain & serviette de bain</span></li>
+                               <li><span class="bullet">🧼</span><span>Shampoing & Savon</span></li>
+                            </ul>
                             </div>
                             <div class="logement-card">
                                 <h3>Thème</h3>
@@ -240,14 +239,14 @@
                     </div>
                     <p class="cagnotte-text">
                       Ce mariage est le début d’une grande aventure… et la prochaine étape sera notre voyage de noces.
-<br>Nous rêvons d’un <b>safari au Kenya</b>, suivi de quelques jours dans un écrin de soleil comme <b>la Réunion, l’île Maurice ou les Seychelles</b>.<br>
-Si vous souhaitez nous offrir un cadeau, une cagnotte a été ouverte pour nous aider à réaliser ce rêve.
+<br>Nous rêvons d’un <b>safari au Kenya ou en Tanzanie</b>, suivi de quelques jours dans un paradis de soleil comme <b>la Réunion, l’île Maurice ou les Seychelles</b>.<br>
+Si vous souhaitez nous offrir un cadeau, une cagnotte Tripee a été ouverte pour nous aider à réaliser ce rêve.
 <br>Merci pour votre amour et votre soutien.
                     </p>
-                    <div class="coming-soon">
-                        <span class="coming-soon-icon">⏳</span>
-                        Informations à venir
-                    </div>
+                    <a style="text-decoration:none;"href="https://tribee.fr/participations/wedding-maureen-william" target="_blank" class="coming-soon">
+        
+                        Cagnotte Tribee
+                    </a>
                 </div>
             </div>
         </div>
@@ -260,6 +259,49 @@ Si vous souhaitez nous offrir un cadeau, une cagnotte a été ouverte pour nous 
         <p class="footer-date">9-11 Août 2026 • Grignan</p>
         <p class="footer-theme">Thème Méditerranéen • Maroc & Provence</p>
     </footer>
+
+    <!-- Contribution modal -->
+    <div class="modal-overlay" id="contributionModal" hidden aria-hidden="true">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="contributionTitle">
+            <button type="button" class="modal-close" id="contributionClose" aria-label="Fermer">×</button>
+            <h3 id="contributionTitle" class="modal-title">Participer à la contribution</h3>
+            <p class="modal-intro">Vous pouvez régler la participation (125€ / personne) via l’un des moyens ci-dessous.</p>
+
+            <div class="modal-grid">
+                <div class="modal-method">
+                    <h4>Lydia</h4>
+                    <p>
+                        <button type="button" class="modal-action" data-copy="0660406703">06 60 40 67 03</button>
+                        <span class="modal-hint">(Lydia / Wero selon votre app)</span>
+                    </p>
+                </div>
+                <div class="modal-method">
+                    <h4>Wero</h4>
+                    <p>
+                        <a href="#" target="_blank" rel="noopener" class="modal-action">Payer via Wero</a>
+                        <span class="modal-hint">(lien à compléter)</span>
+                    </p>
+                </div>
+                <div class="modal-method">
+                    <h4>Revolut</h4>
+                    <p>
+                        <a href="#" target="_blank" rel="noopener" class="modal-action">Payer via Revolut</a>
+                        <span class="modal-hint">(lien à compléter)</span>
+                    </p>
+                </div>
+                <div class="modal-method">
+                    <h4>Virement bancaire</h4>
+                    <p class="modal-bank">
+                        <strong>IBAN:</strong> <span class="bank-value">FRXX XXXX XXXX XXXX XXXX XXXX XXX</span><br>
+                        <strong>BIC:</strong> <span class="bank-value">XXXXXXXX</span><br>
+                        <strong>Motif:</strong> <span class="bank-value">Participation mariage + Nom/Prénom</span>
+                    </p>
+                </div>
+            </div>
+
+            <p class="modal-footnote">Astuce: si vous préférez, vous pouvez aussi nous demander sur WhatsApp et on vous enverra le lien adapté.</p>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

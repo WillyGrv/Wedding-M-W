@@ -1,0 +1,72 @@
+[
+  {
+    "track_name": "Le Festin",
+    "track_artists": ["Camille"],
+    "images": [{"url": "https://picsum.photos/seed/lefestin/200/200"}],
+    "track_uri": "spotify:track:0000000000001",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "Get Lucky",
+    "track_artists": ["Daft Punk", "Pharrell Williams"],
+    "images": [{"url": "https://picsum.photos/seed/getlucky/200/200"}],
+    "track_uri": "spotify:track:0000000000002",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "Valerie",
+    "track_artists": ["Amy Winehouse"],
+    "images": [{"url": "https://picsum.photos/seed/valerie/200/200"}],
+    "track_uri": "spotify:track:0000000000003",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "Dancing Queen",
+    "track_artists": ["ABBA"],
+    "images": [{"url": "https://picsum.photos/seed/dancingqueen/200/200"}],
+    "track_uri": "spotify:track:0000000000004",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "Marry You",
+    "track_artists": ["Bruno Mars"],
+    "images": [{"url": "https://picsum.photos/seed/marryyou/200/200"}],
+    "track_uri": "spotify:track:0000000000005",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "De l\u2019amour",
+    "track_artists": ["Zaz"],
+    "images": [{"url": "https://picsum.photos/seed/delamour/200/200"}],
+    "track_uri": "spotify:track:0000000000006",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "Someone Like You",
+    "track_artists": ["Adele"],
+    "images": [{"url": "https://picsum.photos/seed/someonelikeyou/200/200"}],
+    "track_uri": "spotify:track:0000000000007",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "At Last",
+    "track_artists": ["Etta James"],
+    "images": [{"url": "https://picsum.photos/seed/atlast/200/200"}],
+    "track_uri": "spotify:track:0000000000008",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "Shape of You",
+    "track_artists": ["Ed Sheeran"],
+    "images": [{"url": "https://picsum.photos/seed/shapeofyou/200/200"}],
+    "track_uri": "spotify:track:0000000000009",
+    "track_preview_url": ""
+  },
+  {
+    "track_name": "La Vie en Rose",
+    "track_artists": ["Edith Piaf"],
+    "images": [{"url": "https://picsum.photos/seed/lavieenrose/200/200"}],
+    "track_uri": "spotify:track:000000000000A",
+    "track_preview_url": ""
+  }
+]

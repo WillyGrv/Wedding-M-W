@@ -244,6 +244,88 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
+// CONTRIBUTION MODAL (125€/personne)
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const link = document.getElementById('contributionLink');
+    const modal = document.getElementById('contributionModal');
+    const closeBtn = document.getElementById('contributionClose');
+    const dialog = modal ? modal.querySelector('.modal-dialog') : null;
+    if (!link || !modal || !closeBtn) return;
+
+    let lastActiveElement = null;
+
+    function openModal(e) {
+        if (e) e.preventDefault();
+        lastActiveElement = document.activeElement;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        closeBtn.focus();
+    }
+
+    function closeModal() {
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
+            lastActiveElement.focus();
+        }
+    }
+
+    // Force a safe initial state (in case HTML was edited and the modal is visible)
+    closeModal();
+
+    link.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeModal();
+    });
+
+    // Prevent clicks inside dialog from closing the modal
+    if (dialog) {
+        dialog.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    // Click outside dialog closes (robust even if target isn't exactly the overlay)
+    modal.addEventListener('click', (e) => {
+        if (!dialog) {
+            closeModal();
+            return;
+        }
+        // If click is outside dialog, close
+        if (!dialog.contains(e.target)) closeModal();
+    });
+
+    // Prevent placeholder links in the modal from jumping to top (#)
+    modal.querySelectorAll('a[href="#"]').forEach((a) => {
+        a.addEventListener('click', (e) => e.preventDefault());
+    });
+
+    // Copy helper (for Lydia/Wero phone, etc.)
+    modal.querySelectorAll('[data-copy]').forEach((el) => {
+        el.addEventListener('click', async () => {
+            const value = el.getAttribute('data-copy') || '';
+            try {
+                await navigator.clipboard.writeText(value);
+                el.textContent = 'Copié !';
+                setTimeout(() => { el.textContent = '06 60 40 67 03'; }, 1200);
+            } catch {
+                // Clipboard may fail depending on browser context
+            }
+        });
+    });
+
+    // ESC closes
+    function onKeyDown(e) {
+        if (!modal.hidden && e.key === 'Escape') closeModal();
+    }
+    document.addEventListener('keydown', onKeyDown);
+});
+
+// ==========================================
 // SCROLL ANIMATIONS (Fade in on scroll)
 // ==========================================
 

@@ -1,0 +1,9 @@
+{
+  "name": "wedding-m-w",
+  "private": true,
+  "description": "Static wedding site + optional local Spotify proxy server",
+  "scripts": {
+    "server:start": "npm --prefix server run start",
+    "server:dev": "npm --prefix server run dev"
+  }
+}
