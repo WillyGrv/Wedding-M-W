@@ -552,6 +552,44 @@ app.get('/api/search', searchLimiter, async (req, res) => {
   return res.json({ items: filtered });
 });
 
+// GET /api/track/:id
+// Exact Spotify track lookup, used by the admin UI to display name/artist when the log only stores a URI.
+app.get('/api/track/:id', async (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim();
+    if (!id) return res.status(400).json({ error: 'Missing id' });
+
+    if (!isSpotifyConfigured()) {
+      return res.status(500).json({ error: 'spotify_not_configured' });
+    }
+
+    const accessToken = await getSpotifyAccessToken();
+    const r = await fetch(`https://api.spotify.com/v1/tracks/${encodeURIComponent(id)}`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    if (r.status === 404) return res.status(404).json({ error: 'not_found' });
+    if (!r.ok) {
+      const text = await r.text().catch(() => '');
+      return res.status(r.status).json({ error: 'spotify_error', details: text });
+    }
+
+    const t = await r.json();
+    return res.json({
+      id: t.id,
+      uri: t.uri,
+      name: t.name,
+      artists: (t.artists || []).map(a => a.name),
+      album: t.album?.name || '',
+      imageUrl: t.album?.images?.[1]?.url || t.album?.images?.[0]?.url || '',
+      preview_url: t.preview_url || ''
+    });
+  } catch (err) {
+    console.error('GET /api/track/:id error', err);
+    return res.status(500).json({ error: 'server_error' });
+  }
+});
+
 // ADMIN: list requests (optionally filter by status)
 // GET /api/admin/requests?status=pending|confirmed|all
 app.get('/api/admin/requests', (req, res) => {
@@ -635,6 +673,51 @@ app.post('/api/admin/manual-added', (req, res) => {
   entry.manualAddedAt = Date.now();
   writeJSON(logFile, items);
   return res.json({ success: true, manualAddedAt: entry.manualAddedAt });
+});
+
+// ADMIN: delete a request
+// POST /api/admin/delete { uri }
+app.post('/api/admin/delete', (req, res) => {
+  const { uri } = req.body || {};
+  if (!uri) return res.status(400).json({ success: false, message: 'Missing uri' });
+
+  let log;
+  try {
+    log = readJSON(logFile);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+
+  const items = Array.isArray(log) ? log : [];
+  const idx = items.findIndex(e => e && e.uri === uri);
+  if (idx === -1) return res.status(404).json({ success: false, message: 'Not found' });
+
+  items.splice(idx, 1);
+  writeJSON(logFile, items);
+  return res.json({ success: true });
+});
+
+// Backwards-compatible alias
+app.post('/api/admin/remove', (req, res) => {
+  const { uri } = req.body || {};
+  if (!uri) return res.status(400).json({ success: false, message: 'Missing uri' });
+
+  let log;
+  try {
+    log = readJSON(logFile);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+
+  const items = Array.isArray(log) ? log : [];
+  const idx = items.findIndex(e => e && e.uri === uri);
+  if (idx === -1) return res.status(404).json({ success: false, message: 'Not found' });
+
+  items.splice(idx, 1);
+  writeJSON(logFile, items);
+  return res.json({ success: true });
 });
 
 // POST /api/add-track { uri }

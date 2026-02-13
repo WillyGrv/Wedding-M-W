@@ -15,7 +15,7 @@ const DELETE_ENDPOINTS = [
   `${API_BASE}/api/admin/remove`
 ];
 const MANUAL_ADDED_ENDPOINT = `${API_BASE}/api/admin/manual-added`;
-const SEARCH_ENDPOINT = `${API_BASE}/api/search`;
+const TRACK_ENDPOINT = `${API_BASE}/api/track`;
 
 const $list = document.getElementById('adminList');
 const $msg = document.getElementById('adminStatusMsg');
@@ -79,22 +79,20 @@ function getSpotifyTrackIdFromUri(uri) {
 async function fetchTrackById(trackId) {
   if (!trackId) return null;
   try {
-    const url = new URL(SEARCH_ENDPOINT, location.href);
-    // Spotify search is text-based. Using the URI tends to match the exact track reliably.
-    url.searchParams.set('q', `spotify:track:${trackId}`);
-    url.searchParams.set('limit', '5');
-
-    const resp = await fetch(url.toString());
+    const resp = await fetch(`${TRACK_ENDPOINT}/${encodeURIComponent(trackId)}`);
     if (!resp.ok) return null;
 
-    const data = await resp.json();
-    const items = data.items || data.tracks || [];
-    // /api/search returns either { items: [...] } (frontend-normalized) or { tracks: { items:[...] } } (spotify paging)
-    const list = Array.isArray(items)
-      ? items
-      : (Array.isArray(items.items) ? items.items : []);
-    const best = list.find(t => (t.id && t.id === trackId) || (t.uri && t.uri === `spotify:track:${trackId}`));
-    return best || null;
+    const t = await resp.json();
+    // Normalize to the shape expected elsewhere in this file
+    return {
+      id: t.id,
+      uri: t.uri,
+      name: t.name,
+      artists: t.artists || [],
+      album: t.album || '',
+      imageUrl: t.imageUrl || '',
+      preview_url: t.preview_url || ''
+    };
   } catch {
     return null;
   }
