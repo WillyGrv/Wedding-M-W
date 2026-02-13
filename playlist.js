@@ -1,12 +1,15 @@
 // Minimal front-end for Spotify search and add-to-playlist via backend proxy
 // Configure your backend base URL:
-// - If deployed under the same domain with /api routes, leave API_BASE = '' (relative)
-// - Else set API_BASE to your server URL, e.g. 'https://playlist.yourdomain.com'
-// In local dev, the backend runs on localhost:8888.
-// In production (same domain), set this back to '' or to your deployed API origin.
-const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-  ? 'http://localhost:8888'
-  : '';
+// - Local dev: http://localhost:8888
+// - GitHub Pages: set to your deployed backend (Render/Railway/etc.)
+// - Same-origin deployments (frontend + backend on same domain): set to ''
+//
+// ✅ Update this value after deploying your backend (Render):
+const PROD_API_BASE = 'https://wedding-m-w.onrender.com';
+
+const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+const isGitHubPages = location.hostname.endsWith('.github.io');
+const API_BASE = isLocal ? 'http://localhost:8888' : (isGitHubPages ? PROD_API_BASE : '');
 const SEARCH_ENDPOINT = `${API_BASE}/api/search`;
 const ADD_ENDPOINT = `${API_BASE}/api/add-track`;
 
