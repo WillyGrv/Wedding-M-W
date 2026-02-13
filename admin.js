@@ -8,7 +8,12 @@ const API_BASE = isLocal ? 'http://localhost:8888' : (isGitHubPages ? PROD_API_B
 
 const LIST_ENDPOINT = `${API_BASE}/api/admin/requests`;
 const CONFIRM_ENDPOINT = `${API_BASE}/api/admin/confirm`;
-const DELETE_ENDPOINT = `${API_BASE}/api/admin/delete`;
+// Render backend doesn't currently expose /api/admin/delete in prod (was renamed previously).
+// We'll try common variants to stay compatible.
+const DELETE_ENDPOINTS = [
+  `${API_BASE}/api/admin/delete`,
+  `${API_BASE}/api/admin/remove`
+];
 const MANUAL_ADDED_ENDPOINT = `${API_BASE}/api/admin/manual-added`;
 const SEARCH_ENDPOINT = `${API_BASE}/api/search`;
 
@@ -84,7 +89,10 @@ async function fetchTrackById(trackId) {
 
     const data = await resp.json();
     const items = data.items || data.tracks || [];
-    const list = Array.isArray(items) ? items : (items.items || []);
+    // /api/search returns either { items: [...] } (frontend-normalized) or { tracks: { items:[...] } } (spotify paging)
+    const list = Array.isArray(items)
+      ? items
+      : (Array.isArray(items.items) ? items.items : []);
     const best = list.find(t => (t.id && t.id === trackId) || (t.uri && t.uri === `spotify:track:${trackId}`));
     return best || null;
   } catch {
@@ -354,11 +362,26 @@ async function remove(uri, btn) {
   setMsg('Suppression en cours…');
 
   try {
-    const resp = await fetch(DELETE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uri })
-    });
+    let resp = null;
+    for (const endpoint of DELETE_ENDPOINTS) {
+      // eslint-disable-next-line no-await-in-loop
+      const r = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uri })
+      });
+      // If endpoint doesn't exist, try next
+      if (r.status === 404) continue;
+      resp = r;
+      break;
+    }
+
+    if (!resp) {
+      setMsg('Suppression indisponible (endpoint introuvable côté serveur).', 'error');
+      btn.textContent = original;
+      btn.disabled = false;
+      return;
+    }
 
     if (resp.status === 404) {
       setMsg('Demande introuvable (déjà supprimée ?).', 'error');
