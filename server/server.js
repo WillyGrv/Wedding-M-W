@@ -240,7 +240,7 @@ app.get('/api/auth/login', (_req, res) => {
     client_id: SPOTIFY_CLIENT_ID,
     response_type: 'code',
     redirect_uri: SPOTIFY_REDIRECT_URI,
-    scope: 'playlist-modify-public',
+    scope: 'playlist-modify-public playlist-modify-private',
     show_dialog: 'true'
   });
   return res.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
