@@ -16,6 +16,9 @@ const PORT = process.env.PORT || 8888;
 // Spotify (Client Credentials) token cache
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+const SPOTIFY_REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN;
+const SPOTIFY_PLAYLIST_ID = process.env.SPOTIFY_PLAYLIST_ID;
+const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
 
 /**
  * In-memory token cache.
@@ -28,6 +31,76 @@ const spotifyTokenCache = {
 
 function isSpotifyConfigured() {
   return Boolean(SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET);
+}
+
+function isSpotifyUserConfigured() {
+  return Boolean(isSpotifyConfigured() && SPOTIFY_REFRESH_TOKEN && SPOTIFY_PLAYLIST_ID);
+}
+
+// User token cache (Authorization Code flow via refresh_token)
+const spotifyUserTokenCache = {
+  accessToken: null,
+  expiresAtMs: 0
+};
+
+async function fetchSpotifyUserAccessToken() {
+  if (!isSpotifyUserConfigured()) {
+    throw new Error('Spotify user credentials are not configured (SPOTIFY_REFRESH_TOKEN/PLAYLIST_ID)');
+  }
+
+  const basic = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
+  const resp = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${basic}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: SPOTIFY_REFRESH_TOKEN
+    })
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => '');
+    throw new Error(`Spotify refresh_token request failed (${resp.status}): ${text}`);
+  }
+
+  const data = await resp.json();
+  const accessToken = data.access_token;
+  const expiresInSec = Number(data.expires_in || 3600);
+  if (!accessToken) throw new Error('Spotify refresh response missing access_token');
+
+  const skewSec = Math.min(300, Math.max(60, Math.floor(expiresInSec * 0.1)));
+  spotifyUserTokenCache.accessToken = accessToken;
+  spotifyUserTokenCache.expiresAtMs = Date.now() + Math.max(0, (expiresInSec - skewSec)) * 1000;
+
+  return accessToken;
+}
+
+async function getSpotifyUserAccessToken() {
+  if (spotifyUserTokenCache.accessToken && Date.now() < spotifyUserTokenCache.expiresAtMs) {
+    return spotifyUserTokenCache.accessToken;
+  }
+  return fetchSpotifyUserAccessToken();
+}
+
+async function spotifyAddTrackToPlaylist({ playlistId, trackUri }) {
+  const token = await getSpotifyUserAccessToken();
+  const resp = await fetch(`https://api.spotify.com/v1/playlists/${encodeURIComponent(playlistId)}/tracks`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ uris: [trackUri] })
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => '');
+    throw new Error(`Spotify add-to-playlist failed (${resp.status}): ${text}`);
+  }
+  return resp.json();
 }
 
 async function fetchSpotifyAccessToken() {
@@ -143,11 +216,88 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/debug/token-status', (_req, res) => {
   const now = Date.now();
   const expiresInMs = spotifyTokenCache.expiresAtMs ? (spotifyTokenCache.expiresAtMs - now) : 0;
+  const userExpiresInMs = spotifyUserTokenCache.expiresAtMs ? (spotifyUserTokenCache.expiresAtMs - now) : 0;
   return res.json({
     configured: isSpotifyConfigured(),
+    userConfigured: isSpotifyUserConfigured(),
     cached: Boolean(spotifyTokenCache.accessToken) && now < spotifyTokenCache.expiresAtMs,
-    expiresInSec: Math.max(0, Math.floor(expiresInMs / 1000))
+    expiresInSec: Math.max(0, Math.floor(expiresInMs / 1000)),
+    userCached: Boolean(spotifyUserTokenCache.accessToken) && now < spotifyUserTokenCache.expiresAtMs,
+    userExpiresInSec: Math.max(0, Math.floor(userExpiresInMs / 1000))
   });
+});
+
+// Spotify OAuth (Authorization Code) to obtain a refresh token (one-time setup)
+// Visit /api/auth/login, approve, then /api/auth/callback will show the refresh_token.
+app.get('/api/auth/login', (_req, res) => {
+  if (!isSpotifyConfigured()) {
+    return res.status(500).send('Spotify client credentials not configured (SPOTIFY_CLIENT_ID/SECRET).');
+  }
+  if (!SPOTIFY_REDIRECT_URI) {
+    return res.status(500).send('Missing SPOTIFY_REDIRECT_URI in environment.');
+  }
+  const params = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: SPOTIFY_REDIRECT_URI,
+    scope: 'playlist-modify-public',
+    show_dialog: 'true'
+  });
+  return res.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
+});
+
+app.get('/api/auth/callback', async (req, res) => {
+  const code = String(req.query.code || '');
+  const error = String(req.query.error || '');
+  if (error) return res.status(400).send(`Spotify auth error: ${error}`);
+  if (!code) return res.status(400).send('Missing ?code');
+
+  if (!SPOTIFY_REDIRECT_URI) {
+    return res.status(500).send('Missing SPOTIFY_REDIRECT_URI in environment.');
+  }
+
+  try {
+    const basic = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
+    const resp = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${basic}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: SPOTIFY_REDIRECT_URI
+      })
+    });
+
+    const text = await resp.text();
+    if (!resp.ok) {
+      return res.status(500).send(`Token exchange failed (${resp.status}):\n${text}`);
+    }
+
+    const data = JSON.parse(text);
+    const refreshToken = data.refresh_token;
+    if (!refreshToken) {
+      return res.status(500).send(
+        'No refresh_token returned by Spotify.\n'
+        + 'Try again with show_dialog=true (already set).'
+      );
+    }
+
+    return res
+      .status(200)
+      .type('text/plain')
+      .send(
+        '✅ Spotify refresh token obtained.\n\n'
+        + 'Add this to Render Environment Variables (recommended) or server/.env:\n'
+        + `SPOTIFY_REFRESH_TOKEN=${refreshToken}\n\n`
+        + `Redirect URI used: ${SPOTIFY_REDIRECT_URI}\n`
+      );
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send(`Unexpected error: ${err.message}`);
+  }
 });
 
 // GET /api/search?q=...&limit=...
@@ -218,9 +368,29 @@ app.get('/api/admin/requests', (req, res) => {
 
 // ADMIN: confirm a request
 // POST /api/admin/confirm { uri }
-app.post('/api/admin/confirm', (req, res) => {
+app.post('/api/admin/confirm', async (req, res) => {
   const { uri } = req.body || {};
   if (!uri) return res.status(400).json({ success: false, message: 'Missing uri' });
+
+  // First try to add to Spotify (if configured). We only confirm if Spotify succeeds.
+  if (isSpotifyUserConfigured()) {
+    try {
+      await spotifyAddTrackToPlaylist({ playlistId: SPOTIFY_PLAYLIST_ID, trackUri: uri });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        error: 'spotify_add_failed',
+        message: err.message
+      });
+    }
+  } else {
+    return res.status(500).json({
+      success: false,
+      error: 'spotify_not_configured',
+      message: 'Spotify playlist add is not configured (need SPOTIFY_REFRESH_TOKEN + SPOTIFY_PLAYLIST_ID).'
+    });
+  }
 
   let log;
   try {
