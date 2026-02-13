@@ -10,6 +10,7 @@ const LIST_ENDPOINT = `${API_BASE}/api/admin/requests`;
 const CONFIRM_ENDPOINT = `${API_BASE}/api/admin/confirm`;
 const DELETE_ENDPOINT = `${API_BASE}/api/admin/delete`;
 const MANUAL_ADDED_ENDPOINT = `${API_BASE}/api/admin/manual-added`;
+const SEARCH_ENDPOINT = `${API_BASE}/api/search`;
 
 const $list = document.getElementById('adminList');
 const $msg = document.getElementById('adminStatusMsg');
@@ -54,12 +55,67 @@ async function load() {
     const data = await resp.json();
     const items = data.items || [];
 
-    render(items);
+    // If the backend didn't persist track metadata (only URI), resolve it on the fly for nicer admin display.
+    const enriched = await enrichEntriesWithTrack(items);
+    render(enriched);
     setMsg(`Demandes: ${items.length}`);
   } catch (err) {
     console.error(err);
     setMsg('Impossible de charger les demandes (serveur non joignable ?).', 'error');
   }
+}
+
+function getSpotifyTrackIdFromUri(uri) {
+  if (!uri) return '';
+  if (uri.startsWith('spotify:track:')) return uri.replace('spotify:track:', '');
+  return '';
+}
+
+async function fetchTrackById(trackId) {
+  if (!trackId) return null;
+  try {
+    const url = new URL(SEARCH_ENDPOINT, location.href);
+    url.searchParams.set('q', trackId);
+    url.searchParams.set('limit', '5');
+
+    const resp = await fetch(url.toString());
+    if (!resp.ok) return null;
+
+    const data = await resp.json();
+    const items = data.items || data.tracks || [];
+    const best = items.find(t => (t.id && t.id === trackId) || (t.uri && t.uri === `spotify:track:${trackId}`));
+    return best || null;
+  } catch {
+    return null;
+  }
+}
+
+async function enrichEntriesWithTrack(items) {
+  // Only enrich rows that don't already have track info.
+  const needs = items.filter(e => !e.track || (!e.track.name && !e.track.artists));
+  if (!needs.length) return items;
+
+  // Dedupe by trackId to avoid spamming the API.
+  const ids = Array.from(new Set(needs.map(e => getSpotifyTrackIdFromUri(e.uri)).filter(Boolean)));
+
+  const map = new Map();
+  // Small concurrency to keep things snappy & polite.
+  const batchSize = 4;
+  for (let i = 0; i < ids.length; i += batchSize) {
+    const batch = ids.slice(i, i + batchSize);
+    const results = await Promise.all(batch.map(fetchTrackById));
+    results.forEach((track, idx) => {
+      if (track) map.set(batch[idx], track);
+    });
+  }
+
+  return items.map(e => {
+    if (e.track && (e.track.name || (e.track.artists && e.track.artists.length))) return e;
+    const id = getSpotifyTrackIdFromUri(e.uri);
+    const track = map.get(id);
+    if (!track) return e;
+    return { ...e, track };
+  });
 }
 
 function render(items) {
@@ -80,9 +136,10 @@ function render(items) {
 
     const track = entry.track;
     const hasTrack = track && (track.name || (track.artists && track.artists.length));
+    const shortId = getSpotifyTrackIdFromUri(entry.uri);
     const title = hasTrack
       ? `${track.name || ''}`
-      : (entry.uri || '');
+      : (shortId ? `Track ${shortId.slice(0, 10)}…` : (entry.uri || ''));
     const subtitle = hasTrack
       ? `${(track.artists || []).join(', ')}${track.album ? ` • ${track.album}` : ''}`
       : '';
