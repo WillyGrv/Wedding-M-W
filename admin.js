@@ -75,7 +75,8 @@ async function fetchTrackById(trackId) {
   if (!trackId) return null;
   try {
     const url = new URL(SEARCH_ENDPOINT, location.href);
-    url.searchParams.set('q', trackId);
+    // Spotify search is text-based. Using the URI tends to match the exact track reliably.
+    url.searchParams.set('q', `spotify:track:${trackId}`);
     url.searchParams.set('limit', '5');
 
     const resp = await fetch(url.toString());
@@ -83,7 +84,8 @@ async function fetchTrackById(trackId) {
 
     const data = await resp.json();
     const items = data.items || data.tracks || [];
-    const best = items.find(t => (t.id && t.id === trackId) || (t.uri && t.uri === `spotify:track:${trackId}`));
+    const list = Array.isArray(items) ? items : (items.items || []);
+    const best = list.find(t => (t.id && t.id === trackId) || (t.uri && t.uri === `spotify:track:${trackId}`));
     return best || null;
   } catch {
     return null;
