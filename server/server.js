@@ -582,25 +582,9 @@ app.post('/api/admin/confirm', async (req, res) => {
   const { uri } = req.body || {};
   if (!uri) return res.status(400).json({ success: false, message: 'Missing uri' });
 
-  // First try to add to Spotify (if configured). We only confirm if Spotify succeeds.
-  if (isSpotifyUserConfigured()) {
-    try {
-      await spotifyAddTrackToPlaylist({ playlistId: SPOTIFY_PLAYLIST_ID, trackUri: uri });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        success: false,
-        error: 'spotify_add_failed',
-        message: err.message
-      });
-    }
-  } else {
-    return res.status(500).json({
-      success: false,
-      error: 'spotify_not_configured',
-      message: 'Spotify playlist add is not configured (need SPOTIFY_REFRESH_TOKEN + SPOTIFY_PLAYLIST_ID).'
-    });
-  }
+  // Fallback mode: Spotify write is currently blocked (403) for this app/token.
+  // We still confirm the request in our log and provide an URL so the admin can add manually.
+  // If Spotify add ever becomes available again, you can re-enable the API call here.
 
   let log;
   try {
@@ -617,7 +601,16 @@ app.post('/api/admin/confirm', async (req, res) => {
   entry.status = 'confirmed';
   entry.confirmedAt = Date.now();
   writeJSON(logFile, items);
-  return res.json({ success: true });
+
+  const spotifyOpenUrl = uri.startsWith('spotify:track:')
+    ? `https://open.spotify.com/track/${encodeURIComponent(uri.replace('spotify:track:', ''))}`
+    : null;
+
+  return res.json({
+    success: true,
+    mode: 'manual',
+    spotifyOpenUrl
+  });
 });
 
 // POST /api/add-track { uri }

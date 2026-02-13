@@ -167,8 +167,19 @@ async function confirm(uri, btn) {
       return;
     }
 
+    const data = await resp.json().catch(() => ({}));
     btn.textContent = 'Confirmé ✓';
-    setMsg('Demande confirmée.');
+
+    if (data && data.spotifyOpenUrl) {
+      setMsg('Confirmé. Ouverture de Spotify pour ajout manuel…');
+      try {
+        window.open(data.spotifyOpenUrl, '_blank', 'noopener');
+      } catch {
+        // If popup blocked, user can still copy the URL from the item.
+      }
+    } else {
+      setMsg('Demande confirmée.');
+    }
 
     // refresh list to reflect status + timestamps
     setTimeout(load, 250);
