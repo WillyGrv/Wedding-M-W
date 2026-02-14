@@ -1100,12 +1100,14 @@ section:not(.hero) {
 .invite-title {
     font-family: var(--font-heading);
     font-size: 3rem;
+    font-weight: 100;
     line-height: 1.1;
     color: var(--text);
     letter-spacing: 0.5px;
 }
 .invite-script {
-    font-family: var(--font-script);
+    /* Requested: use Playfair for subsection script */
+    font-family: 'Playfair Display', serif;
     font-size: 3rem;
     color: #2F4A3C;
     margin-top: -1.3rem;
@@ -1114,12 +1116,13 @@ section:not(.hero) {
 .invite-title-white {
     font-family: var(--font-heading);
     font-size: 3rem;
+    font-weight: 100;
     line-height: 1.1;
     color:#fff;
     letter-spacing: 0.5px;
 }
 .invite-script-white {
-    font-family: var(--font-script);
+    font-family: 'Playfair Display', serif;
     font-size: 3rem;
     color:var(--cream);
     margin-top: -1.3rem;
