@@ -244,6 +244,60 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
+// MOBILE BURGER MENU
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const nav = document.getElementById('mainNav');
+    const burger = document.getElementById('navBurger');
+    const mobileNav = document.getElementById('mobileNav');
+    if (!nav || !burger || !mobileNav) return;
+
+    function isOpen() {
+        return nav.classList.contains('is-mobile-open');
+    }
+
+    function open() {
+        nav.classList.add('is-mobile-open');
+        burger.setAttribute('aria-expanded', 'true');
+        mobileNav.setAttribute('aria-hidden', 'false');
+    }
+
+    function close() {
+        nav.classList.remove('is-mobile-open');
+        burger.setAttribute('aria-expanded', 'false');
+        mobileNav.setAttribute('aria-hidden', 'true');
+    }
+
+    burger.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (isOpen()) close(); else open();
+    });
+
+    // Close when clicking a link
+    mobileNav.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener('click', () => close());
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (!isOpen()) return;
+        if (nav.contains(e.target)) return;
+        close();
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isOpen()) close();
+    });
+
+    // Defensive: close when going back to desktop width
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && isOpen()) close();
+    });
+});
+
+// ==========================================
 // CONTRIBUTION MODAL (125€/personne)
 // ==========================================
 

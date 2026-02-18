@@ -13,12 +13,25 @@
     
     <!-- Navigation -->
     <nav id="mainNav">
+        <button class="nav-burger" id="navBurger" type="button" aria-label="Ouvrir le menu" aria-controls="mobileNav" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <ul>
             <li><a href="#rsvp">RSVP & Infos</a></li>
             <li><a href="#logements">Logements</a></li>
             <li><a href="#cagnotte">Cagnotte</a></li>
             <li><a href="#playlist">Playlist</a></li>
         </ul>
+
+        <!-- Mobile drawer nav (hidden on desktop) -->
+        <div class="mobile-nav" id="mobileNav" aria-hidden="true">
+            <a href="#rsvp">RSVP & Infos</a>
+            <a href="#logements">Logements</a>
+            <a href="#cagnotte">Cagnotte</a>
+            <a href="#playlist">Playlist</a>
+        </div>
     </nav>
 
     <!-- Hero Section -->
@@ -159,9 +172,9 @@
                                 <ul class="logement-list">
                                     <li><span class="bullet">🏠</span><span>Domaine <b><u>100% déja réservé </u></b>pour les invités. L'attribution des chambres sera communiqué prochainement.</span></li>
                                     <li><span class="bullet">🛏️</span><span>Tout le monde a un lit déjà disponible (chambres partagées 2 à 18 places)</span></li>
-                                    <li><span class="bullet">💶</span><span>Participation logement: <a href="#" class="contribution-link" id="contributionLink" style="font-weight:bold;font-size:18px;">125€ / personne</a> pour 2 nuits</span></li>
+                                    <li><span class="bullet">💶</span><span>Participation logement: <a href="#" class="contribution-link" id="contributionLink" style="font-weight:bold;font-size:18px;">125€ / personne</a> <span class="contribution-nudge" aria-hidden="true">👈 Cliquez ici</span> pour 2 nuits</span></li>
                                     <li><span class="bullet">🕔</span><span>Arrivée dimanche 9 août à partir de 17h</span></li>
-                                    <li><span class="bullet">🕒</span><span>Départ mardi 11 août après 15h</span></li>
+                                    <li><span class="bullet">🕒</span><span>Libération des chambres à 12h & départ max le mardi 11 août à 16h</span></li>
                             
                                     <li><span class="bullet">🚗</span><span>Parking sur place</span></li>
                                 </ul>
@@ -169,7 +182,7 @@
                             </div>
                             <div class="logement-card">
                                 <h3>Thème</h3>
-                                <p><strong>Provence · Maroc</strong> — ambiance chaleureuse, naturelle et solaire.</p>
+                                <p><strong>Méditerranéen (Provence Maroc</strong> — ambiance chaleureuse, naturelle et solaire.</p>
                                 <div class="theme-groups">
                                                         
                                                         <div class="theme-group" style="margin-top:1rem;">
@@ -292,30 +305,30 @@ Si vous souhaitez nous offrir un cadeau, une cagnotte Tribee a été ouverte pou
                 <div class="modal-method">
                     <h4>Lydia</h4>
                     <p>
-                        <button type="button" class="modal-action" data-copy="0660406703">06 60 40 67 03</button>
-                        <span class="modal-hint">(Lydia / Wero selon votre app)</span>
+                        <a type="button" class="modal-action" href="https://pay.lydia.me/l?t=williamg06x4" target="_blank">06 60 40 67 03</a>
+                        
                     </p>
                 </div>
                 <div class="modal-method">
                     <h4>Wero</h4>
                     <p>
-                        <a href="#" target="_blank" rel="noopener" class="modal-action">Payer via Wero</a>
-                        <span class="modal-hint">(lien à compléter)</span>
+                        <a href="https://share.weropay.eu/p/1/c/8lsDCa9p7T" target="_blank" rel="noopener" class="modal-action">Payer via Wero</a>
+                       
                     </p>
                 </div>
                 <div class="modal-method">
                     <h4>Revolut</h4>
                     <p>
-                        <a href="#" target="_blank" rel="noopener" class="modal-action">Payer via Revolut</a>
-                        <span class="modal-hint">(lien à compléter)</span>
+                        <a href="https://revolut.me/willia7vj" target="_blank" rel="noopener" class="modal-action">Payer via Revolut</a>
+                        
                     </p>
                 </div>
                 <div class="modal-method">
                     <h4>Virement bancaire</h4>
                     <p class="modal-bank">
-                        <strong>IBAN:</strong> <span class="bank-value">FRXX XXXX XXXX XXXX XXXX XXXX XXX</span><br>
-                        <strong>BIC:</strong> <span class="bank-value">XXXXXXXX</span><br>
-                        <strong>Motif:</strong> <span class="bank-value">Participation mariage + Nom/Prénom</span>
+                        <strong>IBAN:</strong> <span class="bank-value">FR76 1807 9132 3802 3090 3034 044</span><br>
+                        <strong>BIC:</strong> <span class="bank-value">CCDFFRPPXXX</span><br>
+                        <strong>Motif:</strong> <span class="bank-value">Nom/Prénom</span>
                     </p>
                 </div>
             </div>

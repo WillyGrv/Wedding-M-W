@@ -264,6 +264,7 @@ padding: 1rem 2.2rem;
 
 .playlist-section .spotify-search {
     display: flex;
+    justify-content:center;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-bottom: 1rem;
@@ -725,6 +726,109 @@ nav ul {
     flex-wrap: wrap;
 }
 
+/* -----------------------
+   Mobile burger nav
+   (desktop remains unchanged)
+   ----------------------- */
+.nav-burger {
+    display: none;
+    -webkit-tap-highlight-color: transparent;
+    border: 0;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(8px);
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+}
+
+.nav-burger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: rgba(0,0,0,0.75);
+    border-radius: 2px;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+nav.is-mobile-open .nav-burger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+nav.is-mobile-open .nav-burger span:nth-child(2) {
+    opacity: 0;
+}
+nav.is-mobile-open .nav-burger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+.mobile-nav {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    nav {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0.7rem 1rem;
+    }
+
+    nav ul {
+        display: none; /* hide desktop menu only on mobile */
+    }
+
+    .nav-burger {
+        display: inline-flex;
+    }
+
+    .mobile-nav {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 12px;
+        width: min(320px, calc(100vw - 24px));
+        background: rgba(var(--cream-rgb), 0.97);
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+        border-radius: 16px;
+        padding: 0.7rem;
+        display: grid;
+        gap: 0.25rem;
+        transform-origin: top right;
+        transform: scale(0.98) translateY(-4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        z-index: 1001;
+    }
+
+    nav.is-mobile-open .mobile-nav {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        pointer-events: auto;
+    }
+
+    .mobile-nav a {
+        display: block;
+        padding: 0.85rem 0.9rem;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #333;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        background: rgba(255,255,255,0.65);
+    }
+    .mobile-nav a:active {
+        transform: scale(0.99);
+    }
+}
+
 nav a {
     text-decoration: none;
     color: #333;
@@ -759,7 +863,57 @@ nav a::after {
     cursor: pointer;
 }
 .contribution-link:hover {
-    color: var(--sage);
+    color: #FFF;
+}
+
+/* Small animated hint next to the 125€/person link */
+.contribution-nudge {
+    display: inline-block;
+    margin: 0 0.25rem 0 0.5rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(var(--cream-rgb), 0.85);
+    color: var(--burgundy);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    transform-origin: left center;
+    animation: contributionPulse 3.4s ease-in-out infinite;
+}
+
+@keyframes contributionPulse {
+    0%, 72% {
+        transform: scale(1);
+        opacity: 1;
+        filter: none;
+    }
+    76% {
+        transform: scale(1.14);
+        opacity: 1;
+    }
+    80% {
+        transform: scale(1.06);
+        opacity: 0.25; /* quick blink */
+    }
+    84% {
+        transform: scale(1.16);
+        opacity: 1;
+        filter: drop-shadow(0 6px 22px rgba(201,123,99,0.35));
+    }
+    90% {
+        transform: scale(1);
+        opacity: 1;
+        filter: none;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contribution-nudge {
+        animation: none;
+    }
 }
 
 .modal-overlay {
@@ -1077,6 +1231,13 @@ section:not(.hero) {
     align-items: center;
 }
 
+/* Mobile: reduce side padding to avoid cramped layouts */
+@media (max-width: 768px) {
+    section:not(.hero) {
+        padding: 2.2rem 1.1rem;
+    }
+}
+
 .container {
     max-width: 1200px;
     width: 100%;
@@ -1220,6 +1381,35 @@ section:not(.hero) {
     .invite-script { font-size: 2.2rem; margin-top: -0.3rem; }
     .invite-grid { grid-template-columns: 1fr; gap: 2rem; }
     .invite-image img { max-height: 520px; }
+    .invite-info { margin-top: 0; }
+}
+
+/* RSVP: stack earlier for better mobile flow */
+@media (max-width: 900px) {
+    .rsvp-content {
+        grid-template-columns: 1fr;
+        gap: 2.2rem;
+    }
+}
+
+/* Hero: prevent oversized typography on small screens */
+@media (max-width: 768px) {
+    .hero {
+        padding: 7rem 1.2rem 3rem;
+    }
+    .names {
+        font-size: 3.1rem;
+    }
+    .wedding-date {
+        font-size: 1.35rem;
+        letter-spacing: 1px;
+    }
+    .wedding-location {
+        font-size: 1.05rem;
+    }
+    nav ul {
+        gap: 1.2rem;
+    }
 }
 /* ==========================================
    INFORMATIONS SECTION (minimalist)
@@ -1655,7 +1845,7 @@ section:not(.hero) {
     display: inline-flex;
     align-items: center;
     gap: 1rem;
-    margin-left:15%;
+    margin: 0 auto;
     padding: 1.2rem 2.5rem;
     background: var(--burgundy);
     color: white;
@@ -1663,6 +1853,15 @@ section:not(.hero) {
     font-weight: 600;
     letter-spacing: 1px;
     font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .coming-soon {
+        width: 100%;
+        max-width: 420px;
+        justify-content: center;
+        padding: 1rem 1.4rem;
+    }
 }
 
 .coming-soon-icon {
