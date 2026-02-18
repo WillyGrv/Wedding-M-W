@@ -522,6 +522,7 @@ padding: 1rem 2.2rem;
 
 .pill {
     display: inline-block;
+    overflow-x: clip;
     padding: 0.15rem 0.55rem;
     border-radius: 999px;
     background: rgba(122,130,104,0.15);
