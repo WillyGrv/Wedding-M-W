@@ -77,7 +77,7 @@ async function searchTracks(query) {
     $results.innerHTML = '';
     return;
   }
-  setStatus('Recherche en cours…');
+  setStatus('Recherche en cours… (Cela peut prendre 30 sec)');
   try {
     const params = new URLSearchParams({ q: query.trim(), limit: '10' });
     const resp = await fetch(`${SEARCH_ENDPOINT}?${params.toString()}`);
