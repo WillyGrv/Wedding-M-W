@@ -176,6 +176,14 @@ padding: 1rem 2.2rem;
     z-index: 1;
 }
 
+/* iOS/Safari: prevent decorative pseudo-elements from causing horizontal scroll */
+.hero,
+.rsvp,
+.logements,
+.cagnotte {
+    overflow-x: clip;
+}
+
 /* Décorations supplémentaires (rameaux d'olivier) — discrets en arrière-plan */
 .rsvp::after {
     content: '';
