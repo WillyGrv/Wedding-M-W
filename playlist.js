@@ -25,6 +25,9 @@ if (!$q || !$btn || !$results || !$status) {
 } else {
 
 function setStatus(msg, type = 'info') {
+  // type: 'info' | 'error' | 'loading'
+  const isLoading = type === 'loading';
+  $status.classList.toggle('is-loading', isLoading);
   $status.textContent = msg || '';
   $status.style.color = type === 'error' ? '#b00020' : 'var(--sage)';
 }
@@ -77,7 +80,7 @@ async function searchTracks(query) {
     $results.innerHTML = '';
     return;
   }
-  setStatus('Recherche en cours… (Cela peut prendre 30 sec)');
+  setStatus('Recherche en cours… (Cela peut prendre 30 sec)', 'loading');
   try {
     const params = new URLSearchParams({ q: query.trim(), limit: '10' });
     const resp = await fetch(`${SEARCH_ENDPOINT}?${params.toString()}`);
