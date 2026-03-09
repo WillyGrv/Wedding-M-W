@@ -1,6 +1,6 @@
 // Admin UI for reviewing and confirming playlist requests
 // Uses the same API_BASE strategy as playlist.js
-const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbxrzBox_SqQWQosse1uuu9C3vNL-ejYZxN3c2QMf4y5zYYuoUxLaI1S4Tnu_LF5yytmiA/exec';
+const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbwKJV7QYQlEY2nTyyIRC-O_NoYrlREPqcXQ5VdutGFrfwskXwbmmSg5funGuJdawDWLZQ/exec';
 const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
