@@ -5,7 +5,7 @@
 // - Same-origin deployments (frontend + backend on same domain): set to ''
 //
 // ✅ Update this value after deploying your backend (Render):
-const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbxhgR1pxJGM5JFoiPq7BSSeYMn_tZhpB3l70TUUahSPVWSTT-kGnb5YY-LtTsEAyRW5/exec';
+const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbwzICxmscgpFWWSBRRvUWyJaOOPKTrgT5kipLNnrtOU-kZ-HFipTxL0ZZtPJH7Ckr8Sqg/exec';
 const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
