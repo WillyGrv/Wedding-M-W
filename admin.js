@@ -1,22 +1,24 @@
 // Admin UI for reviewing and confirming playlist requests
 // Uses the same API_BASE strategy as playlist.js
-const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbxl1kGABHQ0J9v027RoMa8NjLci_cQ5Bwc5SRs8eO2oXM8e9SLBkSNJ_8mV3TyrOkMLpg/exec';
+const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbwJNevxgpZbHuSy__NjMA4NNjxZzEbL8tD3lZ8a1X-C3SKiUMBgymKwBPfUy8iwuAKBxg/exec';
 const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 const isGitHubPages = location.hostname.endsWith('.github.io');
 const API_BASE = isLocal ? 'http://localhost:8888' : (isGitHubPages ? PROD_API_BASE : '');
 
-const LIST_ENDPOINT = `${API_BASE}/api/admin/requests`;
-const CONFIRM_ENDPOINT = `${API_BASE}/api/admin/confirm`;
+const routeUrl = (route) => `${API_BASE}?route=${encodeURIComponent(route)}`;
+
+const LIST_ENDPOINT = routeUrl('/api/admin/requests');
+const CONFIRM_ENDPOINT = routeUrl('/api/admin/confirm');
 // Render backend doesn't currently expose /api/admin/delete in prod (was renamed previously).
 // We'll try common variants to stay compatible.
 const DELETE_ENDPOINTS = [
-  `${API_BASE}/api/admin/delete`,
-  `${API_BASE}/api/admin/remove`
+  routeUrl('/api/admin/delete'),
+  routeUrl('/api/admin/remove')
 ];
-const MANUAL_ADDED_ENDPOINT = `${API_BASE}/api/admin/manual-added`;
-const TRACK_ENDPOINT = `${API_BASE}/api/track`;
+const MANUAL_ADDED_ENDPOINT = routeUrl('/api/admin/manual-added');
+const TRACK_ENDPOINT = routeUrl('/api/track');
 
 const $list = document.getElementById('adminList');
 const $msg = document.getElementById('adminStatusMsg');
@@ -84,7 +86,7 @@ function getSpotifyTrackIdFromUri(uri) {
 async function fetchTrackById(trackId) {
   if (!trackId) return null;
   try {
-   const { resp, data: t } = await fetchJson(`${TRACK_ENDPOINT}/${encodeURIComponent(trackId)}`);
+    const { resp, data: t } = await fetchJson(routeUrl(`/api/track/${encodeURIComponent(trackId)}`));
 if (!resp.ok && !t.id) return null;
     // Normalize to the shape expected elsewhere in this file
     return {

@@ -5,14 +5,15 @@
 // - Same-origin deployments (frontend + backend on same domain): set to ''
 //
 // ✅ Update this value after deploying your backend (Render):
-const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbxl1kGABHQ0J9v027RoMa8NjLci_cQ5Bwc5SRs8eO2oXM8e9SLBkSNJ_8mV3TyrOkMLpg/exec';
+const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbwJNevxgpZbHuSy__NjMA4NNjxZzEbL8tD3lZ8a1X-C3SKiUMBgymKwBPfUy8iwuAKBxg/exec';
 const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 const isGitHubPages = location.hostname.endsWith('.github.io');
 const API_BASE = isLocal ? 'http://localhost:8888' : (isGitHubPages ? PROD_API_BASE : '');
-const SEARCH_ENDPOINT = `${API_BASE}/api/search`;
-const ADD_ENDPOINT = `${API_BASE}/api/add-track`;
+const routeUrl = (route) => `${API_BASE}?route=${encodeURIComponent(route)}`;
+const SEARCH_ENDPOINT = routeUrl('/api/search');
+const ADD_ENDPOINT = routeUrl('/api/add-track');
 
 const $q = document.getElementById('spotifyQuery');
 const $btn = document.getElementById('spotifySearchBtn');
