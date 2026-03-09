@@ -9,8 +9,8 @@ const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbwJNevxgpZbHuSy__
 const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-const isGitHubPages = location.hostname.endsWith('.github.io');
-const API_BASE = isLocal ? 'http://localhost:8888' : (isGitHubPages ? PROD_API_BASE : '');
+// Use PROD_API_BASE for any non-local deployment (GitHub Pages on .github.io or custom domain).
+const API_BASE = isLocal ? 'http://localhost:8888' : PROD_API_BASE;
 const routeUrl = (route) => `${API_BASE}?route=${encodeURIComponent(route)}`;
 const SEARCH_ENDPOINT = routeUrl('/api/search');
 const ADD_ENDPOINT = routeUrl('/api/add-track');
