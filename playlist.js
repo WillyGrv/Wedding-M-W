@@ -199,7 +199,9 @@ async function addTrack(uri, btn) {
     setStatus('Ajout en cours…');
     const { resp, data } = await fetchJson(ADD_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // Apps Script Web Apps often fail CORS preflight (OPTIONS) for application/json.
+      // Using text/plain keeps the request "simple" while we still send JSON in the body.
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ uri })
     });
 

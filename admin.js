@@ -90,7 +90,8 @@ async function fetchTrackById(trackId) {
   if (!trackId) return null;
   try {
     const { resp, data: t } = await fetchJson(routeUrl(`/api/track/${encodeURIComponent(trackId)}`));
-if (!resp.ok && !t.id) return null;
+    if (!resp.ok && !t.id) return null;
+
     // Normalize to the shape expected elsewhere in this file
     return {
       id: t.id,
@@ -333,9 +334,10 @@ async function markManualAdded(uri, btn) {
   setMsg('Marquage en cours…');
 
   try {
-const { resp, data } = await fetchJson(MANUAL_ADDED_ENDPOINT, {
+    const { resp, data } = await fetchJson(MANUAL_ADDED_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // Avoid Apps Script CORS preflight (OPTIONS) by using a "simple" content-type.
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ uri })
     });
 
@@ -373,7 +375,8 @@ async function remove(uri, btn) {
       // eslint-disable-next-line no-await-in-loop
       const { resp: r, data } = await fetchJson(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // Avoid Apps Script CORS preflight (OPTIONS) by using a "simple" content-type.
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ uri })
       });
       // If endpoint doesn't exist, try next
