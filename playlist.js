@@ -5,7 +5,8 @@
 // - Same-origin deployments (frontend + backend on same domain): set to ''
 //
 // ✅ Update this value after deploying your backend (Render):
-const PROD_API_BASE = 'https://wedding-m-w.onrender.com';
+const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbxl1kGABHQ0J9v027RoMa8NjLci_cQ5Bwc5SRs8eO2oXM8e9SLBkSNJ_8mV3TyrOkMLpg/exec';
+const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 const isGitHubPages = location.hostname.endsWith('.github.io');
@@ -73,7 +74,11 @@ function createSpotifyEmbed(trackId) {
   wrap.appendChild(iframe);
   return wrap;
 }
-
+async function fetchJson(url, options) {
+  const resp = await fetch(url, options);
+  const data = await resp.json().catch(() => ({}));
+  return { resp, data };
+}
 async function searchTracks(query) {
   if (!query || query.trim().length < 2) {
     setStatus('Tapez au moins 2 caractères pour rechercher.');
@@ -83,9 +88,10 @@ async function searchTracks(query) {
   setStatus('Recherche en cours… (Cela peut prendre 30 sec)', 'loading');
   try {
     const params = new URLSearchParams({ q: query.trim(), limit: '10' });
-    const resp = await fetch(`${SEARCH_ENDPOINT}?${params.toString()}`);
-    if (!resp.ok) throw new Error(`Recherche échouée (${resp.status})`);
-    const data = await resp.json();
+    const { resp, data } = await fetchJson(`${SEARCH_ENDPOINT}?${params.toString()}`);
+if (!resp.ok && !data.items && !(data.tracks && data.tracks.items)) {
+  throw new Error(`Recherche échouée (${resp.status})`);
+}
 
     // Accept raw Spotify payload or normalized payload
     const items = (data.tracks && data.tracks.items) || data.items || [];
@@ -187,26 +193,24 @@ async function addTrack(uri, btn) {
     btn.disabled = true;
     btn.textContent = 'Ajout…';
     setStatus('Ajout en cours…');
-    const resp = await fetch(ADD_ENDPOINT, {
+    const { resp, data } = await fetchJson(ADD_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ uri })
     });
 
     // UX: more explicit handling
-    if (resp.status === 409) {
+    if (resp.status === 409 || data.message === 'Track already added') {
       setStatus('Déjà proposé — merci !', 'info');
       btn.textContent = 'Déjà ajouté';
       return;
     }
 
-    if (!resp.ok) {
+    if (!resp.ok && !data.success) {
       const msg = `Ajout impossible (${resp.status})`;
       setStatus(msg, 'error');
       return;
     }
-
-    const data = await resp.json().catch(() => ({}));
     if (data.success) {
       setStatus('Chanson ajoutée (enregistrée). Merci !');
       btn.textContent = 'Ajouté ✓';

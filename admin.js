@@ -1,6 +1,7 @@
 // Admin UI for reviewing and confirming playlist requests
 // Uses the same API_BASE strategy as playlist.js
-const PROD_API_BASE = 'https://wedding-m-w.onrender.com';
+const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbxl1kGABHQ0J9v027RoMa8NjLci_cQ5Bwc5SRs8eO2oXM8e9SLBkSNJ_8mV3TyrOkMLpg/exec';
+const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 const isGitHubPages = location.hostname.endsWith('.github.io');
@@ -45,6 +46,12 @@ function escapeHtml(str) {
     .replaceAll("'", '&#039;');
 }
 
+async function fetchJson(url, options) {
+  const resp = await fetch(url, options);
+  const data = await resp.json().catch(() => ({}));
+  return { resp, data };
+}
+
 async function load() {
   const desired = $status.value;
   setMsg('Chargement…');
@@ -54,10 +61,8 @@ async function load() {
     const url = new URL(LIST_ENDPOINT, location.href);
     url.searchParams.set('status', desired);
 
-    const resp = await fetch(url.toString());
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-
-    const data = await resp.json();
+const { resp, data } = await fetchJson(url.toString());
+if (!resp.ok && !Array.isArray(data.items)) throw new Error(`HTTP ${resp.status}`);
     const items = data.items || [];
 
     // If the backend didn't persist track metadata (only URI), resolve it on the fly for nicer admin display.
@@ -79,10 +84,8 @@ function getSpotifyTrackIdFromUri(uri) {
 async function fetchTrackById(trackId) {
   if (!trackId) return null;
   try {
-    const resp = await fetch(`${TRACK_ENDPOINT}/${encodeURIComponent(trackId)}`);
-    if (!resp.ok) return null;
-
-    const t = await resp.json();
+   const { resp, data: t } = await fetchJson(`${TRACK_ENDPOINT}/${encodeURIComponent(trackId)}`);
+if (!resp.ok && !t.id) return null;
     // Normalize to the shape expected elsewhere in this file
     return {
       id: t.id,
@@ -282,27 +285,27 @@ async function confirm(uri, btn) {
   setMsg('Ajout à Spotify en cours…');
 
   try {
-    const resp = await fetch(CONFIRM_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uri })
-    });
+   const { resp, data } = await fetchJson(CONFIRM_ENDPOINT, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ uri })
+});
 
-    if (resp.status === 404) {
+if (resp.status === 404 || data.message === 'Not found') {
       setMsg('Demande introuvable (peut-être supprimée).', 'error');
       btn.textContent = original;
       btn.disabled = false;
       return;
     }
 
-    if (!resp.ok) {
+    if (!resp.ok && !data.success) {
       setMsg(`Erreur de confirmation (HTTP ${resp.status}).`, 'error');
       btn.textContent = original;
       btn.disabled = false;
       return;
     }
 
-    await resp.json().catch(() => ({}));
+    
     btn.textContent = 'Confirmé ✓';
 
     setMsg('Confirmé. Utilisez "Ouvrir Spotify" puis cliquez "Ajouté manuellement ✅".');
@@ -325,13 +328,13 @@ async function markManualAdded(uri, btn) {
   setMsg('Marquage en cours…');
 
   try {
-    const resp = await fetch(MANUAL_ADDED_ENDPOINT, {
+const { resp, data } = await fetchJson(MANUAL_ADDED_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ uri })
     });
 
-    if (!resp.ok) {
+    if (!resp.ok && !data.success) {
       setMsg(`Erreur (HTTP ${resp.status}).`, 'error');
       btn.textContent = original;
       btn.disabled = false;
@@ -363,13 +366,13 @@ async function remove(uri, btn) {
     let resp = null;
     for (const endpoint of DELETE_ENDPOINTS) {
       // eslint-disable-next-line no-await-in-loop
-      const r = await fetch(endpoint, {
+      const { resp: r, data } = await fetchJson(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uri })
       });
       // If endpoint doesn't exist, try next
-      if (r.status === 404) continue;
+      if (r.status === 404 || data.message === 'Not found') continue;
       resp = r;
       break;
     }
