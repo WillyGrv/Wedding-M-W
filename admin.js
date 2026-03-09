@@ -1,13 +1,16 @@
 // Admin UI for reviewing and confirming playlist requests
 // Uses the same API_BASE strategy as playlist.js
-const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbwJNevxgpZbHuSy__NjMA4NNjxZzEbL8tD3lZ8a1X-C3SKiUMBgymKwBPfUy8iwuAKBxg/exec';
+const PROD_API_BASE = 'https://script.google.com/macros/s/AKfycbxrzBox_SqQWQosse1uuu9C3vNL-ejYZxN3c2QMf4y5zYYuoUxLaI1S4Tnu_LF5yytmiA/exec';
 const RENDER_FALLBACK_API_BASE = 'https://wedding-m-w.onrender.com';
 
 const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 // Use PROD_API_BASE for any non-local deployment (GitHub Pages on .github.io or custom domain).
 const API_BASE = isLocal ? 'http://localhost:8888' : PROD_API_BASE;
 
-const routeUrl = (route) => `${API_BASE}?route=${encodeURIComponent(route)}`;
+const routeUrl = (route) => {
+  const sep = API_BASE.includes('?') ? '&' : '?';
+  return `${API_BASE}${sep}route=${encodeURIComponent(route)}`;
+};
 
 const LIST_ENDPOINT = routeUrl('/api/admin/requests');
 const CONFIRM_ENDPOINT = routeUrl('/api/admin/confirm');
