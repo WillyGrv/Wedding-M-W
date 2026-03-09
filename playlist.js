@@ -197,13 +197,11 @@ async function addTrack(uri, btn) {
     btn.disabled = true;
     btn.textContent = 'Ajout…';
     setStatus('Ajout en cours…');
-    const { resp, data } = await fetchJson(ADD_ENDPOINT, {
-      method: 'POST',
-      // Apps Script Web Apps often fail CORS preflight (OPTIONS) for application/json.
-      // Using text/plain keeps the request "simple" while we still send JSON in the body.
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ uri })
-    });
+    // Apps Script Web Apps are brittle with CORS preflight for POST.
+    // Use GET + query params to avoid OPTIONS entirely.
+    const url = new URL(ADD_ENDPOINT, location.href);
+    url.searchParams.set('uri', uri);
+    const { resp, data } = await fetchJson(url.toString());
 
     // UX: more explicit handling
     if (resp.status === 409 || data.message === 'Track already added') {

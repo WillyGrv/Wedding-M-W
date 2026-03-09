@@ -291,11 +291,11 @@ async function confirm(uri, btn) {
   setMsg('Ajout à Spotify en cours…');
 
   try {
-   const { resp, data } = await fetchJson(CONFIRM_ENDPOINT, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ uri })
-});
+    // Apps Script Web Apps are brittle with CORS preflight for POST.
+    // Use GET + query params to avoid OPTIONS entirely.
+    const url = new URL(CONFIRM_ENDPOINT, location.href);
+    url.searchParams.set('uri', uri);
+    const { resp, data } = await fetchJson(url.toString());
 
 if (resp.status === 404 || data.message === 'Not found') {
       setMsg('Demande introuvable (peut-être supprimée).', 'error');
@@ -334,12 +334,11 @@ async function markManualAdded(uri, btn) {
   setMsg('Marquage en cours…');
 
   try {
-    const { resp, data } = await fetchJson(MANUAL_ADDED_ENDPOINT, {
-      method: 'POST',
-      // Avoid Apps Script CORS preflight (OPTIONS) by using a "simple" content-type.
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ uri })
-    });
+    // Apps Script Web Apps are brittle with CORS preflight for POST.
+    // Use GET + query params to avoid OPTIONS entirely.
+    const url = new URL(MANUAL_ADDED_ENDPOINT, location.href);
+    url.searchParams.set('uri', uri);
+    const { resp, data } = await fetchJson(url.toString());
 
     if (!resp.ok && !data.success) {
       setMsg(`Erreur (HTTP ${resp.status}).`, 'error');
@@ -373,12 +372,11 @@ async function remove(uri, btn) {
     let resp = null;
     for (const endpoint of DELETE_ENDPOINTS) {
       // eslint-disable-next-line no-await-in-loop
-      const { resp: r, data } = await fetchJson(endpoint, {
-        method: 'POST',
-        // Avoid Apps Script CORS preflight (OPTIONS) by using a "simple" content-type.
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ uri })
-      });
+      // Apps Script Web Apps are brittle with CORS preflight for POST.
+      // Use GET + query params to avoid OPTIONS entirely.
+      const url = new URL(endpoint, location.href);
+      url.searchParams.set('uri', uri);
+      const { resp: r, data } = await fetchJson(url.toString());
       // If endpoint doesn't exist, try next
       if (r.status === 404 || data.message === 'Not found') continue;
       resp = r;
