@@ -92,7 +92,7 @@ async function searchTracks(query) {
   setStatus('Recherche en cours… (Cela peut prendre 30 sec)', 'loading');
   try {
     const params = new URLSearchParams({ q: query.trim(), limit: '10' });
-    const { resp, data } = await fetchJson(`${SEARCH_ENDPOINT}?${params.toString()}`);
+    const { resp, data } = await fetchJson(`${SEARCH_ENDPOINT}&${params.toString()}`);
 if (!resp.ok && !data.items && !(data.tracks && data.tracks.items)) {
   throw new Error(`Recherche échouée (${resp.status})`);
 }
