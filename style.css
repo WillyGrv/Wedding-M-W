@@ -159,65 +159,125 @@ padding: 1rem 2.2rem;
 }
 
 /* ==========================================
-   RSVP iframe (Apps Script HtmlService)
+   RSVP app (Solution 1: form in-page)
    ========================================== */
 
-.rsvp-iframe-wrap {
+.rsvp-app {
     width: 100%;
     margin-top: 0.75rem;
 }
 
-.rsvp-iframe-loading {
-    width: 100%;
-    text-align: center;
-    color: rgba(0, 0, 0, 0.65);
-    font-family: var(--font-body);
-    padding: 0.75rem 0;
-}
-
-.rsvp-iframe {
-    width: 100%;
-    min-height: 720px;
-    height: 75vh;
-    max-height: 980px;
+.rsvp-submit-frame {
+    position: absolute;
+    width: 1px;
+    height: 1px;
     border: 0;
-    background: transparent;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(201,123,99,0.12);
+    left: -9999px;
+    top: -9999px;
     opacity: 0;
-    transform: translateY(4px);
-    transition: opacity 220ms ease, transform 220ms ease;
+    pointer-events: none;
 }
 
-.rsvp-iframe.is-loaded {
-    opacity: 1;
-    transform: none;
+.rsvp-form {
+    width: 100%;
+    text-align: left;
 }
 
-.rsvp-iframe-fallback {
-    margin: 0.75rem 0 0;
-    font-size: 0.95rem;
+.rsvp-title {
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--burgundy);
+}
+
+.rsvp-label {
+    display: block;
+    margin: 0.75rem 0 0.35rem;
+    font-weight: 600;
+    color: rgba(0,0,0,0.75);
+}
+
+.rsvp-input {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.14);
+    background: rgba(255,255,255,0.55);
+    color: var(--burgundy);
+    box-shadow: 0 1px 6px rgba(201,123,99,0.07);
+}
+
+.rsvp-input:focus {
+    outline: none;
+    border-color: var(--olive);
+}
+
+.rsvp-radio {
+    display: flex;
+    gap: 0.55rem;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.10);
+    background: rgba(255,255,255,0.4);
+    margin: 0.45rem 0;
+    cursor: pointer;
+}
+
+.rsvp-checks {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    padding: 0.5rem 0.25rem;
+}
+
+.rsvp-checks label {
+    display: flex;
+    gap: 0.55rem;
+    align-items: center;
+    padding: 0.55rem 0.7rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.10);
+    background: rgba(255,255,255,0.35);
+}
+
+.rsvp-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.rsvp-actions button {
+    padding: 0.9rem 1.2rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+#rsvpBackBtn {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.75);
+}
+
+#rsvpNextBtn {
+    background: linear-gradient(135deg, var(--olive), var(--sage));
+    color: #fff;
+    box-shadow: 0 8px 22px rgba(122,130,104,0.18);
+}
+
+#rsvpNextBtn:disabled,
+#rsvpBackBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.rsvp-form-status {
+    margin-top: 0.85rem;
+    min-height: 1.4em;
     text-align: center;
-    color: rgba(0, 0, 0, 0.65);
-}
-
-.rsvp-iframe-fallback a {
     color: var(--burgundy);
     font-weight: 600;
-    text-decoration: none;
-}
-
-.rsvp-iframe-fallback a:hover {
-    text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-    .rsvp-iframe {
-        min-height: 820px;
-        height: 82vh;
-        max-height: none;
-    }
 }
 /* Décorations RSVP (grande taille) */
 .rsvp::before {

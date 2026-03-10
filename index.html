@@ -87,22 +87,12 @@
                         Remplis le formulaire ci-dessous pour confirmer ta présence.
                     </p>
 
-                    <div class="rsvp-iframe-wrap" aria-label="Formulaire RSVP">
-                        <div class="rsvp-iframe-loading" id="rsvpIframeLoading">Chargement du formulaire…</div>
-                        <iframe
-                            id="rsvpIframe"
-                            class="rsvp-iframe"
-                            title="Formulaire RSVP"
-                            loading="lazy"
-                            referrerpolicy="no-referrer"
-                            src="https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec?page=rsvp">
-                        </iframe>
-
-                        <p class="rsvp-iframe-fallback">
-                            Si le formulaire ne s’affiche pas, ouvre-le ici :
-                            <a href="https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec?page=rsvp" target="_blank" rel="noopener">Formulaire RSVP</a>
-                        </p>
+                    <div id="rsvp-app" class="rsvp-app" aria-label="Formulaire RSVP">
+                        <!-- Injected by script.js (Solution 1: post to GAS without CORS) -->
                     </div>
+
+                    <!-- Hidden target for cross-origin submit (no CORS) -->
+                    <iframe name="rsvpSubmitFrame" id="rsvpSubmitFrame" class="rsvp-submit-frame" title="RSVP submit" aria-hidden="true"></iframe>
                 </div>
             </div>
         </div>

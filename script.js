@@ -40,16 +40,273 @@ function updateCountdown() {
 // Lance le compteur dès que la page est chargée
 document.addEventListener('DOMContentLoaded', updateCountdown);
 
-// RSVP: form served by Google Apps Script HtmlService in an iframe
-document.addEventListener('DOMContentLoaded', () => {
-    const iframe = document.getElementById('rsvpIframe');
-    const loading = document.getElementById('rsvpIframeLoading');
-    if (!iframe) return;
+// ==========================================
+// RSVP (Solution 1): formulaire côté site + POST vers GAS (no CORS)
+// ==========================================
 
-    iframe.addEventListener('load', () => {
-        if (loading) loading.style.display = 'none';
-        iframe.classList.add('is-loaded');
+document.addEventListener('DOMContentLoaded', () => {
+    const mount = document.getElementById('rsvp-app');
+    if (!mount) return;
+
+    // IMPORTANT: This endpoint is cross-origin. We submit via <form target="rsvpSubmitFrame">.
+    // Needs a doPost(e) in GAS that routes to handleRsvpSubmit_.
+    const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
+    const SUBMIT_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/submit')}`;
+
+    const formHtml = `
+        <form id="rsvpForm" class="rsvp-form" novalidate>
+            <div class="rsvp-step" data-step="presence">
+                <p class="rsvp-title">Est-ce que je serai présent pour ce mariage du siècle ?</p>
+                <label class="rsvp-radio"><input type="radio" name="presence" value="Oui, je serai là" required> Oui, je serai là</label>
+                <label class="rsvp-radio"><input type="radio" name="presence" value="Désolé, je ne pourrai pas venir :(" required> Désolé, je ne pourrai pas venir :(</label>
+            </div>
+
+            <div class="rsvp-step" data-step="no" hidden>
+                <p class="rsvp-title">Oh noooon 😞</p>
+                <label class="rsvp-label">Indique-nous ton nom complet que l'on puisse bien confirmer l'info</label>
+                <input class="rsvp-input" type="text" name="nomComplet" autocomplete="name" required>
+            </div>
+
+            <div class="rsvp-step" data-step="yes" hidden>
+                <p class="rsvp-title">Youuy ! Trop hâte de te voir ramper !</p>
+
+                <label class="rsvp-label">Indique ton nom de famille</label>
+                <input class="rsvp-input" type="text" name="nom" autocomplete="family-name" required>
+
+                <label class="rsvp-label">Indique ton prénom</label>
+                <input class="rsvp-input" type="text" name="prenom" autocomplete="given-name" required>
+
+                <label class="rsvp-label">Indique ton adresse email</label>
+                <input class="rsvp-input" type="email" name="email" autocomplete="email" required>
+
+                <label class="rsvp-label">Indique ton numéro de téléphone</label>
+                <input class="rsvp-input" type="tel" name="telephone" autocomplete="tel" required>
+
+                <label class="rsvp-label">Indique ton code postal</label>
+                <input class="rsvp-input" type="text" name="codePostal" autocomplete="postal-code" required>
+
+                <label class="rsvp-label">Indique ta ville</label>
+                <input class="rsvp-input" type="text" name="ville" autocomplete="address-level2" required>
+
+                <label class="rsvp-label">Indique ton adresse (ligne 1)</label>
+                <input class="rsvp-input" type="text" name="adresse1" autocomplete="address-line1" required>
+            </div>
+
+            <div class="rsvp-step" data-step="more" hidden>
+                <p class="rsvp-title">Quelques informations sur toi...</p>
+
+                <label class="rsvp-label">Régime alimentaire particulier</label>
+                <div class="rsvp-checks">
+                    <label><input type="checkbox" name="regime" value="Aucun, je mange de tout"> Aucun, je mange de tout</label>
+                    <label><input type="checkbox" name="regime" value="Sans gluten"> Sans gluten</label>
+                    <label><input type="checkbox" name="regime" value="Sans porc"> Sans porc</label>
+                    <label><input type="checkbox" name="regime" value="Sans viande (pescétarien)"> Sans viande (pescétarien)</label>
+                    <label><input type="checkbox" name="regime" value="Végétarien"> Végétarien</label>
+                    <label><input type="checkbox" name="regime" value="Végétalien (produit d'origine animale)"> Végétalien (produit d'origine animale)</label>
+                </div>
+
+                <label class="rsvp-label" style="margin-top:0.75rem;">Préférences alcoolisées</label>
+                <label class="rsvp-radio"><input type="radio" name="alcool" value="Avec modération de tout" required> Avec modération de tout</label>
+                <label class="rsvp-radio"><input type="radio" name="alcool" value="Je ne bois pas d'alcool du tout" required> Je ne bois pas d'alcool du tout</label>
+
+                <label class="rsvp-label" style="margin-top:0.75rem;">As-tu une allergie alimentaire quelconque ?</label>
+                <input class="rsvp-input" type="text" name="allergie" placeholder="(optionnel)">
+            </div>
+
+            <div class="rsvp-actions">
+                <button type="button" id="rsvpBackBtn" hidden>Précédent</button>
+                <button type="submit" id="rsvpNextBtn">Continuer</button>
+            </div>
+
+            <div id="rsvpFormStatus" class="rsvp-form-status" aria-live="polite"></div>
+        </form>
+    `;
+
+    mount.innerHTML = formHtml;
+
+    const form = document.getElementById('rsvpForm');
+    const status = document.getElementById('rsvpFormStatus');
+    const nextBtn = document.getElementById('rsvpNextBtn');
+    const backBtn = document.getElementById('rsvpBackBtn');
+    const submitFrame = document.getElementById('rsvpSubmitFrame');
+
+    let step = 'presence';
+    let flow = null; // 'yes' | 'no'
+
+    const steps = {
+        presence: form.querySelector('[data-step="presence"]'),
+        no: form.querySelector('[data-step="no"]'),
+        yes: form.querySelector('[data-step="yes"]'),
+        more: form.querySelector('[data-step="more"]'),
+    };
+
+    function show(s) {
+        Object.entries(steps).forEach(([k, el]) => {
+            if (!el) return;
+            el.hidden = (k !== s);
+        });
+        step = s;
+        backBtn.hidden = (s === 'presence');
+        nextBtn.textContent = (s === 'more' || s === 'no') ? 'Envoyer' : 'Continuer';
+        status.textContent = '';
+    }
+
+    function getRadioValue(name) {
+        const el = form.querySelector(`input[name="${name}"]:checked`);
+        return el ? el.value : '';
+    }
+
+    function getCheckedValues(name) {
+        const els = Array.from(form.querySelectorAll(`input[name="${name}"]:checked`));
+        return els.map(e => e.value);
+    }
+
+    function validateCurrentStep() {
+        if (step === 'presence') {
+            const presence = getRadioValue('presence');
+            if (!presence) return 'Choisis une option.';
+            return null;
+        }
+
+        if (step === 'no') {
+            const nomComplet = String(form.elements.nomComplet.value || '').trim();
+            if (!nomComplet) return 'Indique ton nom complet.';
+            return null;
+        }
+
+        if (step === 'yes') {
+            const required = ['nom', 'prenom', 'email', 'telephone', 'codePostal', 'ville', 'adresse1'];
+            const missing = required.filter((k) => !String(form.elements[k].value || '').trim());
+            if (missing.length) return 'Merci de remplir tous les champs obligatoires.';
+
+            const email = String(form.elements.email.value || '').trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) return 'Email invalide.';
+            return null;
+        }
+
+        if (step === 'more') {
+            const alcool = getRadioValue('alcool');
+            if (!alcool) return 'Choisis une préférence alcoolisée.';
+            return null;
+        }
+
+        return null;
+    }
+
+    function buildSubmitPayload() {
+        const presence = getRadioValue('presence');
+        const isYes = presence === 'Oui, je serai là';
+        const isNo = presence === 'Désolé, je ne pourrai pas venir :(';
+
+        // If multiple checked, join with " | " to keep the cell readable.
+        const regime = getCheckedValues('regime').join(' | ');
+
+        return {
+            presence,
+            nomComplet: isNo ? String(form.elements.nomComplet.value || '').trim() : '',
+            nom: isYes ? String(form.elements.nom.value || '').trim() : '',
+            prenom: isYes ? String(form.elements.prenom.value || '').trim() : '',
+            email: isYes ? String(form.elements.email.value || '').trim() : '',
+            telephone: isYes ? String(form.elements.telephone.value || '').trim() : '',
+            codePostal: isYes ? String(form.elements.codePostal.value || '').trim() : '',
+            ville: isYes ? String(form.elements.ville.value || '').trim() : '',
+            adresse1: isYes ? String(form.elements.adresse1.value || '').trim() : '',
+            regime: isYes ? regime : '',
+            alcool: isYes ? getRadioValue('alcool') : '',
+            allergie: isYes ? String(form.elements.allergie.value || '').trim() : '',
+        };
+    }
+
+    function submitViaFormPost(payload) {
+        return new Promise((resolve) => {
+            // Because this is cross-origin, we can't read the response.
+            // We treat frame load as "request completed" and show a success message.
+            const tmpForm = document.createElement('form');
+            tmpForm.method = 'POST';
+            tmpForm.action = SUBMIT_URL;
+            tmpForm.target = 'rsvpSubmitFrame';
+            tmpForm.style.position = 'absolute';
+            tmpForm.style.left = '-9999px';
+            tmpForm.style.top = '-9999px';
+
+            Object.entries(payload).forEach(([k, v]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = k;
+                input.value = (v === undefined || v === null) ? '' : String(v);
+                tmpForm.appendChild(input);
+            });
+
+            const onLoad = () => {
+                submitFrame.removeEventListener('load', onLoad);
+                tmpForm.remove();
+                resolve(true);
+            };
+            submitFrame.addEventListener('load', onLoad);
+
+            document.body.appendChild(tmpForm);
+            tmpForm.submit();
+
+            // Safety: resolve anyway after 12s
+            setTimeout(() => {
+                try { submitFrame.removeEventListener('load', onLoad); } catch (_) {}
+                try { tmpForm.remove(); } catch (_) {}
+                resolve(true);
+            }, 12000);
+        });
+    }
+
+    form.addEventListener('change', () => {
+        if (step === 'presence') {
+            const presence = getRadioValue('presence');
+            if (presence === 'Oui, je serai là') flow = 'yes';
+            else if (presence === 'Désolé, je ne pourrai pas venir :(') flow = 'no';
+            else flow = null;
+        }
     });
+
+    backBtn.addEventListener('click', () => {
+        if (step === 'yes' || step === 'no') show('presence');
+        else if (step === 'more') show('yes');
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = validateCurrentStep();
+        if (err) {
+            status.textContent = err;
+            return;
+        }
+
+        if (step === 'presence') {
+            show(flow === 'no' ? 'no' : 'yes');
+            return;
+        }
+
+        if (step === 'yes') {
+            show('more');
+            return;
+        }
+
+        // Final step: submit
+        const payload = buildSubmitPayload();
+        status.textContent = 'Envoi en cours...';
+        nextBtn.disabled = true;
+        backBtn.disabled = true;
+
+        await submitViaFormPost(payload);
+
+        // Success UI
+        mount.innerHTML = `
+            <div class="rsvp-success" style="text-align:center;padding:1rem 0;">
+                <div style="font-size:1.4rem;font-weight:700;color:var(--burgundy);">Merci !</div>
+                <div style="margin-top:0.5rem;color:rgba(0,0,0,0.7);">Ton RSVP a bien été enregistré.</div>
+            </div>
+        `;
+    });
+
+    show('presence');
 });
 
 // ==========================================
