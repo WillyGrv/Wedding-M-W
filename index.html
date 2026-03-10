@@ -84,12 +84,24 @@
                     <p class="rsvp-text">
                         Nous avons hâte de célébrer ce moment unique avec vous !<br>
                         Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.<br>
-                        Renseigne ton email ici pour vérifier ton inscription.
+                        Remplis le formulaire ci-dessous pour confirmer ta présence.
                     </p>
-                    <div id="rsvp-check">
-                        <input type="email" id="rsvpEmail" placeholder="Votre email" required>
-                        <button id="rsvpCheckBtn">Vérifier</button>
-                        <div id="rsvpCheckResult"></div>
+
+                    <div class="rsvp-iframe-wrap" aria-label="Formulaire RSVP">
+                        <div class="rsvp-iframe-loading" id="rsvpIframeLoading">Chargement du formulaire…</div>
+                        <iframe
+                            id="rsvpIframe"
+                            class="rsvp-iframe"
+                            title="Formulaire RSVP"
+                            loading="lazy"
+                            referrerpolicy="no-referrer"
+                            src="https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec?page=rsvp">
+                        </iframe>
+
+                        <p class="rsvp-iframe-fallback">
+                            Si le formulaire ne s’affiche pas, ouvre-le ici :
+                            <a href="https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec?page=rsvp" target="_blank" rel="noopener">Formulaire RSVP</a>
+                        </p>
                     </div>
                 </div>
             </div>

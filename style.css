@@ -157,6 +157,68 @@ padding: 1rem 2.2rem;
     text-align: center;
     min-height: 2.2em;
 }
+
+/* ==========================================
+   RSVP iframe (Apps Script HtmlService)
+   ========================================== */
+
+.rsvp-iframe-wrap {
+    width: 100%;
+    margin-top: 0.75rem;
+}
+
+.rsvp-iframe-loading {
+    width: 100%;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.65);
+    font-family: var(--font-body);
+    padding: 0.75rem 0;
+}
+
+.rsvp-iframe {
+    width: 100%;
+    min-height: 720px;
+    height: 75vh;
+    max-height: 980px;
+    border: 0;
+    background: transparent;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(201,123,99,0.12);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.rsvp-iframe.is-loaded {
+    opacity: 1;
+    transform: none;
+}
+
+.rsvp-iframe-fallback {
+    margin: 0.75rem 0 0;
+    font-size: 0.95rem;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.rsvp-iframe-fallback a {
+    color: var(--burgundy);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.rsvp-iframe-fallback a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .rsvp-iframe {
+        min-height: 820px;
+        height: 82vh;
+        max-height: none;
+    }
+}
 /* Décorations RSVP (grande taille) */
 .rsvp::before {
     content: '';
