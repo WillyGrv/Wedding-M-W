@@ -52,6 +52,55 @@ document.addEventListener('DOMContentLoaded', () => {
     // Needs a doPost(e) in GAS that routes to handleRsvpSubmit_.
     const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
     const SUBMIT_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/submit')}`;
+    const CHECK_JSONP_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/check-jsonp')}`;
+
+    function isValidEmail(email) {
+        const s = String(email || '').trim();
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+    }
+
+    // JSONP helper for read-only check (avoids CORS)
+    function fetchJsonp(url, params = {}) {
+        return new Promise((resolve, reject) => {
+            const cbName = `wmwJsonp_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+            const fullParams = new URLSearchParams();
+            Object.entries(params).forEach(([k, v]) => {
+                if (v === undefined || v === null) return;
+                fullParams.set(k, String(v));
+            });
+            fullParams.set('callback', cbName);
+
+            const sep = url.includes('?') ? '&' : '?';
+            const src = `${url}${sep}${fullParams.toString()}`;
+
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = src;
+
+            const timeout = setTimeout(() => {
+                cleanup();
+                reject(new Error('JSONP timeout'));
+            }, 12000);
+
+            function cleanup() {
+                clearTimeout(timeout);
+                try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
+                script.remove();
+            }
+
+            window[cbName] = (data) => {
+                cleanup();
+                resolve(data);
+            };
+
+            script.onerror = () => {
+                cleanup();
+                reject(new Error('JSONP network error'));
+            };
+
+            document.head.appendChild(script);
+        });
+    }
 
     const formHtml = `
         <form id="rsvpForm" class="rsvp-form" novalidate>
@@ -133,6 +182,61 @@ document.addEventListener('DOMContentLoaded', () => {
     let step = 'presence';
     let flow = null; // 'yes' | 'no'
 
+    // Tampon initial: check email
+    const checkBtn = document.getElementById('rsvpCheckBtn');
+    const emailInput = document.getElementById('rsvpEmail');
+    const checkResult = document.getElementById('rsvpCheckResult');
+    const checkWrap = document.getElementById('rsvp-check');
+
+    // Hide form until email check passes (or user chooses to proceed)
+    mount.style.display = 'none';
+
+    async function runEmailCheck() {
+        const email = String(emailInput?.value || '').trim();
+        if (!email) {
+            if (checkResult) checkResult.textContent = '';
+            return;
+        }
+        if (!isValidEmail(email)) {
+            if (checkResult) checkResult.textContent = 'Veuillez entrer une adresse email valide.';
+            return;
+        }
+
+        if (checkResult) checkResult.textContent = 'Vérification en cours...';
+        try {
+            const data = await fetchJsonp(CHECK_JSONP_URL, { email });
+            if (data && data.found) {
+                if (checkResult) {
+                    const fullName = `${String(data.prenom || '').trim()} ${String(data.nom || '').trim()}`.trim();
+                    checkResult.textContent = fullName
+                        ? `RSVP déjà enregistré pour ${fullName}. Merci !`
+                        : 'RSVP déjà enregistré. Merci !';
+                }
+                // Keep the form hidden
+                mount.style.display = 'none';
+                return;
+            }
+
+            if (checkResult) checkResult.textContent = '';
+            mount.style.display = '';
+            // Pre-fill email into the form
+            const emailField = form.querySelector('input[name="email"]');
+            if (emailField) emailField.value = email;
+        } catch (err) {
+            if (checkResult) checkResult.textContent = 'Erreur de vérification, réessayez plus tard.';
+        }
+    }
+
+    if (checkBtn) checkBtn.addEventListener('click', runEmailCheck);
+    if (emailInput) {
+        emailInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                runEmailCheck();
+            }
+        });
+    }
+
     const steps = {
         presence: form.querySelector('[data-step="presence"]'),
         no: form.querySelector('[data-step="no"]'),
@@ -180,8 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (missing.length) return 'Merci de remplir tous les champs obligatoires.';
 
             const email = String(form.elements.email.value || '').trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) return 'Email invalide.';
+            if (!isValidEmail(email)) return 'Email invalide.';
             return null;
         }
 

@@ -87,6 +87,12 @@
                         Remplis le formulaire ci-dessous pour confirmer ta présence.
                     </p>
 
+                    <div id="rsvp-check" class="rsvp-check">
+                        <input type="email" id="rsvpEmail" placeholder="Votre email" autocomplete="email" required>
+                        <button id="rsvpCheckBtn" type="button">Vérifier</button>
+                        <div id="rsvpCheckResult" aria-live="polite"></div>
+                    </div>
+
                     <div id="rsvp-app" class="rsvp-app" aria-label="Formulaire RSVP">
                         <!-- Injected by script.js (Solution 1: post to GAS without CORS) -->
                     </div>
