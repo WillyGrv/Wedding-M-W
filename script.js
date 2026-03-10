@@ -39,13 +39,83 @@ document.addEventListener('DOMContentLoaded', () => {
     const rsvpCard = document.querySelector('.rsvp-card');
     if (!rsvpCard) return;
     const originalHTML = rsvpCard.innerHTML;
-    const formIframe = `
+    const formHtml = `
         <div style="width:100%;display:flex;justify-content: flex-end;margin-bottom: 2%;">
             <button id="rsvpRetourBtn" style="padding:8px 16px;border-radius:8px;border:none;background:#eee;font-weight:500;cursor:pointer;">Retour</button>
         </div>
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSewEkWOQkJiKJOBlMmxI647K0kBp3i6Ne_8pGFKxmO7LrYFjQ/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" style="display:block; border-radius:16px; background:transparent;">Chargement…</iframe>
+
+        <form id="rsvpForm" class="rsvp-form" novalidate>
+            <div class="rsvp-step" data-step="presence">
+                <p style="margin-top:0;font-weight:600;">Est-ce que je serai présent pour ce mariage du siècle ?</p>
+                <label class="rsvp-radio"><input type="radio" name="presence" value="Oui, je serai là" required> Oui, je serai là</label>
+                <label class="rsvp-radio"><input type="radio" name="presence" value="Désolé, je ne pourrai pas venir :(" required> Désolé, je ne pourrai pas venir :(</label>
+            </div>
+
+            <div class="rsvp-step" data-step="no" hidden>
+                <p style="margin-top:0;font-weight:600;">Oh noooon 😞</p>
+                <label class="rsvp-label">Indique-nous ton nom complet que l'on puisse bien confirmer l'info</label>
+                <input class="rsvp-input" type="text" name="nomComplet" autocomplete="name" required>
+            </div>
+
+            <div class="rsvp-step" data-step="yes" hidden>
+                <p style="margin-top:0;font-weight:600;">Youuy ! Trop hâte de te voir ramper !</p>
+                <label class="rsvp-label">Indique ton nom de famille</label>
+                <input class="rsvp-input" type="text" name="nom" autocomplete="family-name" required>
+
+                <label class="rsvp-label">Indique ton prénom</label>
+                <input class="rsvp-input" type="text" name="prenom" autocomplete="given-name" required>
+
+                <label class="rsvp-label">Indique ton adresse email</label>
+                <input class="rsvp-input" type="email" name="email" autocomplete="email" required>
+
+                <label class="rsvp-label">Indique ton numéro de téléphone</label>
+                <input class="rsvp-input" type="tel" name="telephone" autocomplete="tel" required>
+
+                <label class="rsvp-label">Indique ton code postal</label>
+                <input class="rsvp-input" type="text" name="codePostal" autocomplete="postal-code" required>
+
+                <label class="rsvp-label">Indique ta ville</label>
+                <input class="rsvp-input" type="text" name="ville" autocomplete="address-level2" required>
+
+                <label class="rsvp-label">Indique ton adresse (ligne 1)</label>
+                <input class="rsvp-input" type="text" name="adresse1" autocomplete="address-line1" required>
+            </div>
+
+            <div class="rsvp-step" data-step="more" hidden>
+                <p style="margin-top:0;font-weight:600;">Quelques informations sur toi...</p>
+                <label class="rsvp-label">Régime alimentaire particulier</label>
+                <div class="rsvp-checks">
+                    <label><input type="checkbox" name="regime" value="Aucun, je mange de tout"> Aucun, je mange de tout</label>
+                    <label><input type="checkbox" name="regime" value="Sans gluten"> Sans gluten</label>
+                    <label><input type="checkbox" name="regime" value="Sans porc"> Sans porc</label>
+                    <label><input type="checkbox" name="regime" value="Sans viande (pescétarien)"> Sans viande (pescétarien)</label>
+                    <label><input type="checkbox" name="regime" value="Végétarien"> Végétarien</label>
+                    <label><input type="checkbox" name="regime" value="Végétalien (produit d'origine animale)"> Végétalien (produit d'origine animale)</label>
+                </div>
+
+                <label class="rsvp-label" style="margin-top:0.75rem;">Préférences alcoolisées</label>
+                <label class="rsvp-radio"><input type="radio" name="alcool" value="Avec modération de tout" required> Avec modération de tout</label>
+                <label class="rsvp-radio"><input type="radio" name="alcool" value="Je ne bois pas d'alcool du tout" required> Je ne bois pas d'alcool du tout</label>
+
+                <label class="rsvp-label" style="margin-top:0.75rem;">As-tu une allergie alimentaire quelconque ?</label>
+                <input class="rsvp-input" type="text" name="allergie" placeholder="(optionnel)">
+            </div>
+
+            <div class="rsvp-actions">
+                <button type="button" id="rsvpBackBtn" hidden>Précédent</button>
+                <button type="submit" id="rsvpNextBtn">Continuer</button>
+            </div>
+
+            <div id="rsvpFormStatus" class="rsvp-form-status" aria-live="polite"></div>
+        </form>
     `;
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbzmmcFRWjK0Tqs1DeOEti4SQtio3x6nOI2K8mve6lyouugVVMQORWsAyZKBnn_RhY4udg/exec';
+
+    // Apps Script RSVP API (same concept as playlist: Web App /exec)
+    // NOTE: this is the existing URL you already used for the email pre-check.
+    const apiBase = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
+    const routeUrl = (route) => `${apiBase}${apiBase.includes('?') ? '&' : '?'}route=${encodeURIComponent(route)}`;
+    const RSVP_CHECK_URL = routeUrl('/api/rsvp/check');
+    const RSVP_SUBMIT_URL = routeUrl('/api/rsvp/submit');
 
     function restoreRsvpCard(e) {
         if (e) e.preventDefault();
@@ -77,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 resultDiv.textContent = 'Vérification en cours...';
                 try {
-                    const res = await fetch(`${apiUrl}?email=${encodeURIComponent(email)}`);
+                    const res = await fetch(`${RSVP_CHECK_URL}&email=${encodeURIComponent(email)}`);
                     const data = await res.json();
                     if (data.found) {
                         rsvpCard.innerHTML = `<div class="rsvp-success" style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center;font-size:1.25rem;color:var(--burgundy);font-weight:600;position:relative;">
@@ -161,12 +231,200 @@ function launchFireworks() {
                         const showFormBtn = document.getElementById('showRsvpFormBtn');
                         if (showFormBtn) {
                             showFormBtn.addEventListener('click', () => {
-                                rsvpCard.classList.add('rsvp-expanded');
-                                rsvpCard.innerHTML = formIframe;
+                                                                rsvpCard.classList.add('rsvp-expanded');
+                                                                rsvpCard.innerHTML = formHtml;
                                 const retourBtn = rsvpCard.querySelector('#rsvpRetourBtn');
                                 if (retourBtn) {
                                     retourBtn.addEventListener('click', restoreRsvpCard);
                                 }
+
+                                                                // Custom RSVP form behavior (multi-step + submit)
+                                                                const $form = rsvpCard.querySelector('#rsvpForm');
+                                                                const $status = rsvpCard.querySelector('#rsvpFormStatus');
+                                                                const $next = rsvpCard.querySelector('#rsvpNextBtn');
+                                                                const $back = rsvpCard.querySelector('#rsvpBackBtn');
+
+                                                                const steps = {
+                                                                    presence: rsvpCard.querySelector('.rsvp-step[data-step="presence"]'),
+                                                                    no: rsvpCard.querySelector('.rsvp-step[data-step="no"]'),
+                                                                    yes: rsvpCard.querySelector('.rsvp-step[data-step="yes"]'),
+                                                                    more: rsvpCard.querySelector('.rsvp-step[data-step="more"]'),
+                                                                };
+
+                                                                let flow = null; // 'yes' | 'no'
+                                                                let page = 'presence';
+
+                                                                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                                                                function setStatus(msg, type = 'info') {
+                                                                    if (!$status) return;
+                                                                    $status.textContent = msg || '';
+                                                                    $status.style.color = (type === 'error') ? '#b00020' : 'var(--sage)';
+                                                                }
+
+                                                                function showStep(name) {
+                                                                    Object.entries(steps).forEach(([k, el]) => {
+                                                                        if (!el) return;
+                                                                        el.hidden = (k !== name);
+                                                                    });
+                                                                    page = name;
+                                                                    if ($back) $back.hidden = (name === 'presence');
+
+                                                                    if ($next) {
+                                                                        if (name === 'more') $next.textContent = 'Envoyer';
+                                                                        else if (name === 'no') $next.textContent = 'Envoyer';
+                                                                        else $next.textContent = 'Continuer';
+                                                                    }
+                                                                    setStatus('');
+                                                                }
+
+                                                                function getPresenceValue() {
+                                                                    const checked = $form.querySelector('input[name="presence"]:checked');
+                                                                    return checked ? checked.value : '';
+                                                                }
+
+                                                                function collectRegimes() {
+                                                                    const boxes = Array.from($form.querySelectorAll('input[name="regime"]:checked'));
+                                                                    return boxes.map(b => b.value);
+                                                                }
+
+                                                                function validateCurrentStep() {
+                                                                    if (page === 'presence') {
+                                                                        const v = getPresenceValue();
+                                                                        if (!v) return 'Choisissez une option pour continuer.';
+                                                                        return '';
+                                                                    }
+
+                                                                    if (page === 'no') {
+                                                                        const nomComplet = ($form.nomComplet?.value || '').trim();
+                                                                        if (!nomComplet) return 'Merci d’indiquer ton nom complet.';
+                                                                        return '';
+                                                                    }
+
+                                                                    if (page === 'yes') {
+                                                                        const nom = ($form.nom?.value || '').trim();
+                                                                        const prenom = ($form.prenom?.value || '').trim();
+                                                                        const email2 = ($form.email?.value || '').trim();
+                                                                        const tel = ($form.telephone?.value || '').trim();
+                                                                        const cp = ($form.codePostal?.value || '').trim();
+                                                                        const ville = ($form.ville?.value || '').trim();
+                                                                        const adr = ($form.adresse1?.value || '').trim();
+
+                                                                        if (!nom || !prenom || !email2 || !tel || !cp || !ville || !adr) return 'Merci de remplir tous les champs.';
+                                                                        if (!emailRegex.test(email2)) return 'Veuillez entrer une adresse email valide.';
+                                                                        return '';
+                                                                    }
+
+                                                                    if (page === 'more') {
+                                                                        const regimes = collectRegimes();
+                                                                        const alcool = ($form.querySelector('input[name="alcool"]:checked') || {}).value || '';
+                                                                        if (!regimes.length) return 'Choisis au moins une option pour le régime alimentaire.';
+                                                                        if (!alcool) return 'Choisis une préférence alcoolisée.';
+                                                                        return '';
+                                                                    }
+
+                                                                    return '';
+                                                                }
+
+                                                                async function submitRsvp(payload) {
+                                                                    try {
+                                                                        $next.disabled = true;
+                                                                        if ($back) $back.disabled = true;
+                                                                        setStatus('Envoi en cours…');
+
+                                                                        const params = new URLSearchParams();
+                                                                        Object.entries(payload).forEach(([k, v]) => {
+                                                                            if (v === undefined || v === null) return;
+                                                                            if (Array.isArray(v)) params.set(k, v.join(' | '));
+                                                                            else params.set(k, String(v));
+                                                                        });
+
+                                                                        const res2 = await fetch(`${RSVP_SUBMIT_URL}&${params.toString()}`);
+                                                                        const data2 = await res2.json().catch(() => ({}));
+                                                                        if (!res2.ok || !data2 || data2.success !== true) {
+                                                                            const msg = (data2 && (data2.message || data2.error)) ? (data2.message || data2.error) : `Envoi échoué (${res2.status})`;
+                                                                            throw new Error(msg);
+                                                                        }
+
+                                                                        rsvpCard.innerHTML = `<div class="rsvp-success" style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center;font-size:1.15rem;color:var(--burgundy);font-weight:600;position:relative;">
+                                                                            <span>Merci ! Ton RSVP a bien été enregistré.</span>
+                                                                            <div style="margin-top:0.75rem;font-weight:500;color:var(--sage);">À très vite ❤️</div>
+                                                                        </div>`;
+                                                                    } catch (e) {
+                                                                        setStatus(e.message || 'Erreur pendant l\'envoi.', 'error');
+                                                                    } finally {
+                                                                        $next.disabled = false;
+                                                                        if ($back) $back.disabled = false;
+                                                                    }
+                                                                }
+
+                                                                // Init
+                                                                showStep('presence');
+
+                                                                $form.addEventListener('change', (ev) => {
+                                                                    if (ev.target && ev.target.name === 'presence') {
+                                                                        const v = getPresenceValue();
+                                                                        flow = (v === 'Oui, je serai là') ? 'yes' : (v ? 'no' : null);
+                                                                    }
+                                                                });
+
+                                                                if ($back) {
+                                                                    $back.addEventListener('click', () => {
+                                                                        if (page === 'no' || page === 'yes') return showStep('presence');
+                                                                        if (page === 'more') return showStep('yes');
+                                                                    });
+                                                                }
+
+                                                                $form.addEventListener('submit', async (ev) => {
+                                                                    ev.preventDefault();
+                                                                    const errMsg = validateCurrentStep();
+                                                                    if (errMsg) {
+                                                                        setStatus(errMsg, 'error');
+                                                                        return;
+                                                                    }
+
+                                                                    if (page === 'presence') {
+                                                                        // branch
+                                                                        const v = getPresenceValue();
+                                                                        flow = (v === 'Oui, je serai là') ? 'yes' : 'no';
+                                                                        return showStep(flow);
+                                                                    }
+
+                                                                    if (page === 'yes') {
+                                                                        return showStep('more');
+                                                                    }
+
+                                                                    // Submit (no or more)
+                                                                    const presence = getPresenceValue();
+                                                                    const nowIso = new Date().toISOString();
+
+                                                                    if (page === 'no') {
+                                                                        const payload = {
+                                                                            presence,
+                                                                            nomComplet: ($form.nomComplet?.value || '').trim(),
+                                                                            submittedAt: nowIso,
+                                                                        };
+                                                                        return submitRsvp(payload);
+                                                                    }
+
+                                                                    if (page === 'more') {
+                                                                        const payload = {
+                                                                            presence,
+                                                                            nom: ($form.nom?.value || '').trim(),
+                                                                            prenom: ($form.prenom?.value || '').trim(),
+                                                                            email: ($form.email?.value || '').trim(),
+                                                                            telephone: ($form.telephone?.value || '').trim(),
+                                                                            codePostal: ($form.codePostal?.value || '').trim(),
+                                                                            ville: ($form.ville?.value || '').trim(),
+                                                                            adresse1: ($form.adresse1?.value || '').trim(),
+                                                                            regime: collectRegimes(),
+                                                                            alcool: ($form.querySelector('input[name="alcool"]:checked') || {}).value || '',
+                                                                            allergie: ($form.allergie?.value || '').trim(),
+                                                                            submittedAt: nowIso,
+                                                                        };
+                                                                        return submitRsvp(payload);
+                                                                    }
+                                                                });
                             });
                         }
                     }
