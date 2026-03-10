@@ -112,7 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Apps Script RSVP API (same concept as playlist: Web App /exec)
     // NOTE: this is the existing URL you already used for the email pre-check.
-    const apiBase = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
+    // NOTE: Using /macros/u/1/ avoids a 302 redirect that Chrome may block (ORB) for JSONP script loads.
+    const apiBase = 'https://script.google.com/macros/u/1/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
     const routeUrl = (route) => `${apiBase}${apiBase.includes('?') ? '&' : '?'}route=${encodeURIComponent(route)}`;
     const RSVP_CHECK_URL = routeUrl('/api/rsvp/check-jsonp');
     const RSVP_SUBMIT_URL = routeUrl('/api/rsvp/submit-jsonp');
