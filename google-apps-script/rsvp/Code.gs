@@ -41,7 +41,9 @@ function doGet(e) {
     const route = params.route || '';
 
     if (route === '/api/rsvp/check') return json_(handleRsvpCheck_(params));
+    if (route === '/api/rsvp/check-jsonp') return jsonp_(handleRsvpCheck_(params), params.callback);
     if (route === '/api/rsvp/submit') return json_(handleRsvpSubmit_(params));
+    if (route === '/api/rsvp/submit-jsonp') return jsonp_(handleRsvpSubmit_(params), params.callback);
 
     return json_({ ok: true, route: route || null });
   } catch (err) {
@@ -57,6 +59,15 @@ function json_(obj, status) {
   // Note: Apps Script Web App doesn't let us set HTTP status in all deployments;
   // we keep it in the payload and let the client treat success=false as failure.
   return output;
+}
+
+function jsonp_(obj, callbackName) {
+  const cb = String(callbackName || '').trim() || 'callback';
+  const safeCb = cb.replace(/[^\w$.]/g, '');
+  const payload = `${safeCb}(${JSON.stringify(obj)});`;
+  return ContentService
+    .createTextOutput(payload)
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
 function openRsvpSheet_() {

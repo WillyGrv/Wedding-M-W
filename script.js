@@ -114,8 +114,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // NOTE: this is the existing URL you already used for the email pre-check.
     const apiBase = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
     const routeUrl = (route) => `${apiBase}${apiBase.includes('?') ? '&' : '?'}route=${encodeURIComponent(route)}`;
-    const RSVP_CHECK_URL = routeUrl('/api/rsvp/check');
-    const RSVP_SUBMIT_URL = routeUrl('/api/rsvp/submit');
+    const RSVP_CHECK_URL = routeUrl('/api/rsvp/check-jsonp');
+    const RSVP_SUBMIT_URL = routeUrl('/api/rsvp/submit-jsonp');
+
+    // JSONP helper: avoids CORS limitations with Apps Script + GitHub Pages
+    function fetchJsonp(url, params = {}) {
+        return new Promise((resolve, reject) => {
+            const cbName = `wmwJsonp_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+            const fullParams = new URLSearchParams();
+            Object.entries(params).forEach(([k, v]) => {
+                if (v === undefined || v === null) return;
+                fullParams.set(k, String(v));
+            });
+            fullParams.set('callback', cbName);
+
+            const sep = url.includes('?') ? '&' : '?';
+            const src = `${url}${sep}${fullParams.toString()}`;
+
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = src;
+
+            const timeout = setTimeout(() => {
+                cleanup();
+                reject(new Error('JSONP timeout'));
+            }, 15000);
+
+            function cleanup() {
+                clearTimeout(timeout);
+                try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
+                script.remove();
+            }
+
+            window[cbName] = (data) => {
+                cleanup();
+                resolve(data);
+            };
+
+            script.onerror = () => {
+                cleanup();
+                reject(new Error('JSONP network error'));
+            };
+
+            document.head.appendChild(script);
+        });
+    }
 
     function restoreRsvpCard(e) {
         if (e) e.preventDefault();
@@ -147,8 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 resultDiv.textContent = 'Vérification en cours...';
                 try {
-                    const res = await fetch(`${RSVP_CHECK_URL}&email=${encodeURIComponent(email)}`);
-                    const data = await res.json();
+                    const data = await fetchJsonp(RSVP_CHECK_URL, { email });
                     if (data.found) {
                         rsvpCard.innerHTML = `<div class="rsvp-success" style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center;font-size:1.25rem;color:var(--burgundy);font-weight:600;position:relative;">
                             <span>Inscription déjà validée pour <strong>${data.prenom} ${data.nom}</strong> !</span>
@@ -332,17 +374,14 @@ function launchFireworks() {
                                                                         if ($back) $back.disabled = true;
                                                                         setStatus('Envoi en cours…');
 
-                                                                        const params = new URLSearchParams();
-                                                                        Object.entries(payload).forEach(([k, v]) => {
-                                                                            if (v === undefined || v === null) return;
-                                                                            if (Array.isArray(v)) params.set(k, v.join(' | '));
-                                                                            else params.set(k, String(v));
+                                                                        const payloadFlat = { ...payload };
+                                                                        Object.entries(payloadFlat).forEach(([k, v]) => {
+                                                                            if (Array.isArray(v)) payloadFlat[k] = v.join(' | ');
                                                                         });
 
-                                                                        const res2 = await fetch(`${RSVP_SUBMIT_URL}&${params.toString()}`);
-                                                                        const data2 = await res2.json().catch(() => ({}));
-                                                                        if (!res2.ok || !data2 || data2.success !== true) {
-                                                                            const msg = (data2 && (data2.message || data2.error)) ? (data2.message || data2.error) : `Envoi échoué (${res2.status})`;
+                                                                        const data2 = await fetchJsonp(RSVP_SUBMIT_URL, payloadFlat);
+                                                                        if (!data2 || data2.success !== true) {
+                                                                            const msg = (data2 && (data2.message || data2.error)) ? (data2.message || data2.error) : 'Envoi échoué.';
                                                                             throw new Error(msg);
                                                                         }
 
