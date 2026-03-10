@@ -34,6 +34,19 @@
         <button id="adminRefreshBtn" type="button" class="admin-btn">Rafraîchir</button>
       </div>
 
+      <div class="admin-bulk" aria-label="Actions de masse">
+        <div class="admin-bulk-left">
+          <strong>Sélection</strong>
+          <button id="adminSelectAll" type="button" class="admin-btn admin-secondary">Tout</button>
+          <button id="adminSelectNone" type="button" class="admin-btn admin-secondary">Aucun</button>
+          <span id="adminSelectedCount" class="muted">0 sélectionné</span>
+        </div>
+        <div class="admin-bulk-right">
+          <button id="adminBulkConfirm" type="button" class="admin-btn admin-confirm" disabled>Confirmer</button>
+          <button id="adminBulkDelete" type="button" class="admin-btn admin-delete" disabled>Supprimer</button>
+        </div>
+      </div>
+
       <div id="adminStatusMsg" class="status" role="status"></div>
       <div id="adminList" class="admin-list" aria-live="polite"></div>
     </section>

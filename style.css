@@ -450,6 +450,46 @@ padding: 1rem 2.2rem;
     margin: 1.25rem 0 0.75rem;
 }
 
+.admin-bulk {
+    margin: 0.25rem 0 0.75rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.admin-bulk-left,
+.admin-bulk-right {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    user-select: none;
+}
+
+.admin-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--sage);
+}
+
+.admin-select-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
 .admin-filters {
     display: flex;
     gap: 0.5rem;
@@ -645,6 +685,10 @@ padding: 1rem 2.2rem;
 
     .admin-actions .admin-btn {
         width: 100%;
+    }
+
+    .admin-bulk {
+        padding: 0.75rem 0.85rem;
     }
 }
 

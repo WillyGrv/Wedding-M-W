@@ -28,6 +28,16 @@ const $msg = document.getElementById('adminStatusMsg');
 const $refresh = document.getElementById('adminRefreshBtn');
 const $status = document.getElementById('adminStatus');
 
+// Bulk actions UI (optional on page)
+const $selectAll = document.getElementById('adminSelectAll');
+const $selectNone = document.getElementById('adminSelectNone');
+const $selectedCount = document.getElementById('adminSelectedCount');
+const $bulkConfirm = document.getElementById('adminBulkConfirm');
+const $bulkDelete = document.getElementById('adminBulkDelete');
+
+const selectedUris = new Set();
+let lastRenderedEntries = [];
+
 function setMsg(text, type = 'info') {
   $msg.textContent = text || '';
   $msg.style.color = type === 'error' ? '#b00020' : 'var(--sage)';
@@ -62,6 +72,10 @@ async function load() {
   setMsg('Chargement…');
   $list.innerHTML = '';
 
+  // Clear selection on reload to prevent acting on stale DOM/rows
+  selectedUris.clear();
+  updateBulkUi_();
+
   try {
     const url = new URL(LIST_ENDPOINT, location.href);
     url.searchParams.set('status', desired);
@@ -72,12 +86,22 @@ if (!resp.ok && !Array.isArray(data.items)) throw new Error(`HTTP ${resp.status}
 
     // If the backend didn't persist track metadata (only URI), resolve it on the fly for nicer admin display.
     const enriched = await enrichEntriesWithTrack(items);
+    lastRenderedEntries = enriched;
     render(enriched);
     setMsg(`Demandes: ${items.length}`);
   } catch (err) {
     console.error(err);
     setMsg('Impossible de charger les demandes (serveur non joignable ?).', 'error');
   }
+}
+
+function updateBulkUi_() {
+  if ($selectedCount) {
+    const n = selectedUris.size;
+    $selectedCount.textContent = `${n} sélectionné${n > 1 ? 's' : ''}`;
+  }
+  if ($bulkConfirm) $bulkConfirm.disabled = selectedUris.size === 0;
+  if ($bulkDelete) $bulkDelete.disabled = selectedUris.size === 0;
 }
 
 function getSpotifyTrackIdFromUri(uri) {
@@ -196,6 +220,29 @@ function render(items) {
     const actions = document.createElement('div');
     actions.className = 'admin-actions';
 
+    // Bulk selection checkbox (doesn't affect manual actions)
+    const selectWrap = document.createElement('label');
+    selectWrap.className = 'admin-select';
+
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'admin-checkbox';
+    cb.dataset.uri = entry.uri;
+    cb.checked = selectedUris.has(entry.uri);
+    cb.addEventListener('change', () => {
+      if (cb.checked) selectedUris.add(entry.uri);
+      else selectedUris.delete(entry.uri);
+      updateBulkUi_();
+    });
+
+    const cbText = document.createElement('span');
+    cbText.className = 'admin-select-text';
+    cbText.textContent = 'Sélectionner';
+
+    selectWrap.appendChild(cb);
+    selectWrap.appendChild(cbText);
+    actions.appendChild(selectWrap);
+
     const confirmBtn = document.createElement('button');
     confirmBtn.type = 'button';
     confirmBtn.className = 'admin-btn admin-confirm';
@@ -263,6 +310,100 @@ function render(items) {
       });
     }
   });
+
+  // After render, make sure bulk UI reflects current selection
+  updateBulkUi_();
+}
+
+function setBulkBusy_(isBusy, label) {
+  if ($bulkConfirm) {
+    $bulkConfirm.disabled = isBusy || selectedUris.size === 0;
+    $bulkConfirm.textContent = isBusy ? (label || 'Traitement…') : 'Confirmer';
+  }
+  if ($bulkDelete) {
+    $bulkDelete.disabled = isBusy || selectedUris.size === 0;
+    $bulkDelete.textContent = isBusy ? (label || 'Traitement…') : 'Supprimer';
+  }
+  if ($selectAll) $selectAll.disabled = isBusy;
+  if ($selectNone) $selectNone.disabled = isBusy;
+  if ($refresh) $refresh.disabled = isBusy;
+  if ($status) $status.disabled = isBusy;
+}
+
+async function runBulkConfirm_() {
+  if (!selectedUris.size) return;
+
+  const uris = Array.from(selectedUris);
+  setBulkBusy_(true, 'Ajout…');
+  setMsg(`Confirmation en cours… (0/${uris.length})`);
+
+  let ok = 0;
+  let fail = 0;
+
+  for (let i = 0; i < uris.length; i++) {
+    const uri = uris[i];
+    try {
+      // Inline minimal confirm logic (reuse same endpoint/behavior)
+      const url = new URL(CONFIRM_ENDPOINT, location.href);
+      url.searchParams.set('uri', uri);
+      // eslint-disable-next-line no-await-in-loop
+      const { resp, data } = await fetchJson(url.toString());
+
+      if (resp.ok && data && data.success) ok++;
+      else fail++;
+    } catch {
+      fail++;
+    }
+    setMsg(`Confirmation en cours… (${i + 1}/${uris.length})`);
+  }
+
+  setMsg(`Terminé: ${ok} confirmé${ok > 1 ? 's' : ''}${fail ? ` • ${fail} erreur${fail > 1 ? 's' : ''}` : ''}`);
+  selectedUris.clear();
+  setBulkBusy_(false);
+  updateBulkUi_();
+  setTimeout(load, 350);
+}
+
+async function runBulkDelete_() {
+  if (!selectedUris.size) return;
+
+  const n = selectedUris.size;
+  const ok = window.confirm(`Supprimer ${n} demande${n > 1 ? 's' : ''} ?`);
+  if (!ok) return;
+
+  const uris = Array.from(selectedUris);
+  setBulkBusy_(true, 'Suppression…');
+  setMsg(`Suppression en cours… (0/${uris.length})`);
+
+  let okCount = 0;
+  let fail = 0;
+
+  for (let i = 0; i < uris.length; i++) {
+    const uri = uris[i];
+    try {
+      let deleted = false;
+      for (const endpoint of DELETE_ENDPOINTS) {
+        const url = new URL(endpoint, location.href);
+        url.searchParams.set('uri', uri);
+        // eslint-disable-next-line no-await-in-loop
+        const { resp, data } = await fetchJson(url.toString());
+        if (resp.status === 404 || data.message === 'Not found') continue;
+        deleted = resp.ok;
+        break;
+      }
+      if (deleted) okCount++;
+      else fail++;
+    } catch {
+      fail++;
+    }
+    setMsg(`Suppression en cours… (${i + 1}/${uris.length})`);
+  }
+
+  setMsg(`Terminé: ${okCount} supprimé${okCount > 1 ? 's' : ''}${fail ? ` • ${fail} erreur${fail > 1 ? 's' : ''}` : ''}`);
+  selectedUris.clear();
+  setBulkBusy_(false);
+  updateBulkUi_();
+  setTimeout(load, 350);
 }
 
 async function confirm(uri, btn) {
@@ -399,5 +540,40 @@ async function remove(uri, btn) {
 
 $refresh.addEventListener('click', load);
 $status.addEventListener('change', load);
+
+// Bulk actions wiring (keeps manual buttons untouched)
+if ($selectAll) {
+  $selectAll.addEventListener('click', () => {
+    // B: in pending view, select only pending rows (avoid accidental confirmed selection)
+    const desired = $status.value;
+    selectedUris.clear();
+    (lastRenderedEntries || []).forEach((e) => {
+      if (!e || !e.uri) return;
+      if (desired === 'pending' && e.status !== 'pending') return;
+      selectedUris.add(e.uri);
+    });
+
+    // sync checkboxes
+    $list.querySelectorAll('input.admin-checkbox').forEach((el) => {
+      const uri = el.dataset.uri || '';
+      el.checked = selectedUris.has(uri);
+    });
+
+    updateBulkUi_();
+  });
+}
+
+if ($selectNone) {
+  $selectNone.addEventListener('click', () => {
+    selectedUris.clear();
+    $list.querySelectorAll('input.admin-checkbox').forEach((el) => {
+      el.checked = false;
+    });
+    updateBulkUi_();
+  });
+}
+
+if ($bulkConfirm) $bulkConfirm.addEventListener('click', runBulkConfirm_);
+if ($bulkDelete) $bulkDelete.addEventListener('click', runBulkDelete_);
 
 load();
