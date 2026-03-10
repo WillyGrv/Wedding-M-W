@@ -297,11 +297,37 @@ padding: 1rem 2.2rem;
     letter-spacing: 0.5px;
 }
 
+.playlist-section .spotify-search button:disabled {
+    cursor: default;
+    opacity: 0.75;
+}
+
 .playlist-section .results {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.75rem;
     margin-top: 1rem;
+}
+
+/* While searching, dim results and show a small spinner overlay */
+.playlist-section .results.is-searching {
+    position: relative;
+    opacity: 0.65;
+    pointer-events: none;
+    filter: saturate(0.9);
+}
+
+.playlist-section .results.is-searching::after {
+    content: '';
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 2px solid rgba(74, 84, 66, 0.25);
+    border-top-color: rgba(74, 84, 66, 0.85);
+    animation: playlistSpinner 0.8s linear infinite;
 }
 
 .playlist-section .result-item {
@@ -484,6 +510,30 @@ padding: 1rem 2.2rem;
     box-shadow: 0 3px 10px rgba(0,0,0,0.04);
 }
 
+/* Right-side actions: aligned + consistent sizing */
+.admin-actions {
+    display: grid;
+    gap: 0.55rem;
+    justify-items: end;
+}
+
+.admin-actions .admin-btn {
+    width: 168px;
+    text-align: center;
+}
+
+.admin-btn.admin-confirm {
+    background: var(--olive);
+}
+
+.admin-btn.admin-delete {
+    background: rgba(176, 0, 32, 0.92);
+}
+
+.admin-btn.admin-delete:hover {
+    background: rgba(176, 0, 32, 1);
+}
+
 /* Admin track row: keep it compact (avoid huge cover images) */
 .admin-track {
     display: grid;
@@ -586,6 +636,15 @@ padding: 1rem 2.2rem;
 @media (max-width: 640px) {
     .admin-item {
         grid-template-columns: 1fr;
+    }
+
+    .admin-actions {
+        grid-template-columns: 1fr 1fr;
+        justify-items: stretch;
+    }
+
+    .admin-actions .admin-btn {
+        width: 100%;
     }
 }
 

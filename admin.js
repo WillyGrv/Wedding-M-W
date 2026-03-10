@@ -189,7 +189,6 @@ function render(items) {
       <div class="admin-links">
         <button type="button" class="admin-btn admin-secondary" data-preview-embed="${escapeHtml(spotifyEmbedUrl)}">Pré-écouter</button>
         <a class="admin-link" href="${escapeHtml(spotifyOpenUrl)}" target="_blank" rel="noopener">Ouvrir Spotify</a>
-        <button type="button" class="admin-btn admin-secondary" data-copy-url="${escapeHtml(spotifyOpenUrl)}">Copier le lien</button>
       </div>
       ` : ''}
     `;
@@ -231,27 +230,11 @@ function render(items) {
     });
 
     actions.appendChild(confirmBtn);
-    actions.appendChild(manualBtn);
     actions.appendChild(deleteBtn);
 
     row.appendChild(meta);
     row.appendChild(actions);
     $list.appendChild(row);
-
-    // Wire copy link button (if present)
-    const copyBtn = row.querySelector('[data-copy-url]');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', async () => {
-        const url = copyBtn.getAttribute('data-copy-url') || '';
-        if (!url) return;
-        try {
-          await navigator.clipboard.writeText(url);
-          setMsg('Lien copié.');
-        } catch {
-          setMsg('Impossible de copier automatiquement. Sélectionnez et copiez le lien.', 'error');
-        }
-      });
-    }
 
     // Wire preview embed toggle (if present)
     const previewBtn = row.querySelector('[data-preview-embed]');
@@ -314,7 +297,7 @@ if (resp.status === 404 || data.message === 'Not found') {
     
     btn.textContent = 'Confirmé ✓';
 
-    setMsg('Confirmé. Utilisez "Ouvrir Spotify" puis cliquez "Ajouté manuellement ✅".');
+    setMsg('Confirmé.');
 
     // refresh list to reflect status + timestamps
     setTimeout(load, 250);

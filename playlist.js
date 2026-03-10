@@ -37,6 +37,41 @@ function setStatus(msg, type = 'info') {
   $status.style.color = type === 'error' ? '#b00020' : 'var(--sage)';
 }
 
+// Persist "added" state so buttons don't revert after re-render.
+const ADDED_STORAGE_KEY = 'wmw_playlist_added_uris_v1';
+const addedUris = new Set();
+
+function loadAddedUris() {
+  try {
+    const raw = localStorage.getItem(ADDED_STORAGE_KEY);
+    if (!raw) return;
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) arr.forEach((u) => u && addedUris.add(String(u)));
+  } catch (_) {
+    // ignore
+  }
+}
+
+function saveAddedUris() {
+  try {
+    localStorage.setItem(ADDED_STORAGE_KEY, JSON.stringify(Array.from(addedUris)));
+  } catch (_) {
+    // ignore
+  }
+}
+
+function markUriAdded(uri) {
+  if (!uri) return;
+  addedUris.add(String(uri));
+  saveAddedUris();
+}
+
+function isUriAdded(uri) {
+  return uri ? addedUris.has(String(uri)) : false;
+}
+
+loadAddedUris();
+
 function debounce(fn, wait = 400) {
   let t;
   return (...args) => {
@@ -83,16 +118,34 @@ async function fetchJson(url, options) {
   const data = await resp.json().catch(() => ({}));
   return { resp, data };
 }
+
+let currentSearchAbort = null;
+
+function setSearchingUi(isSearching) {
+  $btn.disabled = isSearching;
+  $btn.textContent = isSearching ? 'Recherche…' : 'Rechercher';
+  $results.classList.toggle('is-searching', isSearching);
+}
+
 async function searchTracks(query) {
   if (!query || query.trim().length < 2) {
     setStatus('Tapez au moins 2 caractères pour rechercher.');
     $results.innerHTML = '';
+    setSearchingUi(false);
     return;
   }
+
+  // Cancel any in-flight search to avoid UI "races".
+  if (currentSearchAbort) currentSearchAbort.abort();
+  currentSearchAbort = new AbortController();
+
+  setSearchingUi(true);
   setStatus('Recherche en cours… (Cela peut prendre 30 sec)', 'loading');
   try {
     const params = new URLSearchParams({ q: query.trim(), limit: '10' });
-    const { resp, data } = await fetchJson(`${SEARCH_ENDPOINT}&${params.toString()}`);
+    const { resp, data } = await fetchJson(`${SEARCH_ENDPOINT}&${params.toString()}`, {
+      signal: currentSearchAbort.signal,
+    });
 if (!resp.ok && !data.items && !(data.tracks && data.tracks.items)) {
   throw new Error(`Recherche échouée (${resp.status})`);
 }
@@ -104,8 +157,11 @@ if (!resp.ok && !data.items && !(data.tracks && data.tracks.items)) {
     renderResults(tracks);
     setStatus(`Résultats: ${tracks.length}`);
   } catch (err) {
+    if (err && err.name === 'AbortError') return;
     console.error(err);
     setStatus('Erreur pendant la recherche. Réessayez dans un instant.', 'error');
+  } finally {
+    setSearchingUi(false);
   }
 }
 
@@ -167,8 +223,15 @@ function renderResults(tracks) {
 
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
-    addBtn.textContent = 'Ajouter à la playlist';
-    addBtn.addEventListener('click', () => addTrack(t.uri, addBtn));
+
+    if (isUriAdded(t.uri)) {
+      addBtn.textContent = 'Ajouté ✓';
+      addBtn.disabled = true;
+    } else {
+      addBtn.textContent = 'Ajouter à la playlist';
+      addBtn.addEventListener('click', () => addTrack(t.uri, addBtn));
+    }
+
     actions.appendChild(addBtn);
     row.appendChild(actions);
 
@@ -206,7 +269,9 @@ async function addTrack(uri, btn) {
     // UX: more explicit handling
     if (resp.status === 409 || data.message === 'Track already added') {
       setStatus('Déjà proposé — merci !', 'info');
-      btn.textContent = 'Déjà ajouté';
+      markUriAdded(uri);
+      btn.textContent = 'Ajouté ✓';
+      btn.disabled = true;
       return;
     }
 
@@ -217,7 +282,9 @@ async function addTrack(uri, btn) {
     }
     if (data.success) {
       setStatus('Chanson ajoutée (enregistrée). Merci !');
+      markUriAdded(uri);
       btn.textContent = 'Ajouté ✓';
+      btn.disabled = true;
       return;
     }
 
@@ -226,10 +293,11 @@ async function addTrack(uri, btn) {
     console.error(err);
     setStatus('Erreur réseau. Réessayez.', 'error');
   } finally {
-    setTimeout(() => {
+    // If not added, restore original button state.
+    if (!isUriAdded(uri)) {
       btn.disabled = false;
       btn.textContent = originalLabel;
-    }, 1500);
+    }
   }
 }
 
