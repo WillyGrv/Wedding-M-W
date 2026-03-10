@@ -1990,7 +1990,7 @@ section:not(.hero) {
     padding: 0; /* lean like invite info */
     border-radius: 0; /* no rounded corners */
     box-shadow: none; /* remove card shadow */
-    text-align: left; /* align like invite */
+    text-align: center; /* align like invite */
     order: 1; /* keep text on the left */
 }
 
