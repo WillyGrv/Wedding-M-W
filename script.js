@@ -52,53 +52,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // Needs a doPost(e) in GAS that routes to handleRsvpSubmit_.
     const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
     const SUBMIT_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/submit')}`;
-    const CHECK_JSONP_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/check-jsonp')}`;
+    // Email check is done via hidden iframe GET to avoid ORB redirects on <script> JSONP.
+    // Requires GAS to implement a route that redirects to a URL containing the result in query params.
+    const CHECK_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/check-redirect')}`;
 
     function isValidEmail(email) {
         const s = String(email || '').trim();
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
     }
 
-    // JSONP helper for read-only check (avoids CORS)
-    function fetchJsonp(url, params = {}) {
-        return new Promise((resolve, reject) => {
-            const cbName = `wmwJsonp_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
-            const fullParams = new URLSearchParams();
-            Object.entries(params).forEach(([k, v]) => {
-                if (v === undefined || v === null) return;
-                fullParams.set(k, String(v));
-            });
-            fullParams.set('callback', cbName);
+    function checkEmailViaIframe(email) {
+        return new Promise((resolve) => {
+            const frame = document.getElementById('rsvpCheckFrame');
+            if (!frame) return resolve({ ok: false, error: 'missing_frame' });
 
-            const sep = url.includes('?') ? '&' : '?';
-            const src = `${url}${sep}${fullParams.toString()}`;
+            const tmpForm = document.createElement('form');
+            tmpForm.method = 'GET';
+            tmpForm.action = CHECK_URL;
+            tmpForm.target = 'rsvpCheckFrame';
+            tmpForm.style.position = 'absolute';
+            tmpForm.style.left = '-9999px';
+            tmpForm.style.top = '-9999px';
 
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = src;
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'email';
+            input.value = email;
+            tmpForm.appendChild(input);
 
-            const timeout = setTimeout(() => {
-                cleanup();
-                reject(new Error('JSONP timeout'));
+            const onLoad = () => {
+                frame.removeEventListener('load', onLoad);
+                try { tmpForm.remove(); } catch (_) {}
+
+                // We can't read the document, but we can read the final URL.
+                let href = '';
+                try { href = frame.contentWindow.location.href; } catch (_) {
+                    // Cross-origin: reading href may still throw. We fall back to src.
+                    href = frame.getAttribute('src') || '';
+                }
+
+                try {
+                    const url = new URL(href);
+                    const found = url.searchParams.get('found') === '1';
+                    const prenom = url.searchParams.get('prenom') || '';
+                    const nom = url.searchParams.get('nom') || '';
+                    const error = url.searchParams.get('error') || '';
+                    resolve({ ok: true, found, prenom, nom, error });
+                } catch (err) {
+                    resolve({ ok: false, error: 'parse_failed' });
+                }
+            };
+
+            frame.addEventListener('load', onLoad);
+            document.body.appendChild(tmpForm);
+            tmpForm.submit();
+
+            setTimeout(() => {
+                try { frame.removeEventListener('load', onLoad); } catch (_) {}
+                try { tmpForm.remove(); } catch (_) {}
+                resolve({ ok: false, error: 'timeout' });
             }, 12000);
-
-            function cleanup() {
-                clearTimeout(timeout);
-                try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
-                script.remove();
-            }
-
-            window[cbName] = (data) => {
-                cleanup();
-                resolve(data);
-            };
-
-            script.onerror = () => {
-                cleanup();
-                reject(new Error('JSONP network error'));
-            };
-
-            document.head.appendChild(script);
         });
     }
 
@@ -204,8 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (checkResult) checkResult.textContent = 'Vérification en cours...';
         try {
-            const data = await fetchJsonp(CHECK_JSONP_URL, { email });
-            if (data && data.found) {
+            const data = await checkEmailViaIframe(email);
+            if (data && data.ok && data.found) {
                 if (checkResult) {
                     const fullName = `${String(data.prenom || '').trim()} ${String(data.nom || '').trim()}`.trim();
                     checkResult.textContent = fullName
@@ -214,6 +227,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 // Keep the form hidden
                 mount.style.display = 'none';
+                return;
+            }
+
+            if (data && data.ok && data.error) {
+                if (checkResult) checkResult.textContent = 'Erreur de vérification, réessayez plus tard.';
                 return;
             }
 
