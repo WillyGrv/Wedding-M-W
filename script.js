@@ -63,33 +63,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function checkEmailLegacy(email) {
+        const fetchJson = async (url, extra = {}) => {
+            const res = await fetch(url, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store',
+                redirect: 'follow',
+                ...extra,
+            });
+            const text = await res.text();
+            let json;
+            try {
+                json = text ? JSON.parse(text) : null;
+            } catch {
+                json = null;
+            }
+            return { res, json, text };
+        };
+
         // Attempt 1 (legacy): .../exec?email=...
-        // If the deployed script is now route-based, it may answer { ok:true, route:null }.
+        // If the deployed script is now route-based, it may answer { ok:true, route: ... }.
         // In that case we fallback to the explicit check route.
         const url1 = new URL(RSVP_CHECK_API_URL);
         url1.searchParams.set('email', email);
         url1.searchParams.set('_ts', String(Date.now()));
 
-        const res1 = await fetch(url1.toString(), {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-            cache: 'no-store',
-        });
-        const data1 = await res1.json();
-        if (data1 && typeof data1.found === 'boolean') return data1;
+        const r1 = await fetchJson(url1.toString());
+        if (r1.json && typeof r1.json.found === 'boolean') return r1.json;
 
         // Fallback (route-based GAS): .../exec?route=/api/rsvp/checkF&email=...
         const url2 = new URL(RSVP_CHECK_API_URL);
         url2.searchParams.set('route', '/api/rsvp/checkF');
         url2.searchParams.set('email', email);
         url2.searchParams.set('_ts', String(Date.now()));
-        const res2 = await fetch(url2.toString(), {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-            cache: 'no-store',
-        });
-        const data2 = await res2.json();
-        return data2;
+
+        // Some browsers / privacy settings can be picky with cross-site referrers; use no-referrer.
+        const r2 = await fetchJson(url2.toString(), { referrerPolicy: 'no-referrer' });
+        if (r2.json && typeof r2.json.found === 'boolean') return r2.json;
+
+        // If we got here, the backend responded but not with the contract we need.
+        // Return a normalized error-ish object so the UI can show something helpful.
+        return {
+            found: false,
+            _error: 'unexpected_response',
+            _debug: { status: r2.res?.status, sample: String(r2.text || '').slice(0, 180) },
+        };
     }
 
     const formHtml = `
@@ -139,13 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <label><input type="checkbox" name="regime" value="Aucun, je mange de tout"> Aucun, je mange de tout</label>
                     <label><input type="checkbox" name="regime" value="Sans gluten"> Sans gluten</label>
                     <label><input type="checkbox" name="regime" value="Sans porc"> Sans porc</label>
-                    <label><input type="checkbox" name="regime" value="Sans viande (pescétarien)"> Sans viande (pescétarien)</label>
+                    <label><input type="checkbox" name="regime" value="Sans viande (poisson ok)"> Sans viande (poisson ok)</label>
                     <label><input type="checkbox" name="regime" value="Végétarien"> Végétarien</label>
-                    <label><input type="checkbox" name="regime" value="Végétalien (produit d'origine animale)"> Végétalien (produit d'origine animale)</label>
+                    <label><input type="checkbox" name="regime" value="Végétalien"> Végétalien</label>
                 </div>
 
-                <label class="rsvp-label" style="margin-top:0.75rem;">Préférences alcoolisées</label>
-                <label class="rsvp-radio"><input type="radio" name="alcool" value="Avec modération de tout" required> Avec modération de tout</label>
+                <label class="rsvp-label" style="margin-top:0.75rem;">Préférences alcoolémie</label>
+                <label class="rsvp-radio"><input type="radio" name="alcool" value="Aucune, je bois de tout" required> Aucune, je bois de tout</label>
                 <label class="rsvp-radio"><input type="radio" name="alcool" value="Je ne bois pas d'alcool du tout" required> Je ne bois pas d'alcool du tout</label>
 
                 <label class="rsvp-label" style="margin-top:0.75rem;">As-tu une allergie alimentaire quelconque ?</label>
@@ -215,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const emailField = form.querySelector('input[name="email"]');
             if (emailField) emailField.value = email;
         } catch (err) {
-            if (checkResult) checkResult.textContent = 'Erreur de vérification, réessayez plus tard.';
+            if (checkResult) checkResult.textContent = "Erreur de vérification (connexion ou script Google). Réessayez dans quelques instants.";
         }
     }
 
@@ -282,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (step === 'more') {
             const alcool = getRadioValue('alcool');
-            if (!alcool) return 'Choisis une préférence alcoolisée.';
+            if (!alcool) return 'Choisis une préférence en alcolémie.';
             return null;
         }
 
