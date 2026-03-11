@@ -63,16 +63,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function checkEmailLegacy(email) {
-        const url = new URL(RSVP_CHECK_API_URL);
-        url.searchParams.set('email', email);
-        url.searchParams.set('_ts', String(Date.now()));
-        const res = await fetch(url.toString(), {
+        // Attempt 1 (legacy): .../exec?email=...
+        // If the deployed script is now route-based, it may answer { ok:true, route:null }.
+        // In that case we fallback to the explicit check route.
+        const url1 = new URL(RSVP_CHECK_API_URL);
+        url1.searchParams.set('email', email);
+        url1.searchParams.set('_ts', String(Date.now()));
+
+        const res1 = await fetch(url1.toString(), {
             method: 'GET',
             headers: { 'Accept': 'application/json' },
             cache: 'no-store',
         });
-        const data = await res.json();
-        return data;
+        const data1 = await res1.json();
+        if (data1 && typeof data1.found === 'boolean') return data1;
+
+        // Fallback (route-based GAS): .../exec?route=/api/rsvp/checkF&email=...
+        const url2 = new URL(RSVP_CHECK_API_URL);
+        url2.searchParams.set('route', '/api/rsvp/checkF');
+        url2.searchParams.set('email', email);
+        url2.searchParams.set('_ts', String(Date.now()));
+        const res2 = await fetch(url2.toString(), {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store',
+        });
+        const data2 = await res2.json();
+        return data2;
     }
 
     const formHtml = `
