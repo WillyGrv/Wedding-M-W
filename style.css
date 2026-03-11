@@ -2210,6 +2210,33 @@ footer {
     color: rgba(255, 255, 255, 0.7);
 }
 
+.footer-whatsapp {
+    margin-top: 1rem;
+}
+
+.footer-whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sand);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-whatsapp-link:hover {
+    text-decoration: underline;
+}
+
+.footer-whatsapp-link .wa-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
 /* ==========================================
    RESPONSIVE
    ========================================== */
