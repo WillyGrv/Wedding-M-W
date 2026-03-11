@@ -48,71 +48,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const mount = document.getElementById('rsvp-app');
     if (!mount) return;
 
-    // IMPORTANT: This endpoint is cross-origin. We submit via <form target="rsvpSubmitFrame">.
+    // IMPORTANT: submit stays on GAS (no CORS) via <form target="rsvpSubmitFrame">.
     // Needs a doPost(e) in GAS that routes to handleRsvpSubmit_.
     const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
     const SUBMIT_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/submit')}`;
-    // Email check is done via hidden iframe GET to avoid ORB.
-    // GAS must implement: route=/api/rsvp/checkF-redirect which checks ONLY column F and redirects with found=1|0.
-    const CHECK_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/checkF-redirect')}`;
+
+    // Email check: legacy flow (simple JSON) — call exec directly with ?email=...
+    // Expected JSON: { found: boolean, prenom?: string, nom?: string }
+    const RSVP_CHECK_API_URL = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
 
     function isValidEmail(email) {
         const s = String(email || '').trim();
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
     }
 
-    function checkEmailViaIframe(email) {
-        return new Promise((resolve) => {
-            const frame = document.getElementById('rsvpCheckFrame');
-            if (!frame) return resolve({ ok: false, error: 'missing_frame' });
-
-            const tmpForm = document.createElement('form');
-            tmpForm.method = 'GET';
-            tmpForm.action = CHECK_URL;
-            tmpForm.target = 'rsvpCheckFrame';
-            tmpForm.style.position = 'absolute';
-            tmpForm.style.left = '-9999px';
-            tmpForm.style.top = '-9999px';
-
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'email';
-            input.value = email;
-            tmpForm.appendChild(input);
-
-            const onLoad = () => {
-                frame.removeEventListener('load', onLoad);
-                try { tmpForm.remove(); } catch (_) {}
-
-                // We can't read the document, but we can read the final URL.
-                let href = '';
-                try { href = frame.contentWindow.location.href; } catch (_) {
-                    // Cross-origin: reading href may still throw. We fall back to src.
-                    href = frame.getAttribute('src') || '';
-                }
-
-                try {
-                    const url = new URL(href);
-                    const found = url.searchParams.get('found') === '1';
-                    const prenom = url.searchParams.get('prenom') || '';
-                    const nom = url.searchParams.get('nom') || '';
-                    const error = url.searchParams.get('error') || '';
-                    resolve({ ok: true, found, prenom, nom, error });
-                } catch (err) {
-                    resolve({ ok: false, error: 'parse_failed' });
-                }
-            };
-
-            frame.addEventListener('load', onLoad);
-            document.body.appendChild(tmpForm);
-            tmpForm.submit();
-
-            setTimeout(() => {
-                try { frame.removeEventListener('load', onLoad); } catch (_) {}
-                try { tmpForm.remove(); } catch (_) {}
-                resolve({ ok: false, error: 'timeout' });
-            }, 12000);
+    async function checkEmailLegacy(email) {
+        const url = new URL(RSVP_CHECK_API_URL);
+        url.searchParams.set('email', email);
+        url.searchParams.set('_ts', String(Date.now()));
+        const res = await fetch(url.toString(), {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store',
         });
+        const data = await res.json();
+        return data;
     }
 
     const formHtml = `
@@ -217,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (checkResult) checkResult.textContent = 'Vérification en cours...';
         try {
-            const data = await checkEmailViaIframe(email);
-            if (data && data.ok && data.found) {
+            const data = await checkEmailLegacy(email);
+            if (data && data.found) {
                 if (checkResult) {
                     const fullName = `${String(data.prenom || '').trim()} ${String(data.nom || '').trim()}`.trim();
                     checkResult.textContent = fullName
@@ -227,11 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 // Keep the form hidden
                 mount.style.display = 'none';
-                return;
-            }
-
-            if (data && data.ok && data.error) {
-                if (checkResult) checkResult.textContent = 'Erreur de vérification, réessayez plus tard.';
                 return;
             }
 
