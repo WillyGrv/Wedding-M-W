@@ -1200,6 +1200,23 @@ nav a::after {
     position: relative;
 }
 
+/* Mobile UX: allow vertical scrolling inside the modal when content is taller than the viewport */
+@media (max-width: 768px) {
+    .modal-overlay {
+        align-items: flex-start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.9rem;
+    }
+
+    .modal-dialog {
+        width: 100%;
+        max-height: calc(100dvh - 1.8rem);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
 .modal-close {
     position: absolute;
     top: 0.8rem;
