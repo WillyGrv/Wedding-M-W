@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Needs a doPost(e) in GAS that routes to handleRsvpSubmit_.
     const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbx2yNpUdEVuUjQvYxED20KLtaGrnEeyCuaRVJwHdM-e5MYQNrSEels-OOnYROglPXb4TQ/exec';
     const SUBMIT_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/submit')}`;
-    // Email check is done via hidden iframe GET to avoid ORB redirects on <script> JSONP.
-    // Requires GAS to implement a route that redirects to a URL containing the result in query params.
-    const CHECK_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/check-redirect')}`;
+    // Email check is done via hidden iframe GET to avoid ORB.
+    // GAS must implement: route=/api/rsvp/checkF-redirect which checks ONLY column F and redirects with found=1|0.
+    const CHECK_URL = `${GAS_EXEC_URL}?route=${encodeURIComponent('/api/rsvp/checkF-redirect')}`;
 
     function isValidEmail(email) {
         const s = String(email || '').trim();
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkResult = document.getElementById('rsvpCheckResult');
     const checkWrap = document.getElementById('rsvp-check');
 
-    // Hide form until email check passes (or user chooses to proceed)
+    // Hide form until email check passes
     mount.style.display = 'none';
 
     async function runEmailCheck() {
@@ -235,7 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Not found => hide check UI and show the form
             if (checkResult) checkResult.textContent = '';
+            if (checkWrap) checkWrap.style.display = 'none';
             mount.style.display = '';
             // Pre-fill email into the form
             const emailField = form.querySelector('input[name="email"]');
