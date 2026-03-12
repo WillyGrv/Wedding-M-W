@@ -1794,6 +1794,24 @@ section:not(.hero) {
 .theme-groups {
     margin-top: 0.25rem;
 }
+
+.theme-figure {
+    margin: 0.9rem 0 0.75rem;
+    border-radius: 16px;
+    overflow: hidden;
+    justify-items: center;
+   
+   
+}
+
+.theme-figure img {
+    display: block;
+    width: 70%;
+    height: clamp(160px, 24vw, 230px);
+    object-fit: cover;
+    opacity: 0.9;
+    filter: saturate(0.95) contrast(1.02);
+}
 .color-chips {
     list-style: none;
     margin: 0.5rem 0 0 0;
@@ -1849,6 +1867,10 @@ section:not(.hero) {
 @media (max-width: 1024px) {
     .logements-theme-grid {
         grid-template-columns: 1fr;
+    }
+
+    .theme-figure img {
+        height: 200px;
     }
 }
 
